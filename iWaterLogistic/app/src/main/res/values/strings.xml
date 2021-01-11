@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">iWaterLogistic</string>
+    <string name="login_id">ID</string>
+    <string name="login_text">Логин</string>
+    <string name="password_text">Пароль</string>
+    <string name="enter_text">Войти</string>
 </resources>
