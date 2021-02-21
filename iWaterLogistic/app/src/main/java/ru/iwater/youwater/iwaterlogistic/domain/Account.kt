@@ -1,7 +1,11 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+/**
+ * Класс аккаунта
+ **/
 data class Account(
-    val id: Int,
-    val session: String,
-    val token: String
+    var id: Int,
+    var login: String,
+    var session: String,
+    var company: String
 )

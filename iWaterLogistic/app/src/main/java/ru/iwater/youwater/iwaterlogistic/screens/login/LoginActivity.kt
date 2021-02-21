@@ -1,20 +1,21 @@
-package ru.iwater.youwater.iwaterlogistic.screens
+package ru.iwater.youwater.iwaterlogistic.screens.login
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.google.firebase.iid.FirebaseInstanceId
 import kotlinx.android.synthetic.main.login_activity.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.domain.LoginViewModel
+import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 
-
+/**
+ * экран входа в приложения
+ */
 class LoginActivity : BaseActivity() {
 
     lateinit var loginViewModel: LoginViewModel
@@ -28,32 +29,28 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun authListener() {
-        var notification = ""
-        FirebaseInstanceId.getInstance().instanceId.
-                addOnCompleteListener{ task ->
-                    if (task.isSuccessful) {
-                        notification = task.result?.token.toString()
-                    } else {
-                        Log.w("firebase", "getInstanceId failed", task.exception)
-                    }
-                }
         btn_enter.setOnClickListener {
             loginViewModel.auth(
                     company = et_company.text.toString(),
                     login = et_login.text.toString(),
                     password = et_password.text.toString(),
-                    notification = notification
             )
         }
     }
 
     private fun observeViewModel() {
         loginViewModel.answer.observe(this, Observer {
-            showToast(it)
+            if (it.isNotEmpty()) {
+                showToast(it)
+            } else {
+                val intent = Intent(this, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+            }
         })
     }
 
-    fun showToast(value: String) {
+    private fun showToast(value: String) {
         Toast.makeText(this, value, Toast.LENGTH_LONG).show()
     }
 

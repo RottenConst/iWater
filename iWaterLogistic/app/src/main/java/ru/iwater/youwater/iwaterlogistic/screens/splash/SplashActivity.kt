@@ -1,9 +1,8 @@
-package ru.iwater.youwater.iwaterlogistic.screens
+package ru.iwater.youwater.iwaterlogistic.screens.splash
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -11,9 +10,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
-import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
+import ru.iwater.youwater.iwaterlogistic.screens.login.LoginActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.getLoginShow
-import ru.iwater.youwater.iwaterlogistic.util.HelpProgressLoad
 import ru.iwater.youwater.iwaterlogistic.util.HelpProgressLoad.LOGIN
 
 class SplashActivity : BaseActivity()  {

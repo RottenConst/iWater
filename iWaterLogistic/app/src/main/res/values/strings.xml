@@ -4,4 +4,7 @@
     <string name="login_text">Логин</string>
     <string name="password_text">Пароль</string>
     <string name="enter_text">Войти</string>
+    <string name="completeOrder">Завршенные заказы</string>
+    <string name="orders">Заказы</string>
+    <string name="history">История</string>
 </resources>
