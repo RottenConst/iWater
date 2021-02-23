@@ -1,0 +1,16 @@
+package ru.iwater.youwater.iwaterlogistic.util
+
+import android.content.Context
+
+enum class HelpStateLogin() {
+    ACCOUNT_SAVED,
+}
+
+object HelpLoadingProgress {
+    fun setLoginProgress(context: Context, showLogin: HelpStateLogin, value: Boolean) {
+        PreferencesUtils(context).setPrefBoolean(showLogin.ordinal, value)
+    }
+
+    fun getLoginShow(context: Context, show: HelpStateLogin): Boolean =
+        PreferencesUtils(context).getPrefBool(show.ordinal,  true)
+}
