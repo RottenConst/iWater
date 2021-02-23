@@ -19,8 +19,8 @@ interface DescriptionApi {
     val SOAP_ACTION: String
     val METHOD_NAME: String
     val NAME_SPACE: String
-    abstract val request: SoapObject
-    abstract val soapEnvelope: SoapSerializationEnvelope
+    val request: SoapObject
+    val soapEnvelope: SoapSerializationEnvelope
     val httpTransport: HttpTransportSE
 
     fun getSoapEnvelop(request: SoapObject): SoapSerializationEnvelope {
@@ -31,8 +31,10 @@ interface DescriptionApi {
 
     fun getHttpTransport(): List<HeaderProperty> = listOf(HeaderProperty("Accept-Encoding", "none"))
 
-    fun getRequest(nameSpace: String, methodName: String): SoapObject = SoapObject(nameSpace, methodName)
+    fun getRequest(nameSpace: String, methodName: String): SoapObject =
+        SoapObject(nameSpace, methodName)
 }
+
 /**
  * Класс для связи api soap
  * принимает код компании, логин, пароль, нотифткацию(время входа)
@@ -41,7 +43,8 @@ class Authorisation(
     company: String,
     login: String,
     password: String,
-    notification: String): DescriptionApi {
+    notification: String
+) : DescriptionApi {
     override val SOAP_ACTION: String = "urn:authuser#auth"
     override val METHOD_NAME: String = "auth"
     override val NAME_SPACE: String = "urn:authuser"
@@ -60,7 +63,7 @@ class Authorisation(
     /**
      * метод для авторизации - возвращаут код ошибки(1, 0) сессию и id водителя при успешной авторизации
      **/
-    suspend fun auth(): Pair<Int, String> = withContext(Dispatchers.Default){
+    suspend fun auth(): Pair<Int, String> = withContext(Dispatchers.Default) {
         try {
             httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
             val answer = soapEnvelope.response.toString().split(",")

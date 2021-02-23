@@ -11,8 +11,10 @@ import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.screens.login.LoginActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.getLoginShow
-import ru.iwater.youwater.iwaterlogistic.util.HelpProgressLoad.LOGIN
+import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin
+import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.*
 
 class SplashActivity : BaseActivity()  {
 
@@ -27,7 +29,8 @@ class SplashActivity : BaseActivity()  {
     private suspend fun runNextActivity() {
         delay(500)
         when {
-            getLoginShow(this, LOGIN) -> LoginActivity.start(this)
+            getLoginShow(this, ACCOUNT_SAVED) -> LoginActivity.start(this)
+            else -> MainActivity.start(this)
         }
         finish()
     }

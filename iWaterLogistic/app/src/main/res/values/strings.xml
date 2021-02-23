@@ -4,7 +4,13 @@
     <string name="login_text">Логин</string>
     <string name="password_text">Пароль</string>
     <string name="enter_text">Войти</string>
+    <string name="exit_text">Выход</string>
     <string name="completeOrder">Завршенные заказы</string>
     <string name="orders">Заказы</string>
     <string name="history">История</string>
+    <string name="exit_message_dialog">Вы хотите выйти из приложения?</string>
+    <string name="confirmLogout">Вы уверены, что хотите выйти из своего аккаунта?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="cancel">Отмена</string>
 </resources>

@@ -4,33 +4,45 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.login_activity.*
 import ru.iwater.youwater.iwaterlogistic.R
+import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
-import ru.iwater.youwater.iwaterlogistic.domain.LoginViewModel
+import ru.iwater.youwater.iwaterlogistic.domain.AccountViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
+import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
+import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.ACCOUNT_SAVED
+import java.util.EnumSet.of
+import java.util.List.of
+import java.util.Optional.of
+import javax.inject.Inject
 
 /**
  * экран входа в приложения
  */
 class LoginActivity : BaseActivity() {
 
-    lateinit var loginViewModel: LoginViewModel
+    @Inject
+    lateinit var factory: ViewModelProvider.Factory
+    private val viewModel: AccountViewModel by viewModels {factory}
+    private val screenComponent = App().buildScreenComponent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
-        loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+        screenComponent.inject(this)
         observeViewModel()
         authListener()
     }
 
     private fun authListener() {
         btn_enter.setOnClickListener {
-            loginViewModel.auth(
+            viewModel.auth(
                     company = et_company.text.toString(),
                     login = et_login.text.toString(),
                     password = et_password.text.toString(),
@@ -39,11 +51,12 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun observeViewModel() {
-        loginViewModel.answer.observe(this, Observer {
+        viewModel.messageLD.observe(this, Observer {
             if (it.isNotEmpty()) {
                 showToast(it)
             } else {
                 val intent = Intent(this, MainActivity::class.java)
+                setLoginProgress(this, ACCOUNT_SAVED, false)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
             }

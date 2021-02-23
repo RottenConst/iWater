@@ -1,22 +1,25 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.launch
+import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.response.Authorisation
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
+import javax.inject.Provider
+import javax.inject.Singleton
 
-class LoginViewModel : ViewModel() {
+@OnScreen
+class AccountViewModel @Inject constructor(
+    private val accountRepository: AccountRepository,
+) : ViewModel() {
 
-    private val _message = MutableLiveData<String>()
-    private val _account = MutableLiveData<Account>()
+    private val mMessageLD: MutableLiveData<String> = MutableLiveData()
 
-    val answer: LiveData<String>
-        get() = _message
+    val messageLD: LiveData<String>
+        get() = mMessageLD
 
     fun auth(company: String, login: String, password: String) {
         val calendar = Calendar.getInstance()
@@ -24,18 +27,15 @@ class LoginViewModel : ViewModel() {
         calendar.add(Calendar.DAY_OF_YEAR, 0)
         val sdf = SimpleDateFormat("yyyy-MM-dd")
         val notification = sdf.format(calendar.time)
-
         val authorisation = Authorisation(company, login, password, notification)
         viewModelScope.launch {
-            val auth = AccountRepository().getAuth(authorisation, login, company)
+            val auth = accountRepository.getAuth(authorisation, login, company)
             if (auth.first.isEmpty()) {
-                _account.postValue(auth.second)
-                _message.postValue("")
+                mMessageLD.value = ""
+                accountRepository.setAccount(auth.second)
             } else {
-                _message.postValue(auth.first)
+                mMessageLD.value = auth.first
             }
         }
-
-
     }
 }

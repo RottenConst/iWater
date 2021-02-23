@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -53,7 +54,11 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
 
     implementation files('libs/ksoap2-android-assembly-3.6.2-jar-with-dependencies.jar')
-
+    //dagger
+    implementation 'com.google.dagger:dagger-android:2.32'
+    implementation 'com.google.dagger:dagger-android-support:2.32'
+    kapt 'com.google.dagger:dagger-compiler:2.32'
+    kapt 'com.google.dagger:dagger-android-processor:2.32'
 
 
 //    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
