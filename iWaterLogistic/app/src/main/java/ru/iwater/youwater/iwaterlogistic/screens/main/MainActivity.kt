@@ -15,6 +15,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCurrentOrders
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.ACCOUNT_SAVED
@@ -34,7 +35,7 @@ class MainActivity : BaseActivity() {
 
         Timber.d("account = ${accountRepository.getAccount().login}")
         bottom_bar_navigation.menu[1].isChecked = true
-        //endregion
+        supportFragmentManager.beginTransaction().replace(R.id.fl_container, FragmentCurrentOrders.newInstance()).commit()
 
         bottom_bar_navigation.setOnNavigationItemSelectedListener {
             BottomNavigationView.OnNavigationItemSelectedListener { item ->

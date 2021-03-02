@@ -54,9 +54,14 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
 
     implementation files('libs/ksoap2-android-assembly-3.6.2-jar-with-dependencies.jar')
+    //room
+    implementation 'androidx.room:room-runtime:2.3.0-beta01'
+    kapt 'androidx.room:room-compiler:2.3.0-beta01'
+    implementation 'androidx.room:room-ktx:2.3.0-beta01'
     //dagger
     implementation 'com.google.dagger:dagger-android:2.32'
     implementation 'com.google.dagger:dagger-android-support:2.32'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01'
     kapt 'com.google.dagger:dagger-compiler:2.32'
     kapt 'com.google.dagger:dagger-android-processor:2.32'
 

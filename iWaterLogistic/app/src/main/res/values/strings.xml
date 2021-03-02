@@ -13,4 +13,9 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="cancel">Отмена</string>
+    <string name="current_order">Плановые заказы</string>
+    <string name="no_current_orders">Нет заказов</string>
+    <string name="general_map">Общая карта</string>
+    <string name="string_one">1</string>
+    <string name="order_card">Карточка заказа</string>
 </resources>

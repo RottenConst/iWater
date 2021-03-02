@@ -1,5 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.response
 
+import android.util.AndroidRuntimeException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.ksoap2.HeaderProperty
@@ -8,7 +9,9 @@ import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpResponseException
 import org.ksoap2.transport.HttpTransportSE
+import org.xmlpull.v1.XmlPullParserFactory
 import timber.log.Timber
+import java.lang.ClassCastException
 
 const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl"
 
@@ -20,7 +23,7 @@ interface DescriptionApi {
     val METHOD_NAME: String
     val NAME_SPACE: String
     val request: SoapObject
-    val soapEnvelope: SoapSerializationEnvelope
+    var soapEnvelope: SoapSerializationEnvelope
     val httpTransport: HttpTransportSE
 
     fun getSoapEnvelop(request: SoapObject): SoapSerializationEnvelope {
@@ -49,7 +52,7 @@ class Authorisation(
     override val METHOD_NAME: String = "auth"
     override val NAME_SPACE: String = "urn:authuser"
     override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
-    override val soapEnvelope: SoapSerializationEnvelope
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
     override val httpTransport: HttpTransportSE = HttpTransportSE(URL, 3000)
 
     init {
@@ -76,5 +79,37 @@ class Authorisation(
         }
         return@withContext Pair(1, "")
     }
+}
 
+/**
+ * Класс для связи api soap
+ * принимает код компании, логин, пароль, нотифткацию(время входа)
+ **/
+class DriverWayBill(
+    var session: String = ""
+) : DescriptionApi {
+    override val SOAP_ACTION: String = "urn:info#testlist"
+    override val METHOD_NAME: String = "testwaybill"
+    override val NAME_SPACE: String = "urn:info"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    suspend fun loadOrders(): SoapObject = withContext(Dispatchers.Default) {
+        request.addProperty("session", session)
+        soapEnvelope = getSoapEnvelop(request)
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response as SoapObject
+            try {
+                return@withContext answer.getProperty(0) as SoapObject
+            }catch (e: ClassCastException) {
+                Timber.e(e.fillInStackTrace())
+            }
+            return@withContext SoapObject()
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code ${e.statusCode}")
+        }
+        return@withContext SoapObject()
+    }
 }

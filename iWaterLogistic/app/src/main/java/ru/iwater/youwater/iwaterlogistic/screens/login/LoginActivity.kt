@@ -51,7 +51,7 @@ class LoginActivity : BaseActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.messageLD.observe(this, Observer {
+        viewModel.messageLD.observe(this, {
             if (it.isNotEmpty()) {
                 showToast(it)
             } else {
