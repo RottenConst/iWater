@@ -19,7 +19,7 @@ data class Order(
     val timeStart: String,
     val timeEnd: String,
     val contact: String,
-    val notice: String,
+    var notice: String,
     val date: String,
     val period: String,
     val address: String,

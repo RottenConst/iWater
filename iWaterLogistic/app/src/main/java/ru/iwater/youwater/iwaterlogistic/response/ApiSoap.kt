@@ -1,6 +1,5 @@
 package ru.iwater.youwater.iwaterlogistic.response
 
-import android.util.AndroidRuntimeException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.ksoap2.HeaderProperty
@@ -9,9 +8,7 @@ import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpResponseException
 import org.ksoap2.transport.HttpTransportSE
-import org.xmlpull.v1.XmlPullParserFactory
 import timber.log.Timber
-import java.lang.ClassCastException
 
 const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl"
 
@@ -83,7 +80,7 @@ class Authorisation(
 
 /**
  * Класс для связи api soap
- * принимает код компании, логин, пароль, нотифткацию(время входа)
+ * принимает сессию водителя
  **/
 class DriverWayBill(
     var session: String = ""
@@ -95,18 +92,19 @@ class DriverWayBill(
     override lateinit var soapEnvelope: SoapSerializationEnvelope
     override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
 
-    suspend fun loadOrders(): SoapObject = withContext(Dispatchers.Default) {
+    fun setProperty(session: String) {
         request.addProperty("session", session)
         soapEnvelope = getSoapEnvelop(request)
+    }
+
+    /**
+     * принимает сессию водителя и возвращает информацию о заказах за текущий день
+     **/
+    suspend fun loadOrders(): SoapObject = withContext(Dispatchers.Default) {
         try {
             httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
             val answer = soapEnvelope.response as SoapObject
-            try {
-                return@withContext answer.getProperty(0) as SoapObject
-            }catch (e: ClassCastException) {
-                Timber.e(e.fillInStackTrace())
-            }
-            return@withContext SoapObject()
+            return@withContext answer.getProperty(0) as SoapObject
         } catch (e: HttpResponseException) {
             Timber.e(e.fillInStackTrace(), "Status code ${e.statusCode}")
         }

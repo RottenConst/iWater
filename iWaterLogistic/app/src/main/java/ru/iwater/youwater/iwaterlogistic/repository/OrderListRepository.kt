@@ -1,38 +1,67 @@
 package ru.iwater.youwater.iwaterlogistic.repository
 
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.ksoap2.serialization.SoapObject
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
+import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.response.DriverWayBill
+import timber.log.Timber
 import javax.inject.Inject
 
+@OnScreen
 class OrderListRepository @Inject constructor(
     IWaterDB: IWaterDB
 )
 {
-    private val orderDao: OrderDao = IWaterDB.orderDao()
+    val driverWayBill = DriverWayBill() //api запрос инфо о заказах
 
-    val driverWayBill = DriverWayBill()
+    private val ordersList = mutableListOf<Order>() //загруженные заказы
+    private val orderDao: OrderDao = IWaterDB.orderDao() //обьект бд
 
+
+    /**
+     * сохранить загруженые заказы в бд
+     */
     suspend fun saveOrders() {
-        val orders = getLoadOrderList()
-        for (order in orders) {
+        for (order in ordersList) {
             orderDao.save(order)
         }
     }
 
-    suspend fun getOrders(): List<Order> = withContext(Dispatchers.Default){
+    /**
+     * вернуть информацию о загруженых заказах
+     */
+    fun getOrders(): List<Order> = ordersList
+
+    /**
+     * обновить заказы в бд
+     */
+    fun updateOrder() {
+        for (order in ordersList) {
+            orderDao.update(order)
+        }
+    }
+
+    /**
+     * вернуть заказы из бд
+     */
+    suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
         return@withContext orderDao.load()
     }
 
-    private suspend fun getLoadOrderList(): List<Order> {
+    /**
+     * запрос информации о текущих заказах
+     */
+    suspend fun getLoadOrderList() {
         val answer = driverWayBill.loadOrders()
-        val ordersList = mutableListOf<Order>()
+        ordersList.clear()
         var element = 0
-
+        Timber.d("${answer.propertyCount}")
         for (i in 0 until answer.propertyCount / 13) {
             val id = answer.getPropertyAsString(element).toIntOrNull()
             val name = answer.getPropertyAsString(element + 1) ?: ""
@@ -41,7 +70,7 @@ class OrderListRepository @Inject constructor(
             val cash_b = answer.getPropertyAsString(element + 4).toFloatOrNull()
             val time = answer.getPropertyAsString(element + 5).split("-")
             val contact = answer.getPropertyAsString(element + 6) ?: ""
-            val notice = if (answer.getPropertyAsString(element + 7).equals("anyType{}")) "" else answer.getPropertyAsString(element + 7)
+            val notice = answer.getPropertyAsString(element + 7) ?: ""
             val date = answer.getPropertyAsString(element + 8) ?: ""
             val period = answer.getPropertyAsString(element + 9) ?: ""
             val address = answer.getPropertyAsString(element + 10) ?: ""
@@ -67,7 +96,5 @@ class OrderListRepository @Inject constructor(
             )
             element += 13
         }
-
-        return ordersList
     }
 }

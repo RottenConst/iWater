@@ -12,6 +12,7 @@ class ListOrdersAdapter(
     val orders: MutableList<Order> = mutableListOf()
 ) : RecyclerView.Adapter<ListOrdersAdapter.ListOrderHolder>() {
 
+    lateinit var onOrderClick: ((Order) -> Unit)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListOrderHolder {
           return ListOrderHolder(LayoutInflater.from(parent.context), parent, R.layout.item_current_order)
@@ -26,8 +27,7 @@ class ListOrdersAdapter(
     inner class ListOrderHolder(inflater: LayoutInflater, parent: ViewGroup, resource: Int) :
         RecyclerView.ViewHolder(inflater.inflate(resource, parent, false)) {
             init {
-                itemView.card_order.setOnClickListener {
-                }
+                itemView.card_order.setOnClickListener { onOrderClick.invoke(orders[adapterPosition]) }
             }
 
         fun bindOrders(order: Order, position: Int) {

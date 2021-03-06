@@ -21,6 +21,9 @@ class AccountViewModel @Inject constructor(
     val messageLD: LiveData<String>
         get() = mMessageLD
 
+    /**
+     * авторизация волителя
+     */
     fun auth(company: String, login: String, password: String) {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = System.currentTimeMillis()

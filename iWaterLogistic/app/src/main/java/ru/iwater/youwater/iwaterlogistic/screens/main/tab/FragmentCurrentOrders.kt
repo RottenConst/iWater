@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_orders_list.*
 import ru.iwater.youwater.iwaterlogistic.R
@@ -16,12 +16,10 @@ import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.OrderListViewModel
-import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
-import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
 import javax.inject.Inject
 
-class FragmentCurrentOrders : BaseFragment() {
+class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
@@ -32,7 +30,6 @@ class FragmentCurrentOrders : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         screenComponent.inject(this)
-        viewModel.getLoadOrder()
     }
 
     override fun onCreateView(
@@ -40,18 +37,31 @@ class FragmentCurrentOrders : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = layoutInflater.inflate(R.layout.fragment_orders_list, container, false)
-        observeVW()
-        return view
+        return layoutInflater.inflate(R.layout.fragment_orders_list, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        refresh_container.setOnRefreshListener(this)
         initRecyclerView()
+        observeVW()
+        viewModel.getLoadOrder()
+    }
+
+    override fun onRefresh() {
+        viewModel.getLoadOrder()
+        refresh_container.isRefreshing = false
     }
 
     private fun observeVW() {
         viewModel.listOrder.observe(viewLifecycleOwner, {
-            addCurrentOrders(it)
+            if (it.isNullOrEmpty()) {
+                tv_not_current_orders.visibility = View.VISIBLE
+                list_current_order.visibility = View.GONE
+            } else {
+                addCurrentOrders(it)
+                tv_not_current_orders.visibility = View.GONE
+                list_current_order.visibility = View.VISIBLE
+            }
         })
     }
 
@@ -59,6 +69,9 @@ class FragmentCurrentOrders : BaseFragment() {
         list_current_order.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
         adapter.notifyDataSetChanged()
         list_current_order.adapter = adapter
+        adapter.onOrderClick = {
+            showToast("it order ${it.id}")
+        }
     }
 
     private fun addCurrentOrders(orders: List<Order>) {
