@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/tv_name_date_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/test_order_num_date"
+        android:textColor="@color/colorPrimaryBlue"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_address_order"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/test_order_address"
+        android:textAlignment="center"
+        android:textColor="@color/colorPrimaryBlue"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name_date_order" />
+
+    <ImageView
+        android:id="@+id/iv_name_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="@string/name_order"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_blue_line"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/ic_name_order_24" />
+
+    <TextView
+        android:id="@+id/tv_name_order"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/name_order"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_name_order"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/iv_name_order"
+        app:layout_constraintTop_toBottomOf="@+id/tv_address_order" />
+
+    <TextView
+        android:id="@+id/tv_blue_line"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:background="@color/colorPrimaryBlue"
+        android:text="TextView"
+        android:textColor="@color/colorPrimaryBlue"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/tv_address_order"
+        app:layout_constraintStart_toStartOf="@+id/tv_address_order"
+        app:layout_constraintTop_toBottomOf="@+id/tv_address_order" />
+
+    <ImageView
+        android:id="@+id/iv_price_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/price_order"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_name_order"
+        app:srcCompat="@drawable/ic_price_order_24" />
+
+    <TextView
+        android:id="@+id/tv_price_order"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/price_order"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_price_order"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/iv_price_order"
+        app:layout_constraintTop_toTopOf="@+id/iv_price_order" />
+
+    <ImageView
+        android:id="@+id/iv_about_client"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/info_client"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_price_order"
+        app:srcCompat="@drawable/ic_about_client_24" />
+
+    <TextView
+        android:id="@+id/tv_about_client"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/info_client"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_about_client"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/iv_about_client"
+        app:layout_constraintTop_toTopOf="@+id/iv_about_client" />
+
+    <ImageView
+        android:id="@+id/iv_call_phone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/phone_numbers"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_about_client"
+        app:srcCompat="@drawable/ic_call_phone_client24" />
+
+    <TextView
+        android:id="@+id/tv_phone_number_client"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/phone_numbers"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/iv_call_phone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/iv_call_phone"
+        app:layout_constraintTop_toTopOf="@+id/iv_call_phone" />
+
+    <ImageView
+        android:id="@+id/iv_note_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:contentDescription="@string/notes_order"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_phone_number_client"
+        app:srcCompat="@drawable/ic_note_order_24" />
+
+    <TextView
+        android:id="@+id/tv_note_order"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/notes_order"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toTopOf="@+id/btn_call_client"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/iv_note_order"
+        app:layout_constraintTop_toTopOf="@+id/iv_note_order"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <Button
+        android:id="@+id/btn_to_shipment_order"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:text="@string/to_ship_order"
+        app:icon="@drawable/ic_on_ship_order_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_see_on_map"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/see_on_map"
+        app:icon="@drawable/ic_map_24"
+        app:layout_constraintBottom_toTopOf="@+id/btn_copy_address"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_call_client"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/call_client"
+        app:icon="@drawable/ic_call_phone_client24"
+        app:layout_constraintBottom_toTopOf="@+id/btn_see_on_map"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_copy_address"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/copy_address"
+        app:icon="@drawable/ic_address_copy_24"
+        app:layout_constraintBottom_toTopOf="@+id/btn_to_shipment_order"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

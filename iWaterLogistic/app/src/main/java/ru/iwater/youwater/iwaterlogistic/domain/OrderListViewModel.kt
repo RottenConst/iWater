@@ -1,19 +1,16 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
-import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
-import ru.iwater.youwater.iwaterlogistic.base.App
-import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
-import ru.iwater.youwater.iwaterlogistic.iteractor.AccountStorage
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
-import ru.iwater.youwater.iwaterlogistic.response.DriverWayBill
+import ru.iwater.youwater.iwaterlogistic.screens.cardOrder.AboutOrderFragment
+import ru.iwater.youwater.iwaterlogistic.screens.cardOrder.CardOrderActivity
 import javax.inject.Inject
 
 /**
@@ -22,7 +19,7 @@ import javax.inject.Inject
 @OnScreen
 class OrderListViewModel @Inject constructor(
     private val orderListRepository: OrderListRepository,
-    private val accountRepository: AccountRepository
+    accountRepository: AccountRepository
         ) : ViewModel() {
 
     /**
@@ -52,6 +49,18 @@ class OrderListViewModel @Inject constructor(
             orderListRepository.getLoadOrderList()
             mListOrder.value = orderListRepository.getOrders()
         }
+    }
+
+    /**
+     * сохраняет заказ в бд и запускает экран с информацией о заказе с возможностью отгрузки
+     **/
+    fun getAboutOrder(context: Context, order: Order) {
+        val intent = Intent(context, CardOrderActivity::class.java)
+        intent.putExtra("id", order.id)
+        uiScope.launch {
+            orderListRepository.saveOrder(order)
+        }
+        CardOrderActivity.start(context, intent)
     }
 
     fun refreshOrder() {

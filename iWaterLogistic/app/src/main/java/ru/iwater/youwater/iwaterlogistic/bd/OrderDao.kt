@@ -18,4 +18,7 @@ interface OrderDao {
 
     @Query("SELECT * FROM `order` ORDER BY timeEnd" )
     fun load(): List<Order>
+
+    @Query("SELECT * FROM 'order' WHERE id IS :id")
+    fun getOrderOnId(id: Int): Order
 }

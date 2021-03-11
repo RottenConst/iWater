@@ -2,9 +2,7 @@ package ru.iwater.youwater.iwaterlogistic.domain
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import ru.iwater.youwater.iwaterlogistic.util.CoordinateConverter
 import ru.iwater.youwater.iwaterlogistic.util.TimeConverter
 
 @Entity

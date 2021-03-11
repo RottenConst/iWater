@@ -80,11 +80,9 @@ class Authorisation(
 
 /**
  * Класс для связи api soap
- * принимает сессию водителя
+ * возвращает заказы за текущий деть
  **/
-class DriverWayBill(
-    var session: String = ""
-) : DescriptionApi {
+class DriverWayBill : DescriptionApi {
     override val SOAP_ACTION: String = "urn:info#testlist"
     override val METHOD_NAME: String = "testwaybill"
     override val NAME_SPACE: String = "urn:info"
@@ -92,13 +90,16 @@ class DriverWayBill(
     override lateinit var soapEnvelope: SoapSerializationEnvelope
     override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
 
+    /**
+     * устанавливает сессию водителя в запрос
+     **/
     fun setProperty(session: String) {
         request.addProperty("session", session)
         soapEnvelope = getSoapEnvelop(request)
     }
 
     /**
-     * принимает сессию водителя и возвращает информацию о заказах за текущий день
+     * возвращает информацию о заказах за текущий день
      **/
     suspend fun loadOrders(): SoapObject = withContext(Dispatchers.Default) {
         try {
@@ -109,5 +110,43 @@ class DriverWayBill(
             Timber.e(e.fillInStackTrace(), "Status code ${e.statusCode}")
         }
         return@withContext SoapObject()
+    }
+}
+
+/**
+ * Класс для связи api soap
+ * возвращает тип клиетеа заказа
+ **/
+class TypeClient: DescriptionApi {
+    override val SOAP_ACTION: String = "urn:info#typeClient"
+    override val METHOD_NAME: String = "typeClient"
+    override val NAME_SPACE: String = "urn:info"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    /**
+     * устанавливает id заказа в запрос
+     **/
+    fun setProperty(idOrder: Int) {
+        request.addProperty("id", idOrder)
+        soapEnvelope = getSoapEnvelop(request)
+    }
+
+    /**
+     * возвращает тип клиента заказа:
+     * 0 - физ.лицо;
+     * 1 - юр лицо;
+     **/
+    suspend fun getTypeClient(): String = withContext(Dispatchers.Default) {
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response as SoapObject
+            val type = answer.getProperty(0) as SoapObject
+            return@withContext type.getPropertyAsString("period")
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code ${e.statusCode}")
+        }
+        return@withContext ""
     }
 }

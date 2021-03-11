@@ -1,10 +1,7 @@
 package ru.iwater.youwater.iwaterlogistic.repository
 
-import android.widget.Toast
-import androidx.lifecycle.LiveData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.ksoap2.serialization.SoapObject
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
@@ -34,9 +31,21 @@ class OrderListRepository @Inject constructor(
     }
 
     /**
+     * сохранить заказ в бд
+     */
+    suspend fun saveOrder(order: Order) {
+        orderDao.save(order)
+    }
+
+    /**
      * вернуть информацию о загруженых заказах
      */
-    fun getOrders(): List<Order> = ordersList
+    fun getOrders(): List<Order> {
+        val orders = ordersList
+        orders.sortBy { order -> order.timeEnd }
+        orders.asReversed()
+        return orders
+    }
 
     /**
      * обновить заказы в бд
@@ -55,6 +64,13 @@ class OrderListRepository @Inject constructor(
     }
 
     /**
+     * вернуть заказы из бд по id
+     */
+    suspend fun getDBOrderOnId(id: Int): Order = withContext(Dispatchers.Default) {
+        return@withContext orderDao.getOrderOnId(id)
+    }
+
+    /**
      * запрос информации о текущих заказах
      */
     suspend fun getLoadOrderList() {
@@ -70,7 +86,7 @@ class OrderListRepository @Inject constructor(
             val cash_b = answer.getPropertyAsString(element + 4).toFloatOrNull()
             val time = answer.getPropertyAsString(element + 5).split("-")
             val contact = answer.getPropertyAsString(element + 6) ?: ""
-            val notice = answer.getPropertyAsString(element + 7) ?: ""
+            val notice = if (answer.getPropertyAsString(element + 7).equals("anyType{}")) "" else answer.getPropertyAsString(element + 7)
             val date = answer.getPropertyAsString(element + 8) ?: ""
             val period = answer.getPropertyAsString(element + 9) ?: ""
             val address = answer.getPropertyAsString(element + 10) ?: ""

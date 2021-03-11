@@ -10,7 +10,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.container_activity.*
+import kotlinx.android.synthetic.main.main_container_activity.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
@@ -30,7 +30,7 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.container_activity)
+        setContentView(R.layout.main_container_activity)
         accountRepository = AccountRepository(screenComponent.accountStorage())
 
         Timber.d("account = ${accountRepository.getAccount().login}")

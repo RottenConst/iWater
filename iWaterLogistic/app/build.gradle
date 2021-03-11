@@ -11,6 +11,7 @@ android {
 
     defaultConfig {
         applicationId "ru.iwater.youwater.iwaterlogistic"
+        vectorDrawables.useSupportLibrary = true
         minSdkVersion 19
         targetSdkVersion 30
         versionCode 1

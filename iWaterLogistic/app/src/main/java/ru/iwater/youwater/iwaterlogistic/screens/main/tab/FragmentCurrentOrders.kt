@@ -70,7 +70,7 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
         adapter.notifyDataSetChanged()
         list_current_order.adapter = adapter
         adapter.onOrderClick = {
-            showToast("it order ${it.id}")
+            context?.let { it1 -> viewModel.getAboutOrder(it1, it) }
         }
     }
 

@@ -38,6 +38,11 @@
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
         </activity>
 
+        <activity android:name=".screens.cardOrder.CardOrderActivity"
+            android:parentActivityName=".screens.main.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/about_order"/>
+
     </application>
 
 
