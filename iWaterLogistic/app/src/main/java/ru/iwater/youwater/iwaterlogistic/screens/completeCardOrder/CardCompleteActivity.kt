@@ -1,4 +1,4 @@
-package ru.iwater.youwater.iwaterlogistic.screens.cardOrder
+package ru.iwater.youwater.iwaterlogistic.screens.completeCardOrder
 
 import android.content.Context
 import android.content.Intent
@@ -6,8 +6,9 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
+import ru.iwater.youwater.iwaterlogistic.screens.cardOrder.AboutOrderFragment
 
-class CardOrderActivity : BaseActivity() {
+class CardCompleteActivity: BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,7 +19,7 @@ class CardOrderActivity : BaseActivity() {
     }
 
     private fun getFragment(id: Int) {
-        val fragment = AboutOrderFragment.newInstance()
+        val fragment = FragmentCompleteOrderInfo.newInstance()
         val bundle = Bundle()
         bundle.putInt("id", id)
         fragment.arguments = bundle

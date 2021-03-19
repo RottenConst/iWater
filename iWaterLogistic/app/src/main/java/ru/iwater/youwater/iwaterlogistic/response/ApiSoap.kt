@@ -106,8 +106,8 @@ class DriverWayBill : DescriptionApi {
             httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
             val answer = soapEnvelope.response as SoapObject
             return@withContext answer.getProperty(0) as SoapObject
-        } catch (e: HttpResponseException) {
-            Timber.e(e.fillInStackTrace(), "Status code ${e.statusCode}")
+        } catch (e: Exception) {
+            Timber.e(e.fillInStackTrace())
         }
         return@withContext SoapObject()
     }
@@ -146,6 +146,69 @@ class TypeClient: DescriptionApi {
             return@withContext type.getPropertyAsString("period")
         } catch (e: HttpResponseException) {
             Timber.e(e.fillInStackTrace(), "Status code ${e.statusCode}")
+        }
+        return@withContext ""
+    }
+}
+
+
+/**
+ * Класс для связи api soap
+ * для отгрузки товара передачи параметров на сервер
+ **/
+class Accept: DescriptionApi {
+    override val SOAP_ACTION: String = "urn:authuser#accept"
+    override val METHOD_NAME: String = "accept"
+    override val NAME_SPACE: String = "urn:authuser"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    /**
+     * устанавливает параметры заказа при отгрузки
+     **/
+    fun setProperty(id: Int, tank: Int, comment: String, coordinates: String) {
+        request.addProperty("id", id)
+        request.addProperty("tank", tank)
+        request.addProperty("coment", comment)
+        request.addProperty("coord", coordinates)
+        soapEnvelope = getSoapEnvelop(request)
+    }
+
+    suspend fun acceptOrder(): List<String> = withContext(Dispatchers.Default) {
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response.toString()
+            return@withContext answer.split(",")
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code ${e.statusCode}")
+        }
+        return@withContext arrayListOf<String>()
+    }
+}
+
+class OrderCurrent: DescriptionApi {
+    override val SOAP_ACTION: String = "urn:info#infoCurrent"
+    override val METHOD_NAME: String = "infoCurrent"
+    override val NAME_SPACE: String = "urn:info"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    fun setProperty(idOrder: Int) {
+        request.addProperty("id", idOrder)
+        soapEnvelope = getSoapEnvelop(request)
+    }
+
+    suspend fun getFactAddress(): String = withContext(Dispatchers.Default) {
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response as SoapObject
+            val factAddress = answer.getProperty(0) as SoapObject
+            Timber.d(factAddress.getPropertyAsString("fact_address"))
+            return@withContext factAddress.getPropertyAsString("fact_address")
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code${e.statusCode}")
         }
         return@withContext ""
     }

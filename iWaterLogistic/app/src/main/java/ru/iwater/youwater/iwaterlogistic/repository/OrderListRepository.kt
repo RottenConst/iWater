@@ -7,15 +7,17 @@ import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.response.DriverWayBill
+import ru.iwater.youwater.iwaterlogistic.response.OrderCurrent
 import timber.log.Timber
 import javax.inject.Inject
 
 @OnScreen
-class OrderListRepository @Inject constructor(
+class   OrderListRepository @Inject constructor(
     IWaterDB: IWaterDB
 )
 {
     val driverWayBill = DriverWayBill() //api запрос инфо о заказах
+    val orderCurrent = OrderCurrent()
 
     private val ordersList = mutableListOf<Order>() //загруженные заказы
     private val orderDao: OrderDao = IWaterDB.orderDao() //обьект бд
@@ -42,9 +44,14 @@ class OrderListRepository @Inject constructor(
      */
     fun getOrders(): List<Order> {
         val orders = ordersList
+        val currentOrder = mutableListOf<Order>()
         orders.sortBy { order -> order.timeEnd }
         orders.asReversed()
-        return orders
+        for (order in orders) {
+            if (order.status == 0)
+                currentOrder.add(order)
+        }
+        return currentOrder
     }
 
     /**
@@ -68,6 +75,10 @@ class OrderListRepository @Inject constructor(
      */
     suspend fun getDBOrderOnId(id: Int): Order = withContext(Dispatchers.Default) {
         return@withContext orderDao.getOrderOnId(id)
+    }
+
+    suspend fun getFactAddress(): String {
+        return orderCurrent.getFactAddress()
     }
 
     /**

@@ -1,25 +1,23 @@
 package ru.iwater.youwater.iwaterlogistic.screens.login
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.login_activity.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
-import ru.iwater.youwater.iwaterlogistic.domain.AccountViewModel
+import ru.iwater.youwater.iwaterlogistic.domain.vm.AccountViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.ACCOUNT_SAVED
-import java.util.EnumSet.of
-import java.util.List.of
-import java.util.Optional.of
 import javax.inject.Inject
 
 /**
@@ -36,6 +34,17 @@ class LoginActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.login_activity)
         screenComponent.inject(this)
+        if (ActivityCompat.checkSelfPermission(
+                this@LoginActivity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this@LoginActivity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                1
+            )
+        }
         observeViewModel()
         authListener()
     }

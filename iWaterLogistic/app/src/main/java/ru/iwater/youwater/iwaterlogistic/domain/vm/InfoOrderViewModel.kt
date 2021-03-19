@@ -1,7 +1,5 @@
-package ru.iwater.youwater.iwaterlogistic.domain
+package ru.iwater.youwater.iwaterlogistic.domain.vm
 
-import android.content.Context
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,14 +8,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
-import ru.iwater.youwater.iwaterlogistic.response.TypeClient
-import timber.log.Timber
 import javax.inject.Inject
 
 @OnScreen
-class ShipmentsViewModel @Inject constructor(
-    private val orderListRepository: OrderListRepository
+class InfoOrderViewModel @Inject constructor(
+    private val orderListRepository: OrderListRepository,
 ) : ViewModel() {
 
     /**
@@ -26,11 +23,8 @@ class ShipmentsViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
+    private lateinit var orderInfo: Order
     private val mOrder: MutableLiveData<Order> = MutableLiveData()
-    private val mTypeClient: MutableLiveData<String> = MutableLiveData()
-
-    val typeClient: LiveData<String>
-        get() = mTypeClient
 
     val order: LiveData<Order>
         get() = mOrder
@@ -39,30 +33,41 @@ class ShipmentsViewModel @Inject constructor(
      * возвращает заказ по id
      **/
     fun getOrderInfo(id: Int) {
+        orderListRepository.orderCurrent.setProperty(id)
         uiScope.launch {
-            mOrder.value = orderListRepository.getDBOrderOnId(id)
+            orderInfo = orderListRepository.getDBOrderOnId(id)
+            orderInfo.address = orderListRepository.getFactAddress()
+            mOrder.value = orderInfo
         }
     }
 
     /**
-     * запрашивает и устанавливает тип клиента
+     * сохранить заказ
      **/
-    fun getTypeClient(id: Int) {
-        val typeClient = TypeClient()
-        typeClient.setProperty(id)
+    fun saveOrder() {
         uiScope.launch {
-            when (typeClient.getTypeClient()) {
-                "0" -> {
-                    mTypeClient.value = "Физ. лицо"
+            orderListRepository.saveOrder(orderInfo)
+        }
+    }
+
+    /**
+     * парсит в моссив телефоны клиента
+     **/
+    fun getPhoneNumberClient(): Array<String> {
+        if (orderInfo.contact.isNotEmpty()) {
+            return when {
+                orderInfo.contact.contains(",") -> {
+                    orderInfo.contact.split(",").toTypedArray()
                 }
-                "1" -> {
-                    mTypeClient.value = "Юр. лицо"
+                orderInfo.contact.contains(";") -> {
+                    orderInfo.contact.split(";").toTypedArray()
                 }
                 else -> {
-                    mTypeClient.value = "0"
+                    arrayOf(orderInfo.contact)
                 }
             }
         }
+        return arrayOf(orderInfo.contact)
     }
 
     /**

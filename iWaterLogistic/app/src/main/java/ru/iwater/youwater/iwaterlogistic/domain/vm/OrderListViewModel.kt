@@ -1,4 +1,4 @@
-package ru.iwater.youwater.iwaterlogistic.domain
+package ru.iwater.youwater.iwaterlogistic.domain.vm
 
 import android.content.Context
 import android.content.Intent
@@ -7,9 +7,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
-import ru.iwater.youwater.iwaterlogistic.screens.cardOrder.AboutOrderFragment
 import ru.iwater.youwater.iwaterlogistic.screens.cardOrder.CardOrderActivity
 import javax.inject.Inject
 

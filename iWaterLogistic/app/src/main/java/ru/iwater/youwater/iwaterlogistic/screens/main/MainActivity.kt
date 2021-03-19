@@ -1,7 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.screens.main
 
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -9,12 +8,15 @@ import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
+import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_container_activity.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
+import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCompleteOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCurrentOrders
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
@@ -34,26 +36,11 @@ class MainActivity : BaseActivity() {
         accountRepository = AccountRepository(screenComponent.accountStorage())
 
         Timber.d("account = ${accountRepository.getAccount().login}")
-        bottom_bar_navigation.menu[1].isChecked = true
-        supportFragmentManager.beginTransaction().replace(R.id.fl_container, FragmentCurrentOrders.newInstance()).commit()
 
-        bottom_bar_navigation.setOnNavigationItemSelectedListener {
-            BottomNavigationView.OnNavigationItemSelectedListener { item ->
-                when (item.itemId) {
-                    R.id.complete_order -> {
-                        TODO()
-                    }
-                    R.id.orders -> {
-                        TODO()
-                    }
-                    R.id.history -> {
-                        TODO()
-                    }
-                    else -> false
-                }
-            }
-            false
-        }
+        title = resources.getString(R.string.orders)
+        bottom_bar_navigation.menu[1].isChecked = true
+        loadFragment(FragmentCurrentOrders.newInstance())
+        bottom_bar_navigation.setOnNavigationItemSelectedListener (bottomNavFragment)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -67,9 +54,11 @@ class MainActivity : BaseActivity() {
                 AlertDialog.Builder(this)
                     .setMessage(R.string.confirmLogout)
                     .setPositiveButton(
-                        R.string.yes) { _, _ ->
+                        R.string.yes
+                    ) { _, _ ->
                         val intent = Intent(applicationContext, SplashActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         setLoginProgress(this, ACCOUNT_SAVED, true)
                         accountRepository.deleteAccount()
                         startActivity(intent)
@@ -80,6 +69,32 @@ class MainActivity : BaseActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private val bottomNavFragment = BottomNavigationView.OnNavigationItemSelectedListener { item ->
+        when(item.itemId) {
+            R.id.complete_order -> {
+
+                loadFragment(FragmentCompleteOrders.newInstance())
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.orders -> {
+
+                loadFragment(FragmentCurrentOrders.newInstance())
+                return@OnNavigationItemSelectedListener true
+            }
+            R.id.history -> {
+                TODO()
+            }
+        }
+        true
+    }
+
+    private fun loadFragment(fragment: BaseFragment) {
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.fl_container, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 
 

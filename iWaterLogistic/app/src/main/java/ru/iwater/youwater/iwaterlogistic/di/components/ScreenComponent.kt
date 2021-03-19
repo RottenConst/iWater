@@ -6,7 +6,9 @@ import ru.iwater.youwater.iwaterlogistic.di.viewmodel.ViewModelFactoryModule
 import ru.iwater.youwater.iwaterlogistic.iteractor.StorageStateAccount
 import ru.iwater.youwater.iwaterlogistic.screens.cardOrder.AboutOrderFragment
 import ru.iwater.youwater.iwaterlogistic.screens.cardOrder.ShipmentsFragment
+import ru.iwater.youwater.iwaterlogistic.screens.completeCardOrder.FragmentCompleteOrderInfo
 import ru.iwater.youwater.iwaterlogistic.screens.login.LoginActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCompleteOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCurrentOrders
 
 @OnScreen
@@ -18,4 +20,6 @@ interface ScreenComponent {
         fun inject(fragmentCurrentOrders: FragmentCurrentOrders)
         fun inject(aboutOrderFragment: AboutOrderFragment)
         fun inject(shipmentsFragment: ShipmentsFragment)
+        fun inject(completeOrders: FragmentCompleteOrders)
+        fun inject(completeOrders: FragmentCompleteOrderInfo)
 }

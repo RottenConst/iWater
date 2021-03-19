@@ -43,6 +43,16 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/about_order"/>
 
+        <activity android:name=".screens.completeCardOrder.CardCompleteActivity"
+            android:parentActivityName=".screens.main.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/about_order"/>
+
+        <activity
+            android:name=".screens.cardOrder.CompleteShipActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="Отгруженный заказ"/>
+
     </application>
 
 

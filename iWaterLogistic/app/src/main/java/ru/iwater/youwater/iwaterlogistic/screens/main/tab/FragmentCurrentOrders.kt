@@ -15,7 +15,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.domain.Order
-import ru.iwater.youwater.iwaterlogistic.domain.OrderListViewModel
+import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
 import javax.inject.Inject
 

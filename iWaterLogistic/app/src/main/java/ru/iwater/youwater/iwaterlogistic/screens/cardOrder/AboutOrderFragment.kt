@@ -20,7 +20,7 @@ import kotlinx.android.synthetic.main.about_order_fragment.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
-import ru.iwater.youwater.iwaterlogistic.domain.InfoOrderViewModel
+import ru.iwater.youwater.iwaterlogistic.domain.vm.InfoOrderViewModel
 import javax.inject.Inject
 
 class AboutOrderFragment : BaseFragment() {
@@ -73,6 +73,7 @@ class AboutOrderFragment : BaseFragment() {
         }
         //кнопка "отгрузить заказ"
         btn_to_shipment_order.setOnClickListener {
+            viewModel.saveOrder()
             val fragment = ShipmentsFragment.newInstance()
             fragment.arguments = arg
             activity?.supportFragmentManager?.beginTransaction()
