@@ -57,6 +57,7 @@ dependencies {
     implementation files('libs/ksoap2-android-assembly-3.6.2-jar-with-dependencies.jar')
     //room
     implementation 'androidx.room:room-runtime:2.3.0-beta01'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
     kapt 'androidx.room:room-compiler:2.3.0-beta01'
     implementation 'androidx.room:room-ktx:2.3.0-beta01'
     //dagger
@@ -65,9 +66,12 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01'
     kapt 'com.google.dagger:dagger-compiler:2.32'
     kapt 'com.google.dagger:dagger-android-processor:2.32'
-
+    implementation 'com.google.maps.android:android-maps-utils:2.2.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 
 //    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+//    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 //    implementation 'com.squareup.retrofit2:converter-simplexml:2.9.0'
 //    implementation 'com.squareup.okhttp3:okhttp:4.10.0-RC1'
 //    implementation 'com.squareup.okhttp3:logging-interceptor:4.10.0-RC1'

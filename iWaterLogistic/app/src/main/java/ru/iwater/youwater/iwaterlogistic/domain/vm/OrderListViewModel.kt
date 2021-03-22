@@ -51,6 +51,13 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    fun getLoadOrderWithFactAddress() {
+        uiScope.launch {
+            orderListRepository.getLoadOrderList()
+            mListOrder.value = orderListRepository.getOrders()
+        }
+    }
+
     /**
      * сохраняет заказ в бд и запускает экран с информацией о заказе с возможностью отгрузки
      **/

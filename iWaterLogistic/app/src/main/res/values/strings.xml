@@ -5,6 +5,7 @@
     <string name="password_text">Пароль</string>
     <string name="enter_text">Войти</string>
     <string name="exit_text">Выход</string>
+    <string name="map">Карта</string>
 
     <string name="completeOrder">Завршенные заказы</string>
     <string name="orders">Заказы</string>
@@ -50,4 +51,5 @@
     <string name="time_complete">Время отгрузки: 14:45</string>
     <string name="general_report">Общий отчет</string>
     <string name="set_cost">установить расходы</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

@@ -1,5 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.screens.main.tab
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
+import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import javax.inject.Inject
 
 class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -45,6 +47,10 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
         initRecyclerView()
         observeVW()
         viewModel.getLoadOrder()
+        btn_general_map.setOnClickListener {
+            val intent = Intent(this.context, MapsActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onRefresh() {
