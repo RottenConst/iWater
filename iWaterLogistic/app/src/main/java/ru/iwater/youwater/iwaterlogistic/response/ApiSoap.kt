@@ -187,6 +187,10 @@ class Accept: DescriptionApi {
     }
 }
 
+/**
+ * Класс для связи api soap
+ * для получения фактического адресса
+ **/
 class OrderCurrent: DescriptionApi {
     override val SOAP_ACTION: String = "urn:info#infoCurrent"
     override val METHOD_NAME: String = "infoCurrent"

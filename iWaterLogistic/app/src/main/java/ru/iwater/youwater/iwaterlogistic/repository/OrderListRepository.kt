@@ -2,9 +2,12 @@ package ru.iwater.youwater.iwaterlogistic.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.iwater.youwater.iwaterlogistic.Receivers.TimeNotification
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
+import ru.iwater.youwater.iwaterlogistic.di.components.OnApplication
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.response.DriverWayBill
 import ru.iwater.youwater.iwaterlogistic.response.OrderCurrent
@@ -12,7 +15,7 @@ import timber.log.Timber
 import javax.inject.Inject
 
 @OnScreen
-class   OrderListRepository @Inject constructor(
+class  OrderListRepository @Inject constructor(
     IWaterDB: IWaterDB
 )
 {
@@ -26,8 +29,8 @@ class   OrderListRepository @Inject constructor(
     /**
      * сохранить загруженые заказы в бд
      */
-    suspend fun saveOrders() {
-        for (order in ordersList) {
+    suspend fun saveOrders(orders: List<Order>) {
+        for (order in orders) {
             orderDao.save(order)
         }
     }
@@ -47,9 +50,15 @@ class   OrderListRepository @Inject constructor(
         val currentOrder = mutableListOf<Order>()
         orders.sortBy { order -> order.timeEnd }
         orders.asReversed()
+        TimeNotification.notifycationOrders.notifyOrders.clear()
         for (order in orders) {
-            if (order.status == 0)
+            if (order.status == 0) {
                 currentOrder.add(order)
+                TimeNotification.notifycationOrders.notifyOrders.add(NotifyOrder(order.id, order.timeEnd, order.date, order.address,
+                    notification = false,
+                    fail = false
+                ))
+            }
         }
         return currentOrder
     }
@@ -61,6 +70,10 @@ class   OrderListRepository @Inject constructor(
         for (order in ordersList) {
             orderDao.update(order)
         }
+    }
+
+    suspend fun deleteOrder(order: Order) = withContext(Dispatchers.Default) {
+        orderDao.delete(order)
     }
 
     /**
@@ -75,6 +88,13 @@ class   OrderListRepository @Inject constructor(
      */
     suspend fun getDBOrderOnId(id: Int): Order = withContext(Dispatchers.Default) {
         return@withContext orderDao.getOrderOnId(id)
+    }
+
+    /**
+     * вернуть все не доставленные заказы из бд
+     */
+    suspend fun getDBLoadCurrentOrder(date: String): List<Order> = withContext(Dispatchers.Default) {
+        return@withContext orderDao.getLoadCurrentOrder(date)
     }
 
     suspend fun getFactAddress(): String {
@@ -96,7 +116,7 @@ class   OrderListRepository @Inject constructor(
             val cash = answer.getPropertyAsString(element + 3).toFloatOrNull()
             val cash_b = answer.getPropertyAsString(element + 4).toFloatOrNull()
             val time = answer.getPropertyAsString(element + 5).split("-")
-            val contact = answer.getPropertyAsString(element + 6) ?: ""
+            val contact = if (answer.getPropertyAsString(element + 6).equals("anyType{}")) "" else answer.getPropertyAsString(element + 6)
             val notice = if (answer.getPropertyAsString(element + 7).equals("anyType{}")) "" else answer.getPropertyAsString(element + 7)
             val date = answer.getPropertyAsString(element + 8) ?: ""
             val period = answer.getPropertyAsString(element + 9) ?: ""

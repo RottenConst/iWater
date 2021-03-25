@@ -5,10 +5,11 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.view.Gravity
 import android.widget.TextView
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -40,6 +41,9 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     private lateinit var lastLocation: Location
     private lateinit var myPoint: LatLng
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private var orders = mutableListOf<Order>()
+    private var coordinate = ""
+    var num = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +73,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        observeCoordinate()
         observeOrders(mMap)
 
         if (ActivityCompat.checkSelfPermission(
@@ -97,75 +102,95 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     }
 
 
+    private fun observeCoordinate() {
+        viewModel.coordinate.observe(this, {
+            coordinate = it
+        })
+    }
+
     private fun observeOrders(mMap: GoogleMap) {
         viewModel.getLoadOrder()
         viewModel.listOrder.observe(this, {
-            for (order in it) {
-                val latitude = order.coordinates[0].toDouble()
-                val longitude = order.coordinates[1].toDouble()
-                var num = 0
-                num += 1
-                val point = LatLng(latitude, longitude)
-                Timber.d("$latitude, $longitude")
+            for (order in it){
+                viewModel.getCoordinatesOnAddressOrder(order, applicationContext)
+            }
+            observeDBOrder()
+        })
+    }
 
-                when {
-                    order.period.contains("8:00-11:59") -> {
-                        val marker = MarkerOptions().position(point).icon(
-                            BitmapDescriptorFactory.fromBitmap(
-                                getCustomIcon(num, R.drawable.ic_icon_red)
-                            )
-                        ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
-                        mMap.addMarker(marker)
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
-                    }
-                    order.period.contains("9:00-13:59") -> {
-                        val marker = MarkerOptions().position(point).icon(
-                            BitmapDescriptorFactory.fromBitmap(
-                                getCustomIcon(num, R.drawable.ic_icon_yellow)
-                            )
-                        ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
-                        mMap.addMarker(marker)
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
-                    }
-                    order.period.contains("9:00-17:59") -> {
-                        val marker = MarkerOptions().position(point).icon(
-                            BitmapDescriptorFactory.fromBitmap(
-                                getCustomIcon(num, R.drawable.ic_icon_green)
-                            )
-                        ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
-                        mMap.addMarker(marker)
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
-                    }
-                    order.period.contains("13:00-17:59") -> {
-                        val marker = MarkerOptions().position(point).icon(
-                            BitmapDescriptorFactory.fromBitmap(
-                                getCustomIcon(num, R.drawable.ic_icon_violet)
-                            )
-                        ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
-                        mMap.addMarker(marker)
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
-                    }
-                    order.period.contains("18:00-20:59") -> {
-                        val marker = MarkerOptions().position(point).icon(
-                            BitmapDescriptorFactory.fromBitmap(
-                                getCustomIcon(num, R.drawable.ic_icon_blue)
-                            )
-                        ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
-                        mMap.addMarker(marker)
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
-                    }
-                    else -> {
-                        val marker = MarkerOptions().position(point).icon(
-                            BitmapDescriptorFactory.fromBitmap(
-                                getCustomIcon(num, R.drawable.ic_icon_lightgray)
-                            )
-                        ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
-                        mMap.addMarker(marker)
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
-                    }
+    private fun observeDBOrder(){
+        viewModel.getLoadOrderCurrentOrderFromBd()
+        viewModel.dbListOrder.observe(this, {
+            getMarker(it)
+        })
+    }
+
+
+    private fun getMarker(orders: List<Order>) {
+        for (order in orders) {
+            val latitude = order.coordinates[0].toDouble()
+            val longitude = order.coordinates[1].toDouble()
+            num += 1
+            val point = LatLng(latitude, longitude)
+            Timber.d("$latitude, $longitude")
+
+            when {
+                order.period.contains("8:00-11:59") -> {
+                    val marker = MarkerOptions().position(point).icon(
+                        BitmapDescriptorFactory.fromBitmap(
+                            getCustomIcon(num, R.drawable.ic_icon_red)
+                        )
+                    ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
+                    mMap.addMarker(marker)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
+                }
+                order.period.contains("9:00-13:59") -> {
+                    val marker = MarkerOptions().position(point).icon(
+                        BitmapDescriptorFactory.fromBitmap(
+                            getCustomIcon(num, R.drawable.ic_icon_yellow)
+                        )
+                    ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
+                    mMap.addMarker(marker)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
+                }
+                order.period.contains("9:00-17:59") -> {
+                    val marker = MarkerOptions().position(point).icon(
+                        BitmapDescriptorFactory.fromBitmap(
+                            getCustomIcon(num, R.drawable.ic_icon_green)
+                        )
+                    ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
+                    mMap.addMarker(marker)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
+                }
+                order.period.contains("13:00-17:59") -> {
+                    val marker = MarkerOptions().position(point).icon(
+                        BitmapDescriptorFactory.fromBitmap(
+                            getCustomIcon(num, R.drawable.ic_icon_violet)
+                        )
+                    ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
+                    mMap.addMarker(marker)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
+                }
+                order.period.contains("18:00-20:59") -> {
+                    val marker = MarkerOptions().position(point).icon(
+                        BitmapDescriptorFactory.fromBitmap(
+                            getCustomIcon(num, R.drawable.ic_icon_blue)
+                        )
+                    ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
+                    mMap.addMarker(marker)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
+                }
+                else -> {
+                    val marker = MarkerOptions().position(point).icon(
+                        BitmapDescriptorFactory.fromBitmap(
+                            getCustomIcon(num, R.drawable.ic_icon_lightgray)
+                        )
+                    ).title(order.address).snippet("${order.timeStart} - ${order.timeEnd}")
+                    mMap.addMarker(marker)
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
             }
-        })
+        }
     }
 
     //Кастомные иконки с номерами точек

@@ -6,6 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <ImageView
+        android:id="@+id/iv_name_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:contentDescription="@string/name_order"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_name_order"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tv_name_order"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/ic_name_order_24" />
+
     <TextView
         android:id="@+id/tv_name_date_order"
         android:layout_width="wrap_content"
@@ -37,19 +49,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_name_date_order" />
 
-    <ImageView
-        android:id="@+id/iv_name_order"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:contentDescription="@string/name_order"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_blue_line"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_name_order_24" />
-
     <TextView
         android:id="@+id/tv_name_order"
         android:layout_width="0dp"
@@ -60,9 +59,7 @@
         android:text="@string/name_order"
         android:textColor="@color/black"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_name_order"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/iv_name_order"
         app:layout_constraintTop_toBottomOf="@+id/tv_address_order" />
 
@@ -83,10 +80,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
         android:contentDescription="@string/price_order"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_price_order"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_name_order"
+        app:layout_constraintTop_toTopOf="@+id/tv_price_order"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_price_order_24" />
 
     <TextView
@@ -94,14 +92,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="@string/price_order"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_price_order"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/iv_price_order"
-        app:layout_constraintTop_toTopOf="@+id/iv_price_order" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_name_order" />
 
     <ImageView
         android:id="@+id/iv_about_client"
@@ -110,8 +107,10 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         android:contentDescription="@string/info_client"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_about_client"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_price_order"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_about_client_24" />
 
     <TextView
@@ -119,24 +118,25 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="@string/info_client"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_about_client"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/iv_about_client"
-        app:layout_constraintTop_toTopOf="@+id/iv_about_client" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_price_order" />
 
     <ImageView
         android:id="@+id/iv_call_phone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
         android:contentDescription="@string/phone_numbers"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_phone_number_client"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_about_client"
+        app:layout_constraintTop_toTopOf="@+id/tv_phone_number_client"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_call_phone_client24" />
 
     <TextView
@@ -144,41 +144,56 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:text="@string/phone_numbers"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/iv_call_phone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/iv_call_phone"
-        app:layout_constraintTop_toTopOf="@+id/iv_call_phone" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_about_client" />
 
     <ImageView
         android:id="@+id/iv_note_order"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
         android:contentDescription="@string/notes_order"
+        app:layout_constraintBottom_toBottomOf="@+id/scrollView2"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_phone_number_client"
+        app:layout_constraintTop_toTopOf="@+id/scrollView2"
+        app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/ic_note_order_24" />
 
-    <TextView
-        android:id="@+id/tv_note_order"
+    <ScrollView
+        android:id="@+id/scrollView2"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
+        android:layout_marginTop="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="8dp"
-        android:text="@string/notes_order"
-        android:textColor="@color/black"
         app:layout_constraintBottom_toTopOf="@+id/btn_call_client"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/iv_note_order"
-        app:layout_constraintTop_toTopOf="@+id/iv_note_order"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_phone_number_client">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_note_order"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/notes_order"
+                android:textColor="@color/black" />
+        </LinearLayout>
+    </ScrollView>
 
     <Button
         android:id="@+id/btn_to_shipment_order"

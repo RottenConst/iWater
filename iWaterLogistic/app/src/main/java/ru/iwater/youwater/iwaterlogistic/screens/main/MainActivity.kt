@@ -8,7 +8,6 @@ import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
-import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.android.synthetic.main.main_container_activity.*
 import ru.iwater.youwater.iwaterlogistic.R
@@ -19,6 +18,7 @@ import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCompleteOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCurrentOrders
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
+import ru.iwater.youwater.iwaterlogistic.service.TimeListenerService
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.ACCOUNT_SAVED
 import timber.log.Timber
@@ -35,12 +35,13 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.main_container_activity)
         accountRepository = AccountRepository(screenComponent.accountStorage())
 
+        val service = Intent(this.applicationContext, TimeListenerService::class.java)
+        startService(service)
         Timber.d("account = ${accountRepository.getAccount().login}")
 
-        title = resources.getString(R.string.orders)
         bottom_bar_navigation.menu[1].isChecked = true
         loadFragment(FragmentCurrentOrders.newInstance())
-        bottom_bar_navigation.setOnNavigationItemSelectedListener (bottomNavFragment)
+        bottom_bar_navigation.setOnNavigationItemSelectedListener(bottomNavFragment)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -74,7 +75,6 @@ class MainActivity : BaseActivity() {
     private val bottomNavFragment = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         when(item.itemId) {
             R.id.complete_order -> {
-
                 loadFragment(FragmentCompleteOrders.newInstance())
                 return@OnNavigationItemSelectedListener true
             }

@@ -68,11 +68,17 @@
             android:name=".screens.cardOrder.CompleteShipActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Отгруженный заказ" />
+        <activity android:name=".screens.report.ReportActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:label="@string/report"
+            android:parentActivityName=".screens.main.MainActivity"/>
         <activity
             android:name=".screens.map.MapsActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/map"
             android:parentActivityName=".screens.main.MainActivity"/>
+
+        <service android:name=".service.TimeListenerService" />
     </application>
 
 </manifest>

@@ -68,9 +68,11 @@ class ShipmentsViewModel @Inject constructor(
                     order.date,
                     order.period,
                     order.address,
-                    1, order.coordinates,
+                    status = 1,
+                    order.coordinates,
                     shipCoordinate )
                 completeOrdersRepository.saveCompleteOrder(completeOrder)
+                orderListRepository.deleteOrder(order)
                 completeOrdersRepository.accept.acceptOrder()
             }
         }

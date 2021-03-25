@@ -2,6 +2,7 @@ package ru.iwater.youwater.iwaterlogistic.di.components
 
 import android.content.Context
 import dagger.Component
+import ru.iwater.youwater.iwaterlogistic.Receivers.TimeNotification
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.di.AccountStorageModule
 import ru.iwater.youwater.iwaterlogistic.di.ContextModule

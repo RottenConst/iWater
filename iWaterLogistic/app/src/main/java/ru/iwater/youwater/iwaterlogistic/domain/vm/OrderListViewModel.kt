@@ -1,7 +1,9 @@
 package ru.iwater.youwater.iwaterlogistic.domain.vm
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.location.Geocoder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +13,10 @@ import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.screens.cardOrder.CardOrderActivity
+import timber.log.Timber
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -35,10 +41,19 @@ class OrderListViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
+    private val mCoordinate: MutableLiveData<String> = MutableLiveData()
+
     private val mListOrder: MutableLiveData<List<Order>> = MutableLiveData()
+    private val mDbListOrder: MutableLiveData<List<Order>> = MutableLiveData()
 
     val listOrder: LiveData<List<Order>>
         get() = mListOrder
+
+    val dbListOrder: LiveData<List<Order>>
+        get() = mDbListOrder
+
+    val coordinate: LiveData<String>
+        get() = mCoordinate
 
     /**
      * загружаем инфу о заказах
@@ -48,6 +63,7 @@ class OrderListViewModel @Inject constructor(
         uiScope.launch {
             orderListRepository.getLoadOrderList()
             mListOrder.value = orderListRepository.getOrders()
+            listOrder.value?.let { orderListRepository.saveOrders(it) }
         }
     }
 
@@ -70,11 +86,32 @@ class OrderListViewModel @Inject constructor(
         CardOrderActivity.start(context, intent)
     }
 
-    fun refreshOrder() {
+    @SuppressLint("TimberArgCount")
+    fun getCoordinatesOnAddressOrder(order: Order, context: Context) {
+        val locationAddress = order.address
         uiScope.launch {
-            orderListRepository.getLoadOrderList()
-            orderListRepository.updateOrder()
-            mListOrder.value = orderListRepository.getOrders()
+            val geoCoder = Geocoder(context, Locale.getDefault())
+            try {
+                val addressList = geoCoder.getFromLocationName(locationAddress, 1)
+                if (addressList != null && addressList.size > 0) {
+                    val address = addressList[0]
+                    val coordinate = "${address.latitude}-${address.longitude}"
+                    order.coordinates = coordinate.split("-")
+                    orderListRepository.saveOrder(order)
+                    Timber.d("coordinate = $")
+                }
+            } catch (e: IOException) {
+                Timber.e(e, "Unable to connect to Geocoder")
+            }
+        }
+    }
+
+    fun getLoadOrderCurrentOrderFromBd() {
+        val currentDate = Calendar.getInstance()
+        val formatter = SimpleDateFormat("dd/MM/yyyy")
+        val timeComplete = formatter.format(currentDate.time)
+        uiScope.launch {
+            mDbListOrder.value = orderListRepository.getDBLoadCurrentOrder(timeComplete)
         }
     }
 

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_current_order.view.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 
 class ListOrdersAdapter(
     val orders: MutableList<Order> = mutableListOf()
@@ -32,7 +33,22 @@ class ListOrdersAdapter(
 
         fun bindOrders(order: Order, position: Int) {
             itemView.num_order.text = (position + 1).toString()
-            "№${order.id}, ${order.date}, ${order.timeStart} - ${order.timeEnd}, ${order.address}".also { itemView.order_info.text = it }
+            "Заказ ${order.timeStart} - ${order.timeEnd}, ${order.address}, ${order.product}".also { itemView.order_info.text = it }
+            if (UtilsMethods.timeDifference(order.timeEnd, UtilsMethods.getFormatedDate()) > 7200) {
+                itemView.num_order.setBackgroundResource(R.drawable.circle_green)
+            }
+
+            if (UtilsMethods.timeDifference(order.timeEnd, UtilsMethods.getFormatedDate()) in 3601..7199) {
+                itemView.num_order.setBackgroundResource(R.drawable.circle_yellow)
+            }
+
+            if (UtilsMethods.timeDifference(order.timeEnd, UtilsMethods.getFormatedDate()) < 3600) {
+                itemView.num_order.setBackgroundResource(R.drawable.circle_red)
+            }
+
+            if (UtilsMethods.timeDifference(order.timeEnd, UtilsMethods.getFormatedDate()) < 0) {
+                itemView.num_order.setBackgroundResource(R.drawable.circle_grey)
+            }
         }
 
     }

@@ -7,7 +7,7 @@
     <string name="exit_text">Выход</string>
     <string name="map">Карта</string>
 
-    <string name="completeOrder">Завршенные заказы</string>
+    <string name="completeOrder">Завершенные заказы</string>
     <string name="orders">Заказы</string>
     <string name="history">История</string>
     <string name="exit_message_dialog">Вы хотите выйти из приложения?</string>
@@ -37,7 +37,7 @@
     <string name="notes_order">примичания к заказу</string>
     <string name="makeCall">Звонок клиенту. Выберите номер телефона</string>
     <string name="count_tank_to_back">Кол-во бутылок к возврату</string>
-    <string name="no_to_ship_order">не отгрузил заказ</string>
+    <string name="no_to_ship_order">заказ не отгружен</string>
     <string name="about_order">Карточка заказа</string>
 
     <string name="cash">Наличные</string>
@@ -52,4 +52,18 @@
     <string name="general_report">Общий отчет</string>
     <string name="set_cost">установить расходы</string>
     <string name="title_activity_maps">Map</string>
+    <string name="expenditure">Введите расход</string>
+
+    <string name="report">Отчет</string>
+    <string name="take_away_tank">Забрано бутелей:</string>
+    <string name="total_money">Всего получено денег:</string>
+    <string name="cash_total">Наличные всего:</string>
+    <string name="cash_on_site">Оплата на сайте:</string>
+    <string name="cash_on_terminal">Оплата через терминал:</string>
+    <string name="cash_many">Оплата наличными:</string>
+    <string name="no_cash_money">Оплата безналичными</string>
+    <string name="complete_orders_total">Всего выполнено заказов</string>
+    <string name="name_expenses">Наименование расхода</string>
+    <string name="cost">123руб</string>
+    <string name="expenses">Расходы</string>
 </resources>

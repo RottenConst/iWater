@@ -22,5 +22,5 @@ data class Order(
     val period: String,
     var address: String,
     var status: Int,
-    val coordinates: List<String>
+    var coordinates: List<String>
 )

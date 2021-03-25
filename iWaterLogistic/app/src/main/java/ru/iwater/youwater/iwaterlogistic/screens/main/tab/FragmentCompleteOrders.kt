@@ -1,14 +1,19 @@
 package ru.iwater.youwater.iwaterlogistic.screens.main.tab
 
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_complete_order.*
+import kotlinx.android.synthetic.main.layout_custom_alert_dialog.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
@@ -43,6 +48,32 @@ class FragmentCompleteOrders: BaseFragment() {
         initRecyclerView()
         observeVW()
         viewModel.getCompleteListOrders()
+
+        btn_set_cost.setOnClickListener {
+            val layoutInflater = LayoutInflater.from(context)
+            val viewDialog = layoutInflater.inflate(R.layout.layout_custom_alert_dialog, null)
+            val dialogBuilder = context?.let { it1 -> AlertDialog.Builder(it1) }
+            dialogBuilder?.setView(viewDialog)
+            val etNameParametr = viewDialog.findViewById<EditText>(R.id.et_name_parametr)
+            val etParametr = viewDialog.findViewById<EditText>(R.id.et_parametr)
+            val tvTitle = viewDialog.findViewById<TextView>(R.id.tv_title_dialog)
+            tvTitle.text = "Установить рассход"
+            dialogBuilder
+                ?.setCancelable(false)
+                ?.setPositiveButton("Ok") { _, _ ->
+                    viewModel.addExpensesInBD(etNameParametr.text.toString(), etParametr.text.toString().toFloat())
+                    showToast(etNameParametr.text.toString())
+                }
+                ?.setNegativeButton("Отмена") { dialog, _ ->
+                            dialog.cancel();
+                }
+            val alertDialog = dialogBuilder?.create()
+            alertDialog?.show()
+        }
+
+        btn_report.setOnClickListener {
+            this.context?.let { it1 -> viewModel.getReportActivity(it1) }
+        }
     }
 
     private fun observeVW() {
