@@ -17,6 +17,7 @@ import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCompleteOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCurrentOrders
+import ru.iwater.youwater.iwaterlogistic.screens.report.ReportFragment
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.service.TimeListenerService
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
@@ -29,6 +30,8 @@ class MainActivity : BaseActivity() {
     @Inject
     lateinit var accountRepository: AccountRepository
     private val screenComponent = App().buildScreenComponent()
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,12 +82,12 @@ class MainActivity : BaseActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.orders -> {
-
                 loadFragment(FragmentCurrentOrders.newInstance())
                 return@OnNavigationItemSelectedListener true
             }
-            R.id.history -> {
-                TODO()
+            R.id.report -> {
+                loadFragment(ReportFragment.newInstance())
+                return@OnNavigationItemSelectedListener true
             }
         }
         true

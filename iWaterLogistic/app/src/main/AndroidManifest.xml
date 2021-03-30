@@ -55,6 +55,10 @@
             android:name=".screens.login.LoginActivity"
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"/>
         <activity
+            android:name=".screens.main.StartWorkActivity"
+            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
             android:name=".screens.cardOrder.CardOrderActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/about_order"

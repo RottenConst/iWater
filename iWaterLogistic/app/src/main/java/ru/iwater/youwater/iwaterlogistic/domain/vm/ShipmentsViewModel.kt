@@ -10,15 +10,18 @@ import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.response.TypeClient
+import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import javax.inject.Inject
 
 @OnScreen
 class ShipmentsViewModel @Inject constructor(
     private val orderListRepository: OrderListRepository,
-    private val completeOrdersRepository: CompleteOrdersRepository
+    private val completeOrdersRepository: CompleteOrdersRepository,
+    accountRepository: AccountRepository
 ) : ViewModel() {
 
     /**
@@ -30,6 +33,8 @@ class ShipmentsViewModel @Inject constructor(
     private val mOrder: MutableLiveData<Order> = MutableLiveData()
     private val mTypeClient: MutableLiveData<String> = MutableLiveData()
     private val mCompleteOrder: MutableLiveData<CompleteOrder> = MutableLiveData()
+    private var nameDriver: String = accountRepository.getAccount().login
+    private var company: String = accountRepository.getAccount().company
 
     val typeClient: LiveData<String>
         get() = mTypeClient
@@ -53,6 +58,9 @@ class ShipmentsViewModel @Inject constructor(
         }
         uiScope.launch {
             orderId?.let {
+                val orderDelivered = completeOrdersRepository.getCompleteListOrders(UtilsMethods.getTodayDateString()).size
+                val totalMoney = completeOrdersRepository.getSumCashFullCompleteOrder(UtilsMethods.getTodayDateString())
+                completeOrdersRepository.reportInsert.setPropertyReport(nameDriver, orderId, typeClient.value, typeCash, cash, tank, orderDelivered, totalMoney, company)
                 val order = orderListRepository.getDBOrderOnId(it)
                 val completeOrder = CompleteOrder(
                     order.id,
@@ -74,6 +82,7 @@ class ShipmentsViewModel @Inject constructor(
                 completeOrdersRepository.saveCompleteOrder(completeOrder)
                 orderListRepository.deleteOrder(order)
                 completeOrdersRepository.accept.acceptOrder()
+                completeOrdersRepository.reportInsert.sendReport()
             }
         }
     }
@@ -94,13 +103,13 @@ class ShipmentsViewModel @Inject constructor(
         uiScope.launch {
             when (typeClient.getTypeClient()) {
                 "0" -> {
-                    mTypeClient.value = "Физ. лицо"
+                    mTypeClient.value = "0"
                 }
                 "1" -> {
-                    mTypeClient.value = "Юр. лицо"
+                    mTypeClient.value = "1"
                 }
                 else -> {
-                    mTypeClient.value = "0"
+                    mTypeClient.value = "500"
                 }
             }
         }

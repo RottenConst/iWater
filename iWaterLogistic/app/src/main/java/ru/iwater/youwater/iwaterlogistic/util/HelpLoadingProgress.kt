@@ -4,6 +4,7 @@ import android.content.Context
 
 enum class HelpStateLogin() {
     ACCOUNT_SAVED,
+    IS_WORK_START
 }
 
 object HelpLoadingProgress {
@@ -13,4 +14,7 @@ object HelpLoadingProgress {
 
     fun getLoginShow(context: Context, show: HelpStateLogin): Boolean =
         PreferencesUtils(context).getPrefBool(show.ordinal,  true)
+
+    fun getStartDayShow(context: Context, show: HelpStateLogin): Boolean =
+        PreferencesUtils(context).getPrefBool(show.ordinal, true)
 }

@@ -5,13 +5,13 @@ import kotlinx.coroutines.withContext
 import ru.iwater.youwater.iwaterlogistic.Receivers.TimeNotification
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
-import ru.iwater.youwater.iwaterlogistic.di.components.OnApplication
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.response.DriverWayBill
 import ru.iwater.youwater.iwaterlogistic.response.OrderCurrent
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 @OnScreen
@@ -35,6 +35,20 @@ class  OrderListRepository @Inject constructor(
         }
     }
 
+    suspend fun checkDbOrder() {
+        val ordersDb = getDBOrders()
+        val orders = getOrders()
+        if (orders.size < ordersDb.size) {
+            for (orderDb in ordersDb) {
+                for (order in orders) {
+                    if (order.id != orderDb.id) {
+                        deleteOrder(orderDb)
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * сохранить заказ в бд
      */
@@ -51,13 +65,16 @@ class  OrderListRepository @Inject constructor(
         orders.sortBy { order -> order.timeEnd }
         orders.asReversed()
         TimeNotification.notifycationOrders.notifyOrders.clear()
-        for (order in orders) {
-            if (order.status == 0) {
-                currentOrder.add(order)
-                TimeNotification.notifycationOrders.notifyOrders.add(NotifyOrder(order.id, order.timeEnd, order.date, order.address,
-                    notification = false,
-                    fail = false
-                ))
+        for (i in 0 until orders.size - 1) {
+            if (orders[i].id != orders[i + 1].id && orders[i].status == 0) {
+                currentOrder.add(orders[i])
+                TimeNotification.notifycationOrders.notifyOrders.add(
+                    NotifyOrder(
+                        orders[i].id, orders[i].timeEnd, orders[i].date, orders[i].address,
+                        notification = false,
+                        fail = false
+                    )
+                )
             }
         }
         return currentOrder
@@ -116,8 +133,12 @@ class  OrderListRepository @Inject constructor(
             val cash = answer.getPropertyAsString(element + 3).toFloatOrNull()
             val cash_b = answer.getPropertyAsString(element + 4).toFloatOrNull()
             val time = answer.getPropertyAsString(element + 5).split("-")
-            val contact = if (answer.getPropertyAsString(element + 6).equals("anyType{}")) "" else answer.getPropertyAsString(element + 6)
-            val notice = if (answer.getPropertyAsString(element + 7).equals("anyType{}")) "" else answer.getPropertyAsString(element + 7)
+            val contact = if (answer.getPropertyAsString(element + 6).equals("anyType{}")) "" else answer.getPropertyAsString(
+                element + 6
+            )
+            val notice = if (answer.getPropertyAsString(element + 7).equals("anyType{}")) "" else answer.getPropertyAsString(
+                element + 7
+            )
             val date = answer.getPropertyAsString(element + 8) ?: ""
             val period = answer.getPropertyAsString(element + 9) ?: ""
             val address = answer.getPropertyAsString(element + 10) ?: ""

@@ -15,7 +15,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.domain.vm.AccountViewModel
-import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.StartWorkActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.ACCOUNT_SAVED
 import javax.inject.Inject
@@ -64,7 +64,7 @@ class LoginActivity : BaseActivity() {
             if (it.isNotEmpty()) {
                 showToast(it)
             } else {
-                val intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, StartWorkActivity::class.java)
                 setLoginProgress(this, ACCOUNT_SAVED, false)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)

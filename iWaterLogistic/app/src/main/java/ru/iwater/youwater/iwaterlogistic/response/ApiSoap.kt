@@ -217,3 +217,41 @@ class OrderCurrent: DescriptionApi {
         return@withContext ""
     }
 }
+
+/**
+ * Класс для связи api soap
+ * для отправки отчета конкретного заказа
+ **/
+class ReportInsert: DescriptionApi {
+    override val SOAP_ACTION: String = "urn:info#reportInserts"
+    override val METHOD_NAME: String = "reportInserts"
+    override val NAME_SPACE: String = "urn:info"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    fun setPropertyReport(nameDriver: String, orderId: Int, typeClient: String?, paymentType: String, payment: Float, numberContainers: Int, ordersDelivered: Int, totalMoney: Float, company: String) {
+        request.addProperty("name", nameDriver)
+        request.addProperty("order_id", orderId)
+        request.addProperty("type_client", typeClient)
+        request.addProperty("payment_type", paymentType)
+        request.addProperty("payment", payment.toString())
+        request.addProperty("number_containers", numberContainers)
+        request.addProperty("orders_delivered", ordersDelivered)
+        request.addProperty("total_money", totalMoney.toString())
+        request.addProperty("company", company)
+        soapEnvelope = getSoapEnvelop(request)
+    }
+
+    suspend fun sendReport(): String = withContext(Dispatchers.Default) {
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response.toString()
+            Timber.d("$answer")
+            return@withContext answer
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code${e.statusCode}")
+        }
+        return@withContext ""
+    }
+}

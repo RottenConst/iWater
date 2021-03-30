@@ -1,5 +1,7 @@
 package ru.iwater.youwater.iwaterlogistic.util
 
+import android.content.Context
+import android.widget.Toast
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -28,5 +30,15 @@ object UtilsMethods {
         val formatter = SimpleDateFormat("dd/MM/yyyy")
         val timeComplete = formatter.format(currentDate.time)
         return timeComplete.replace("\\s+".toRegex(), "").split("/")
+    }
+
+    fun getTodayDateString(): String {
+        val currentDate = Calendar.getInstance()
+        val formatter = SimpleDateFormat("dd/MM/yyyy")
+        return formatter.format(currentDate.time)
+    }
+
+    fun showToast(context: Context?, value: String) {
+        Toast.makeText(context, value, Toast.LENGTH_LONG).show()
     }
 }

@@ -199,21 +199,21 @@ class ShipmentsFragment: BaseFragment(), LocationListener {
      **/
     private fun methodsOfCash(typeClient: String) {
         when (typeClient) {
-            "Физ. лицо" -> {
+            "0" -> {
                 ic_check_doc.visibility = View.GONE
                 tv_check_doc.visibility = View.GONE
                 cb_doc_no.visibility = View.GONE
                 cb_doc_yes.visibility = View.GONE
                 radio_cash_group.visibility = View.VISIBLE
-                this.typeClient = "Физ. лицо"
+                this.typeClient = "0"
             }
-            "Юр. лицо" -> {
+            "1" -> {
                 ic_check_doc.visibility = View.VISIBLE
                 tv_check_doc.visibility = View.VISIBLE
                 cb_doc_no.visibility = View.VISIBLE
                 cb_doc_yes.visibility = View.VISIBLE
                 radio_cash_group.visibility = View.GONE
-                this.typeClient = "Юр. лицо"
+                this.typeClient = "1"
                 typeCash = "Без наличные"
             }
             else -> {

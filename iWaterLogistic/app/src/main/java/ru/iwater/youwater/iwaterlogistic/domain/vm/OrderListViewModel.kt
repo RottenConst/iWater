@@ -26,7 +26,7 @@ import javax.inject.Inject
 class OrderListViewModel @Inject constructor(
     private val orderListRepository: OrderListRepository,
     accountRepository: AccountRepository
-        ) : ViewModel() {
+) : ViewModel() {
 
     /**
      * при инициализации устанавливаем сессию
@@ -62,6 +62,7 @@ class OrderListViewModel @Inject constructor(
     fun getLoadOrder() {
         uiScope.launch {
             orderListRepository.getLoadOrderList()
+            orderListRepository.checkDbOrder()
             mListOrder.value = orderListRepository.getOrders()
             listOrder.value?.let { orderListRepository.saveOrders(it) }
         }

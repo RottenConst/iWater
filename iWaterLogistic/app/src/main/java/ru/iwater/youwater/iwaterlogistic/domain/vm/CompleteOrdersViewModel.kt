@@ -16,7 +16,6 @@ import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
 import ru.iwater.youwater.iwaterlogistic.screens.completeCardOrder.CardCompleteActivity
 import ru.iwater.youwater.iwaterlogistic.screens.report.ReportActivity
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -39,6 +38,15 @@ class CompleteOrdersViewModel @Inject constructor(
     //расходы
     private val mExpenses: MutableLiveData<List<Expenses>> = MutableLiveData()
 
+    private val mManyToReport: MutableLiveData<Float> = MutableLiveData()
+
+    private val mIsCompleteOrder: MutableLiveData<Boolean> = MutableLiveData()
+
+    val isCompleteOrder: LiveData<Boolean>
+        get() = mIsCompleteOrder
+
+    val manyToReport: LiveData<Float>
+        get() = mManyToReport
 
     val reportDay: LiveData<ReportDay>
         get() = mReportDay
@@ -108,7 +116,15 @@ class CompleteOrdersViewModel @Inject constructor(
 
     fun getTodayExpenses() {
         uiScope.launch {
+            val many = completeOrdersRepository.getSumCashCompleteOrder("Наличные", timeComplete) - completeOrdersRepository.getSumOfCostExpenses(timeComplete)
             mExpenses.value = completeOrdersRepository.loadExpenses(timeComplete)
+            mManyToReport.value = many
+        }
+    }
+
+    fun isSendReportDay() {
+        uiScope.launch {
+           mIsCompleteOrder.value = completeOrdersRepository.getSumCurrentOrder()
         }
     }
 

@@ -8,12 +8,17 @@
     <string name="map">Карта</string>
 
     <string name="completeOrder">Завершенные заказы</string>
+    <string name="ProcessedOrders">Обработанные</string>
+    <string name="inWork">В Работе</string>
     <string name="orders">Заказы</string>
     <string name="history">История</string>
     <string name="exit_message_dialog">Вы хотите выйти из приложения?</string>
     <string name="confirmLogout">Вы уверены, что хотите выйти из своего аккаунта?</string>
+    <string name="confirmEndDay">Вы уверены, закончить рабочий день и отправить отчет?</string>
+    <string name="confirmEndOrder">Пожалуйста выполните все не завершенные заказы прежде чем закончить день или свяжитесь с диспетчером для переноса заказов</string>
 
     <string name="yes">Да</string>
+    <string name="ok">Ok</string>
     <string name="no">Нет</string>
 
     <string name="cancel">Отмена</string>
@@ -50,7 +55,7 @@
     <string name="returnToCurrent">Вернуться к текущему путевому листу</string>
     <string name="time_complete">Время отгрузки: 14:45</string>
     <string name="general_report">Общий отчет</string>
-    <string name="set_cost">установить расходы</string>
+    <string name="set_cost">задать расходы</string>
     <string name="title_activity_maps">Map</string>
     <string name="expenditure">Введите расход</string>
 
@@ -66,4 +71,8 @@
     <string name="name_expenses">Наименование расхода</string>
     <string name="cost">123руб</string>
     <string name="expenses">Расходы</string>
+    <string name="end_session">Закончить день</string>
+    <string name="start_worc">Начать день</string>
+    <string name="current_orders">Заказы</string>
+    <string name="cash_many_to_report">Наличных к сдаче</string>>
 </resources>

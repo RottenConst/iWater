@@ -5,9 +5,13 @@ import kotlinx.coroutines.withContext
 import ru.iwater.youwater.iwaterlogistic.bd.CompleteOrderDao
 import ru.iwater.youwater.iwaterlogistic.bd.ExpensesDao
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
+import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
 import ru.iwater.youwater.iwaterlogistic.domain.Expenses
+import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.response.Accept
+import ru.iwater.youwater.iwaterlogistic.response.ReportInsert
+import timber.log.Timber
 import javax.inject.Inject
 
 class CompleteOrdersRepository @Inject constructor(
@@ -15,9 +19,11 @@ class CompleteOrdersRepository @Inject constructor(
 ) {
 
     val accept = Accept()
+    val reportInsert = ReportInsert()
 
     private val completeOrderDao: CompleteOrderDao = iWaterDB.completeOrderDao()
     private val expensesDao: ExpensesDao = iWaterDB.ExpensesDao()
+    private val orderDao: OrderDao = iWaterDB.orderDao()
 
 
    suspend fun saveCompleteOrder(completeOrder: CompleteOrder) {
@@ -48,12 +54,31 @@ class CompleteOrdersRepository @Inject constructor(
         return@withContext completeOrderDao.getTankOfOrders(date)
     }
 
+    suspend fun getSumOfCostExpenses(date: String): Float = withContext(Dispatchers.Default) {
+        return@withContext expensesDao.sumCost(date)
+    }
+
     suspend fun saveExpenses(expenses: Expenses) {
         expensesDao.save(expenses)
     }
 
     suspend fun loadExpenses(date: String) : List<Expenses> = withContext(Dispatchers.Default) {
         return@withContext expensesDao.load(date)
+    }
+
+    /**
+     * вернуть не завершенные заказы из бд
+     */
+    suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
+        return@withContext orderDao.load()
+    }
+
+    suspend fun getSumCurrentOrder(): Boolean {
+        val order = getDBOrders().size
+        Timber.d("$order")
+        if (order > 0) {
+            return false
+        } else return true
     }
 
     suspend fun getAccept() {

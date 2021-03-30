@@ -8,14 +8,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
-import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.util.NotificationSender
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
-import java.text.ParseException
-import java.text.SimpleDateFormat
 
 class TimeNotification : BroadcastReceiver() {
 
@@ -42,6 +39,7 @@ class TimeNotification : BroadcastReceiver() {
         orderListRepository.driverWayBill.setProperty(accountRepository.getAccount().session)
         CoroutineScope(Dispatchers.Main).launch {
             orderListRepository.getLoadOrderList()
+            orderListRepository.checkDbOrder()
             dbOrders = orderListRepository.getDBOrders().size
             orderNet = orderListRepository.getOrders().size
         }
@@ -53,6 +51,11 @@ class TimeNotification : BroadcastReceiver() {
                 false
             )
         }
+
+        if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0) {
+            notificationSender.sendNotification("По завершению всех заказов не забудьте закончить день и отправить отчет" , orderNet + 200, false)
+        }
+
         Timber.d("Order net $orderNet, OrderDB ${notifycationOrders.notifyOrders.size}")
         for (dbOrder in notifycationOrders.notifyOrders) {
             for (notify in notifycationOrders.isNotify) {
