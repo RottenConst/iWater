@@ -1,6 +1,5 @@
-package ru.iwater.youwater.iwaterlogistic.screens.report
+package ru.iwater.youwater.iwaterlogistic.screens.main.tab.report
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,12 +15,8 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.domain.Expenses
-import ru.iwater.youwater.iwaterlogistic.domain.vm.CompleteOrdersViewModel
+import ru.iwater.youwater.iwaterlogistic.domain.vm.ReportViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ExpensesAdapter
-import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
-import ru.iwater.youwater.iwaterlogistic.service.TimeListenerService
-import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
-import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import javax.inject.Inject
 
@@ -29,11 +24,10 @@ class ReportFragment: BaseFragment() {
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
-    private val viewModel: CompleteOrdersViewModel by viewModels { factory }
+    private val viewModel: ReportViewModel by viewModels { factory }
     private val adapter = ExpensesAdapter()
 
     private val screenComponent = App().buildScreenComponent()
-    private var isComplete: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,12 +45,17 @@ class ReportFragment: BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val arg = arguments
-        val date = UtilsMethods.getTodayDateString()
+        val date = arg?.getString("date")
         "Отчет за $date".also { tv_report_title.text = it }
         initRV()
-        observeReport()
-        observeExpenses()
-
+        if (date == UtilsMethods.getTodayDateString()) {
+            observeReport()
+            observeTodayExpenses()
+        } else {
+            btn_set_cost.visibility = View.GONE
+            date?.let { observeReportDate(it) }
+            date?.let { observeExpenses(it) }
+        }
 
         btn_set_cost.setOnClickListener {
             val layoutInflater = LayoutInflater.from(context)
@@ -70,9 +69,30 @@ class ReportFragment: BaseFragment() {
             dialogBuilder
                 ?.setCancelable(false)
                 ?.setPositiveButton("Ok") { _, _ ->
-                    viewModel.addExpensesInBD(etNameParametr.text.toString(), etParametr.text.toString().toFloat())
-                    UtilsMethods.showToast(this.context, etNameParametr.text.toString())
-                    observeExpenses()
+                    when {
+                        etNameParametr.text.isEmpty() -> {
+                            UtilsMethods.showToast(this.context, "Вы не заполнели расход")
+                        }
+                        etParametr.text.isEmpty() -> {
+                            UtilsMethods.showToast(this.context, "Вы не ввели сумму расхода")
+                        }
+                        etNameParametr.text.isEmpty() && etParametr.text.isEmpty() -> {
+                            UtilsMethods.showToast(this.context, "Заполните расход и сумму расхода")
+                        }
+                        else -> {
+                            viewModel.addExpensesInBD(
+                                etNameParametr.text.toString(),
+                                etParametr.text.toString().toFloat()
+                            )
+                            viewModel.sendExpenses(
+                                etNameParametr.text.toString(),
+                                etParametr.text.toString().toFloat()
+                            )
+                            UtilsMethods.showToast(this.context, etNameParametr.text.toString())
+                            observeTodayExpenses()
+                            observeReport()
+                        }
+                    }
                 }
                 ?.setNegativeButton("Отмена") { dialog, _ ->
                     dialog.cancel();
@@ -81,52 +101,10 @@ class ReportFragment: BaseFragment() {
             alertDialog?.show()
         }
 
-        btn_end_day.setOnClickListener {
-
-            if (isComplete) {
-                this.context?.let { it1 ->
-                    AlertDialog.Builder(it1)
-                        .setMessage(R.string.confirmEndDay)
-                        .setPositiveButton(
-                            R.string.yes
-                        ) { _, _ ->
-                            val intent = Intent(it1, SplashActivity::class.java)
-                            intent.flags =
-                                Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                            HelpLoadingProgress.setLoginProgress(
-                                it1,
-                                HelpStateLogin.IS_WORK_START,
-                                true
-                            )
-                            val service = Intent(
-                                activity?.applicationContext,
-                                TimeListenerService::class.java
-                            )
-                            activity?.stopService(service)
-                            activity?.finish()
-                            startActivity(intent)
-                        }
-                        .setNegativeButton(R.string.no) { dialog, _ ->
-                            dialog.cancel()
-                        }.create().show()
-                }
-            } else {
-                this.context?.let { it1 ->
-                    AlertDialog.Builder(it1)
-                        .setMessage(R.string.confirmEndOrder)
-                        .setPositiveButton(
-                            R.string.ok
-                        ) { dialog, _ ->
-                            dialog.cancel()
-                        }.create().show()
-                }
-            }
-        }
-
     }
 
     private fun observeReport() {
-        viewModel.initReport()
+        viewModel.initThisReport()
         viewModel.reportDay.observe(viewLifecycleOwner, {
             tv_num_total_orders.text = "${it.orderComplete}"
             tv_tank_report.text = "${it.tank}"
@@ -137,14 +115,27 @@ class ReportFragment: BaseFragment() {
             tv_cash_num_money.text = "${it.cashMoney}руб."
             tv_no_cash_num.text = "${it.noCashMoney}руб."
             tv_cash_num_on_site.text = "${it.cashOnSite}руб."
-        })
-        viewModel.isSendReportDay()
-        viewModel.isCompleteOrder.observe(viewLifecycleOwner, {
-            isComplete = it
+            tv_num_cash_many_report.text = "${it.moneyDelivery}руб."
         })
     }
 
-    private fun observeExpenses() {
+    private fun observeReportDate(date: String) {
+        viewModel.initDateReport(date)
+        viewModel.reportDay.observe(viewLifecycleOwner, {
+            tv_num_total_orders.text = "${it.orderComplete}"
+            tv_tank_report.text = "${it.tank}"
+            tv_total_money.text = "${it.totalMoney}руб."
+            tv_cash_num_total.text = "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб."
+            tv_cash_num_on_site.text = "${it.cashOnSite}руб."
+            tv_cash_num_on_terminal.text = "${it.cashOnTerminal}руб."
+            tv_cash_num_money.text = "${it.cashMoney}руб."
+            tv_no_cash_num.text = "${it.noCashMoney}руб."
+            tv_cash_num_on_site.text = "${it.cashOnSite}руб."
+            tv_num_cash_many_report.text = "${it.moneyDelivery}руб."
+        })
+    }
+
+    private fun observeTodayExpenses() {
         viewModel.getTodayExpenses()
         viewModel.expenses.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
@@ -154,8 +145,17 @@ class ReportFragment: BaseFragment() {
                 tv_expenses_title.text = "Расходов нет"
             }
         })
-        viewModel.manyToReport.observe(viewLifecycleOwner, {
-            tv_num_cash_many_report.text = "${it}руб."
+    }
+
+    private fun observeExpenses(date: String) {
+        viewModel.getExpenses(date)
+        viewModel.expenses.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                tv_expenses_title.text = "Расходы"
+                addExpenses(it)
+            } else {
+                tv_expenses_title.text = "Расходов нет"
+            }
         })
     }
 

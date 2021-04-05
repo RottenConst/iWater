@@ -8,9 +8,11 @@ import org.ksoap2.serialization.SoapObject
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpResponseException
 import org.ksoap2.transport.HttpTransportSE
+import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import timber.log.Timber
 
-const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl"
+const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl" //test
+//const val URL = "http://dev.iwatercrm.ru/iwater_logistic/driver/server.php?wsdl" //prod
 
 /**
  * базоаый класс для связи с api
@@ -237,13 +239,84 @@ class ReportInsert: DescriptionApi {
         request.addProperty("payment_type", paymentType)
         request.addProperty("payment", payment.toString())
         request.addProperty("number_containers", numberContainers)
-        request.addProperty("orders_delivered", ordersDelivered)
-        request.addProperty("total_money", totalMoney.toString())
+        request.addProperty("orders_delivered", ordersDelivered + 1)
+        request.addProperty("total_money", (totalMoney + payment).toString())
         request.addProperty("company", company)
         soapEnvelope = getSoapEnvelop(request)
     }
 
     suspend fun sendReport(): String = withContext(Dispatchers.Default) {
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response.toString()
+            Timber.d("$answer")
+            return@withContext answer
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code${e.statusCode}")
+        }
+        return@withContext ""
+    }
+}
+
+/**
+ * Класс для связи api soap
+ * для отправки расхода
+ **/
+class AddExpenses: DescriptionApi {
+    override val SOAP_ACTION: String = "urn:info#expenses"
+    override val METHOD_NAME: String = "expenses"
+    override val NAME_SPACE: String = "urn:info"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    fun setPropertyExpenses(driverId: Int, nameExpenses: String, money: Float) {
+        request.addProperty("driver_id", driverId)
+        request.addProperty("expens", nameExpenses)
+        request.addProperty("money", money.toString())
+        soapEnvelope = getSoapEnvelop(request)
+    }
+
+    suspend fun sendExpenses(): String = withContext(Dispatchers.Default) {
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response.toString()
+            Timber.d("$answer")
+            return@withContext answer
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code${e.statusCode}")
+        }
+        return@withContext ""
+    }
+}
+
+/**
+ * Класс для связи api soap
+ * для отправки общего отчета
+ **/
+class DriverCloseDay: DescriptionApi {
+    override val SOAP_ACTION: String = "urn:info#driverCloseday"
+    override val METHOD_NAME: String = "driverCloseday"
+    override val NAME_SPACE: String = "urn:info"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    fun setPropertyGeneralReport(driverId: Int, reportDay: ReportDay) {
+        request.addProperty("driver_id", driverId)
+        request.addProperty("taken_bottles", reportDay.tank)
+        request.addProperty("orders_completed", reportDay.orderComplete)
+        request.addProperty("money_site", reportDay.cashOnSite.toString())
+        request.addProperty("money_terminal", reportDay.cashOnTerminal.toString())
+        request.addProperty("money_cash", reportDay.cashMoney.toString())
+        request.addProperty("money_cash_b", reportDay.noCashMoney.toString())
+        request.addProperty("cash_delivery", reportDay.moneyDelivery.toString())
+        request.addProperty("cash_sum", (reportDay.cashMoney + reportDay.cashOnSite + reportDay.cashOnTerminal).toString())
+        request.addProperty("total_money", reportDay.totalMoney.toString())
+        soapEnvelope = getSoapEnvelop(request)
+    }
+
+    suspend fun sendGeneralReport(): String = withContext(Dispatchers.Default) {
         try {
             httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
             val answer = soapEnvelope.response.toString()

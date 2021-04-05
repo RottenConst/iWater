@@ -1,4 +1,4 @@
-package ru.iwater.youwater.iwaterlogistic.screens.cardOrder
+package ru.iwater.youwater.iwaterlogistic.screens.main.tab.current
 
 import android.Manifest
 import android.content.ClipData
@@ -66,7 +66,8 @@ class AboutOrderFragment : BaseFragment() {
         }
         //кнопка "копировать адрес"
         btn_copy_address.setOnClickListener {
-            val clipBoard = activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clipBoard =
+                activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clipData = ClipData.newPlainText("", viewModel.order.value?.address)
             clipBoard.setPrimaryClip(clipData)
             getToast("адресс скопирован")
@@ -108,31 +109,28 @@ class AboutOrderFragment : BaseFragment() {
                 Manifest.permission.CALL_PHONE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            activity?.let {
-                ActivityCompat.requestPermissions(
-                    it, arrayOf(Manifest.permission.CALL_PHONE), 0
-                )
-            }
-            this.context?.let {
-                AlertDialog.Builder(it)
-                    .setTitle(R.string.makeCall)
-                    .setPositiveButton("Ok") { _, _ ->
-                        if (intentCall.data != null) {
-                            if (ActivityCompat.checkSelfPermission(
-                                    screenComponent.appContext(),
-                                    Manifest.permission.CALL_PHONE
-                                ) == PackageManager.PERMISSION_GRANTED
-                            ) {
-                                startActivity(intentCall)
-                            }
-                        }
-                    }
-                    .setNegativeButton("Отмена") { dialog, _ -> dialog.cancel() }
-                    .setSingleChoiceItems(phones, -1) { _, item ->
-                        intentCall.data = Uri.parse("tel: ${phones[item]}")
-                    }.create().show()
-            }
+            ActivityCompat.requestPermissions(
+                this.activity!!, arrayOf(Manifest.permission.CALL_PHONE),
+                0
+            )
         }
+        AlertDialog.Builder(this.context!!)
+            .setTitle(R.string.makeCall)
+            .setPositiveButton("Ok") { _, _ ->
+                if (intentCall.data != null) {
+                    if (ActivityCompat.checkSelfPermission(
+                            screenComponent.appContext(),
+                            Manifest.permission.CALL_PHONE
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        startActivity(intentCall)
+                    }
+                }
+            }
+            .setNegativeButton("Отмена") { dialog, _ -> dialog.cancel() }
+            .setSingleChoiceItems(phones, -1) { _, item ->
+                intentCall.data = Uri.parse("tel: ${phones[item]}")
+            }.create().show()
     }
 
     private fun getToast(message: String) {

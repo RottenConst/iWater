@@ -30,4 +30,12 @@
         <item name="android:layout_weight">1</item>
         <item name="android:gravity">bottom</item>
     </style>
+
+    //иконка с уведомлением
+    <style name="CounterText">
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:textSize">@dimen/counter_text_size</item>
+        <item name="android:textColor">@color/counter_text_color</item>
+        <item name="android:textStyle">normal</item>
+    </style>
 </resources>

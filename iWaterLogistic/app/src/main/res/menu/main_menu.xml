@@ -8,4 +8,10 @@
         android:orderInCategory="1"
         android:title="Item"
         app:showAsAction="always" />
+
+<!--    <item-->
+<!--        android:id="@+id/action_counter_3"-->
+<!--        app:actionLayout="@layout/badge_with_counter_icon"-->
+<!--        android:title="existing action view"-->
+<!--        app:showAsAction="ifRoom"/>-->
 </menu>

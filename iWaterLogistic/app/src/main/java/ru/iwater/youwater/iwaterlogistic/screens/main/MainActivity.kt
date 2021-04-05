@@ -9,29 +9,29 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.android.synthetic.main.badge_with_counter_icon.*
 import kotlinx.android.synthetic.main.main_container_activity.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
-import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCompleteOrders
-import ru.iwater.youwater.iwaterlogistic.screens.main.tab.FragmentCurrentOrders
-import ru.iwater.youwater.iwaterlogistic.screens.report.ReportFragment
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrders
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListReport
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.service.TimeListenerService
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
-import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.ACCOUNT_SAVED
+import ru.iwater.youwater.iwaterlogistic.util.HelpState.ACCOUNT_SAVED
 import timber.log.Timber
 import javax.inject.Inject
+
 
 class MainActivity : BaseActivity() {
 
     @Inject
     lateinit var accountRepository: AccountRepository
     private val screenComponent = App().buildScreenComponent()
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +46,11 @@ class MainActivity : BaseActivity() {
         loadFragment(FragmentCurrentOrders.newInstance())
         bottom_bar_navigation.setOnNavigationItemSelectedListener(bottomNavFragment)
     }
+
+//    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+//        initThirdCounter(menu)
+//        return super.onPrepareOptionsMenu(menu)
+//    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -86,7 +91,7 @@ class MainActivity : BaseActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.report -> {
-                loadFragment(ReportFragment.newInstance())
+                loadFragment(FragmentListReport.newInstance())
                 return@OnNavigationItemSelectedListener true
             }
         }
@@ -101,7 +106,35 @@ class MainActivity : BaseActivity() {
     }
 
 
+//    private fun initThirdCounter(menu: Menu?) {
+//        val counterItem = menu?.findItem(R.id.action_counter_3)
+//        val counter: View? = counterItem?.actionView
+//        counter?.setOnClickListener { _ -> onThirdCounterClick() }
+//        updateThirdCounter(mCounterValue3)
+//    }
+//
+//    private fun onThirdCounterClick() {
+//        updateThirdCounter(++mCounterValue3)
+//    }
+//
+//    private fun updateThirdCounter(newCounterValue: Int) {
+//        if (icon_badge == null || counter == null) {
+//            return
+//        }
+//        if (newCounterValue == 0) {
+//            icon_badge.setImageResource(R.drawable.ic_grey_notification)
+//            counter.visibility = View.GONE
+//        } else {
+//            icon_badge.setImageResource(R.drawable.ic_grey_notification)
+//            counter.visibility = View.VISIBLE
+//            counter.text = newCounterValue.toString()
+//        }
+//    }
+
     companion object {
+
+//        private var mCounterValue3 = 0
+
         fun start(context: Context) {
             ContextCompat.startActivity(context, Intent(context, MainActivity::class.java), null)
         }

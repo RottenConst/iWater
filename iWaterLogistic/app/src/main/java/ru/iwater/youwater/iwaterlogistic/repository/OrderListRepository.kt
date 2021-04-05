@@ -10,6 +10,7 @@ import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.response.DriverWayBill
 import ru.iwater.youwater.iwaterlogistic.response.OrderCurrent
+import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
@@ -45,6 +46,7 @@ class  OrderListRepository @Inject constructor(
                         deleteOrder(orderDb)
                     }
                 }
+                if (orderDb.date != UtilsMethods.getTodayDateString()) deleteOrder(orderDb)
             }
         }
     }
@@ -65,12 +67,12 @@ class  OrderListRepository @Inject constructor(
         orders.sortBy { order -> order.timeEnd }
         orders.asReversed()
         TimeNotification.notifycationOrders.notifyOrders.clear()
-        for (i in 0 until orders.size - 1) {
-            if (orders[i].id != orders[i + 1].id && orders[i].status == 0) {
-                currentOrder.add(orders[i])
+        for (order in orders) {
+            if (order.status == 0) {
+                currentOrder.add(order)
                 TimeNotification.notifycationOrders.notifyOrders.add(
                     NotifyOrder(
-                        orders[i].id, orders[i].timeEnd, orders[i].date, orders[i].address,
+                        order.id, order.timeEnd, order.date, order.address,
                         notification = false,
                         fail = false
                     )
@@ -114,6 +116,9 @@ class  OrderListRepository @Inject constructor(
         return@withContext orderDao.getLoadCurrentOrder(date)
     }
 
+    /**
+     * получить фактический адресс
+     */
     suspend fun getFactAddress(): String {
         return orderCurrent.getFactAddress()
     }

@@ -15,7 +15,7 @@ import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.StartWorkActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.getLoginShow
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.getStartDayShow
-import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.*
+import ru.iwater.youwater.iwaterlogistic.util.HelpState.*
 
 class SplashActivity : BaseActivity()  {
 

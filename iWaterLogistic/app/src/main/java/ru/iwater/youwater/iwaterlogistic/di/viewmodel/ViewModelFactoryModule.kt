@@ -39,4 +39,9 @@ abstract class ViewModelFactoryModule {
     @IntoMap
     @ViewModelKey(CompleteOrdersViewModel::class)
     abstract fun bindCompleteOrderViewModel(completeOrdersViewModel: CompleteOrdersViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ReportViewModel::class)
+    abstract fun bindReportsViewModel(reportViewModel: ReportViewModel): ViewModel
 }

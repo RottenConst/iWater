@@ -1,4 +1,4 @@
-package ru.iwater.youwater.iwaterlogistic.screens.cardOrder
+package ru.iwater.youwater.iwaterlogistic.screens.main.tab.current
 
 import android.Manifest
 import android.content.Context
@@ -25,6 +25,7 @@ import ru.iwater.youwater.iwaterlogistic.R.color.transperent
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.domain.vm.ShipmentsViewModel
+import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
@@ -145,6 +146,10 @@ class ShipmentsFragment: BaseFragment(), LocationListener {
                 this.context?.let { it1 -> CompleteShipActivity.start(it1, intent) }
                 activity?.finish()
             }
+        }
+
+        btn_no_ship_order.setOnClickListener {
+            this.context?.let { it1 -> MainActivity.start(it1) }
         }
 
     }

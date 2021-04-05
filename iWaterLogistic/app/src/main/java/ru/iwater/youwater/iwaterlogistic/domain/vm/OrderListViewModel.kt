@@ -12,7 +12,7 @@ import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
-import ru.iwater.youwater.iwaterlogistic.screens.cardOrder.CardOrderActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CardOrderActivity
 import timber.log.Timber
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -63,8 +63,9 @@ class OrderListViewModel @Inject constructor(
         uiScope.launch {
             orderListRepository.getLoadOrderList()
             orderListRepository.checkDbOrder()
-            mListOrder.value = orderListRepository.getOrders()
-            listOrder.value?.let { orderListRepository.saveOrders(it) }
+            val orders = orderListRepository.getOrders()
+            orderListRepository.saveOrders(orders)
+            mListOrder.value = orderListRepository.getDBOrders()
         }
     }
 
@@ -87,6 +88,9 @@ class OrderListViewModel @Inject constructor(
         CardOrderActivity.start(context, intent)
     }
 
+    /**
+     * Получить координаты для заказа
+     */
     @SuppressLint("TimberArgCount")
     fun getCoordinatesOnAddressOrder(order: Order, context: Context) {
         val locationAddress = order.address
@@ -107,6 +111,9 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Получить заказы за выбранную дату из бд
+     */
     fun getLoadOrderCurrentOrderFromBd() {
         val currentDate = Calendar.getInstance()
         val formatter = SimpleDateFormat("dd/MM/yyyy")

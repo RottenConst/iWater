@@ -6,24 +6,35 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\Satan\\AndroidStudioProjects\\iWater\\iWaterKey.jks')
+            storePassword 'endipskov'
+            keyAlias 'iWater'
+            keyPassword 'EnDiCoMp666'
+        }
+    }
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "ru.iwater.youwater.iwaterlogistic"
+        applicationId 'ru.iwater.yourwater.iwaterlogistic'
         vectorDrawables.useSupportLibrary = true
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 31
+        versionName "3.0.1"
 
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
+        signingConfig signingConfigs.release
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
         }
     }
     compileOptions {

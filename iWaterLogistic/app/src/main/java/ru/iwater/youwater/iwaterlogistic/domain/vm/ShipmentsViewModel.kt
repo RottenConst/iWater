@@ -32,7 +32,6 @@ class ShipmentsViewModel @Inject constructor(
 
     private val mOrder: MutableLiveData<Order> = MutableLiveData()
     private val mTypeClient: MutableLiveData<String> = MutableLiveData()
-    private val mCompleteOrder: MutableLiveData<CompleteOrder> = MutableLiveData()
     private var nameDriver: String = accountRepository.getAccount().login
     private var company: String = accountRepository.getAccount().company
 

@@ -74,5 +74,6 @@
     <string name="end_session">Закончить день</string>
     <string name="start_worc">Начать день</string>
     <string name="current_orders">Заказы</string>
-    <string name="cash_many_to_report">Наличных к сдаче</string>>
+    <string name="cash_many_to_report">Наличных к сдаче</string>
+    <string name="reports">Oтчеты</string>>
 </resources>

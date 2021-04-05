@@ -11,11 +11,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
-import ru.iwater.youwater.iwaterlogistic.domain.Expenses
-import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
-import ru.iwater.youwater.iwaterlogistic.screens.completeCardOrder.CardCompleteActivity
-import ru.iwater.youwater.iwaterlogistic.screens.report.ReportActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.CardCompleteActivity
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -31,28 +28,6 @@ class CompleteOrdersViewModel @Inject constructor(
 
     private val mListOrders: MutableLiveData<List<CompleteOrder>> = MutableLiveData()
     private val mOrder: MutableLiveData<CompleteOrder> = MutableLiveData()
-
-    //отчет
-    private val mReportDay: MutableLiveData<ReportDay> = MutableLiveData()
-
-    //расходы
-    private val mExpenses: MutableLiveData<List<Expenses>> = MutableLiveData()
-
-    private val mManyToReport: MutableLiveData<Float> = MutableLiveData()
-
-    private val mIsCompleteOrder: MutableLiveData<Boolean> = MutableLiveData()
-
-    val isCompleteOrder: LiveData<Boolean>
-        get() = mIsCompleteOrder
-
-    val manyToReport: LiveData<Float>
-        get() = mManyToReport
-
-    val reportDay: LiveData<ReportDay>
-        get() = mReportDay
-
-    val expenses: LiveData<List<Expenses>>
-        get() = mExpenses
 
     val listCompleteOrder: LiveData<List<CompleteOrder>>
         get() = mListOrders
@@ -85,26 +60,6 @@ class CompleteOrdersViewModel @Inject constructor(
     }
 
 
-    fun initReport() {
-        uiScope.launch {
-            mReportDay.value = ReportDay(1,
-                timeComplete,
-                completeOrdersRepository.getSumCashFullCompleteOrder(timeComplete),
-                completeOrdersRepository.getSumCashCompleteOrder("Наличные", timeComplete),
-                completeOrdersRepository.getSumCashCompleteOrder("На сайте", timeComplete),
-                completeOrdersRepository.getSumCashCompleteOrder("Оплата через терминал", timeComplete),
-                completeOrdersRepository.getSumCashCompleteOrder("Без наличные", timeComplete),
-                completeOrdersRepository.getTankCompleteOrder(timeComplete),
-                completeOrdersRepository.getCountCompleteOrder(timeComplete) )
-        }
-    }
-
-    fun addExpensesInBD(name: String, cost: Float) {
-        uiScope.launch {
-            completeOrdersRepository.saveExpenses(Expenses(timeComplete, name, cost))
-        }
-    }
-
     /**
      * сохраняет заказ в бд и запускает экран с информацией о заказе с возможностью отгрузки
      **/
@@ -112,29 +67,6 @@ class CompleteOrdersViewModel @Inject constructor(
         val intent = Intent(context, CardCompleteActivity::class.java)
         intent.putExtra("id", completeOrder.id)
         CardCompleteActivity.start(context, intent)
-    }
-
-    fun getTodayExpenses() {
-        uiScope.launch {
-            val many = completeOrdersRepository.getSumCashCompleteOrder("Наличные", timeComplete) - completeOrdersRepository.getSumOfCostExpenses(timeComplete)
-            mExpenses.value = completeOrdersRepository.loadExpenses(timeComplete)
-            mManyToReport.value = many
-        }
-    }
-
-    fun isSendReportDay() {
-        uiScope.launch {
-           mIsCompleteOrder.value = completeOrdersRepository.getSumCurrentOrder()
-        }
-    }
-
-
-    /**
-     * запустить экран с отчетами
-     **/
-    fun getReportActivity(context: Context) {
-        val intent = Intent(context, ReportActivity::class.java)
-        ReportActivity.start(context, intent)
     }
 
     /**

@@ -1,11 +1,10 @@
-package ru.iwater.youwater.iwaterlogistic.screens.cardOrder
+package ru.iwater.youwater.iwaterlogistic.screens.main.tab.current
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.core.content.ContextCompat
 import kotlinx.android.synthetic.main.complete_order.*
-import kotlinx.android.synthetic.main.shipment_order_fragment.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity

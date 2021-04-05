@@ -10,6 +10,7 @@ import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
+import ru.iwater.youwater.iwaterlogistic.util.HelpNotification
 import ru.iwater.youwater.iwaterlogistic.util.NotificationSender
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
@@ -24,6 +25,7 @@ class TimeNotification : BroadcastReceiver() {
         val notifyOrders = mutableListOf<NotifyOrder>()
         val isNotify = mutableListOf<Int>()
         val failList = mutableListOf<Int>()
+        var coutNotifycation = 0
     }
 
 
@@ -52,8 +54,9 @@ class TimeNotification : BroadcastReceiver() {
             )
         }
 
-        if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0) {
+        if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0 && notifycationOrders.coutNotifycation != 3) {
             notificationSender.sendNotification("По завершению всех заказов не забудьте закончить день и отправить отчет" , orderNet + 200, false)
+            notifycationOrders.coutNotifycation++
         }
 
         Timber.d("Order net $orderNet, OrderDB ${notifycationOrders.notifyOrders.size}")
@@ -69,9 +72,11 @@ class TimeNotification : BroadcastReceiver() {
                 Timber.d("${dbOrder.id} ${dbOrder.fail}")
                 if (UtilsMethods.timeDifference(dbOrder.timeEnd, formatedDate) in 1..3600 && !dbOrder.notification) {
                     notificationSender.sendNotification("Через 1 час истекает заказ ${dbOrder.address}" , dbOrder.id, false)
+//                    HelpNotification.saveNotification(context, 1, "${UtilsMethods.getTodayDateString()} Через 1 час истекает заказ ${dbOrder.address}")
                     notifycationOrders.isNotify.add(dbOrder.id)
                 } else if (UtilsMethods.timeDifference(dbOrder.timeEnd, formatedDate) < 0 && !dbOrder.fail) {
                     notificationSender.sendNotification("Время истекло. Адрес:  ${dbOrder.address}" , dbOrder.id, false)
+//                    HelpNotification.saveNotification(context, 1, "${UtilsMethods.getTodayDateString()} Время истекло. Адрес:  ${dbOrder.address}")
                     notifycationOrders.failList.add(dbOrder.id)
                 }
             }

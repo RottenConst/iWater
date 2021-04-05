@@ -17,7 +17,7 @@ import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.domain.vm.AccountViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.StartWorkActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
-import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.ACCOUNT_SAVED
+import ru.iwater.youwater.iwaterlogistic.util.HelpState.ACCOUNT_SAVED
 import javax.inject.Inject
 
 /**

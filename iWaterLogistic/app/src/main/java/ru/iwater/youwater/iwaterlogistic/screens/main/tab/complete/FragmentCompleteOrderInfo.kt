@@ -1,4 +1,4 @@
-package ru.iwater.youwater.iwaterlogistic.screens.completeCardOrder
+package ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete
 
 import android.os.Bundle
 import android.view.LayoutInflater

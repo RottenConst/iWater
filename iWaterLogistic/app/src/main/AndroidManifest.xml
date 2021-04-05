@@ -18,10 +18,10 @@
     <application
         android:name=".base.App"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_launcher_square"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.IWaterLogistic"
         android:usesCleartextTraffic="true">
@@ -59,20 +59,20 @@
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity
-            android:name=".screens.cardOrder.CardOrderActivity"
+            android:name=".screens.main.tab.current.CardOrderActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/about_order"
             android:parentActivityName=".screens.main.MainActivity" />
         <activity
-            android:name=".screens.completeCardOrder.CardCompleteActivity"
+            android:name=".screens.main.tab.complete.CardCompleteActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/about_order"
             android:parentActivityName=".screens.main.MainActivity" />
         <activity
-            android:name=".screens.cardOrder.CompleteShipActivity"
+            android:name=".screens.main.tab.current.CompleteShipActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="Отгруженный заказ" />
-        <activity android:name=".screens.report.ReportActivity"
+        <activity android:name=".screens.main.tab.report.ReportActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/report"
             android:parentActivityName=".screens.main.MainActivity"/>

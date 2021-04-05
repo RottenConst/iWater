@@ -1,11 +1,10 @@
-package ru.iwater.youwater.iwaterlogistic.screens.main.tab
+package ru.iwater.youwater.iwaterlogistic.screens.main.tab.current
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -84,10 +83,6 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
         adapter.orders.clear()
         adapter.orders.addAll(orders)
         adapter.notifyDataSetChanged()
-    }
-
-    private fun showToast(value: String) {
-        Toast.makeText(this.context, value, Toast.LENGTH_LONG).show()
     }
 
     private fun showSnack( message: String) {

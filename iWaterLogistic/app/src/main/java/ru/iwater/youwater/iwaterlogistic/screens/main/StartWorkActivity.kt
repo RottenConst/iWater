@@ -20,7 +20,7 @@ import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListCurrentOrdersPreview
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
-import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin
+import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import javax.inject.Inject
 
@@ -53,7 +53,7 @@ class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
                     val intent = Intent(applicationContext, SplashActivity::class.java)
                     intent.flags =
                         Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    HelpLoadingProgress.setLoginProgress(this, HelpStateLogin.ACCOUNT_SAVED, true)
+                    HelpLoadingProgress.setLoginProgress(this, HelpState.ACCOUNT_SAVED, true)
                     accountRepository.deleteAccount()
                     startActivity(intent)
                     finish()
@@ -65,7 +65,7 @@ class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
 
         btn_start_day.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
-            HelpLoadingProgress.setLoginProgress(this, HelpStateLogin.IS_WORK_START, false)
+            HelpLoadingProgress.setLoginProgress(this, HelpState.IS_WORK_START, false)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }

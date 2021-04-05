@@ -16,5 +16,8 @@ interface ReportDayDao {
     fun delete(reportDay: ReportDay)
 
     @Query("SELECT * FROM `reportday` WHERE date is :date" )
-    fun loadReportDays(date: String): List<ReportDay>
+    fun loadReportDays(date: String): ReportDay
+
+    @Query("SELECT * FROM `reportday` ORDER BY 'date'" )
+    fun loadAllReports(): List<ReportDay>
 }

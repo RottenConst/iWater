@@ -23,7 +23,7 @@ class InfoOrderViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private lateinit var orderInfo: Order
+    private var orderInfo: Order = Order()
     private val mOrder: MutableLiveData<Order> = MutableLiveData()
 
     val order: LiveData<Order>
@@ -54,7 +54,7 @@ class InfoOrderViewModel @Inject constructor(
      * парсит в моссив телефоны клиента
      **/
     fun getPhoneNumberClient(): Array<String> {
-        if (orderInfo.contact.isNotEmpty()) {
+        if (orderInfo.contact.isNullOrEmpty()) {
             return when {
                 orderInfo.contact.contains(",") -> {
                     orderInfo.contact.split(",").toTypedArray()
