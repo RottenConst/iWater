@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import kotlinx.android.synthetic.main.fragment_complete_order.*
+import kotlinx.android.synthetic.main.fragment_orders_list.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
@@ -16,7 +18,7 @@ import ru.iwater.youwater.iwaterlogistic.domain.vm.CompleteOrdersViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.CompleteListOrdersAdapter
 import javax.inject.Inject
 
-class FragmentCompleteOrders : BaseFragment() {
+class FragmentCompleteOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
@@ -39,6 +41,8 @@ class FragmentCompleteOrders : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        refresh_container_complete.setOnRefreshListener(this)
+        viewModel.getCompleteOrderCRM()
         initRecyclerView()
         observeVW()
         viewModel.getCompleteListOrders()
@@ -48,7 +52,15 @@ class FragmentCompleteOrders : BaseFragment() {
 //        }
     }
 
+
+    override fun onRefresh() {
+        viewModel.getCompleteOrderCRM()
+        viewModel.getCompleteListOrders()
+        refresh_container_complete.isRefreshing = false
+    }
+
     private fun observeVW() {
+        viewModel.getCompleteOrderCRM()
         viewModel.listCompleteOrder.observe(viewLifecycleOwner, {
             if (it.isNullOrEmpty()) {
                 tv_no_complete.visibility = View.VISIBLE

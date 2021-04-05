@@ -83,6 +83,22 @@ class  OrderListRepository @Inject constructor(
     }
 
     /**
+     * возвращает выполненые заказы за сегодня
+     */
+    fun getCompleteOrder(): List<Order> {
+        val orders = ordersList
+        val completeOrder = mutableListOf<Order>()
+        orders.sortBy { order -> order.timeEnd }
+        orders.asReversed()
+        for (order in orders) {
+            if (order.status == 1) {
+                completeOrder.add(order)
+            }
+        }
+        return completeOrder
+    }
+
+    /**
      * обновить заказы в бд
      */
     fun updateOrder() {

@@ -11,7 +11,9 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
+import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
+import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.CardCompleteActivity
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,7 +21,9 @@ import javax.inject.Inject
 
 @OnScreen
 class CompleteOrdersViewModel @Inject constructor(
-    private val completeOrdersRepository: CompleteOrdersRepository
+    private val completeOrdersRepository: CompleteOrdersRepository,
+    private val orderListRepository: OrderListRepository,
+    accountRepository: AccountRepository
 ) : ViewModel() {
 
     private val viewModelJob = SupervisorJob()
@@ -40,6 +44,7 @@ class CompleteOrdersViewModel @Inject constructor(
         val currentDate = Calendar.getInstance()
         val formatter = SimpleDateFormat("dd/MM/yyyy")
         timeComplete = formatter.format(currentDate.time)
+        orderListRepository.driverWayBill.setProperty(accountRepository.getAccount().session)
     }
     /**
      * возвращает заказ по id
@@ -67,6 +72,47 @@ class CompleteOrdersViewModel @Inject constructor(
         val intent = Intent(context, CardCompleteActivity::class.java)
         intent.putExtra("id", completeOrder.id)
         CardCompleteActivity.start(context, intent)
+    }
+
+    /**
+     * сохраняет в базу завершенные заказы есди их нет базе
+     */
+    fun getCompleteOrderCRM() {
+        uiScope.launch {
+            orderListRepository.getLoadOrderList()
+            val ordersCRM = orderListRepository.getCompleteOrder()
+            val completeOrders = completeOrdersRepository.getCompleteListOrders(timeComplete)
+            for (orderCRM  in ordersCRM) {
+                val completeCRM = CompleteOrder(
+                    orderCRM.id,
+                    orderCRM.name,
+                    orderCRM.product,
+                    if (orderCRM.cash == 0.00F)orderCRM.cash_b else orderCRM.cash,
+                    "неизвестно",
+                    0,
+                    orderCRM.timeStart,
+                    orderCRM.timeEnd,
+                    "$timeComplete ${orderCRM.timeEnd}",
+                    orderCRM.contact,
+                    orderCRM.notice,
+                    "нет данных",
+                    orderCRM.date,
+                    orderCRM.period,
+                    orderCRM.address,
+                    orderCRM.status,
+                    orderCRM.coordinates,
+                    mutableListOf())
+                if (completeOrders.isEmpty()) {
+                    completeOrdersRepository.saveCompleteOrder(completeCRM)
+                } else {
+                    for (completeOrder in completeOrders) {
+                        if (completeOrder.id != completeCRM.id) {
+                            completeOrdersRepository.saveCompleteOrder(completeOrder)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**

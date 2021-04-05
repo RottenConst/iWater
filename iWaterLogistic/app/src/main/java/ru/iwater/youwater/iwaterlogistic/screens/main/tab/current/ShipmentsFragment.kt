@@ -126,7 +126,7 @@ class ShipmentsFragment: BaseFragment(), LocationListener {
                 cb_doc_yes.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
             } else {
                 val currentDate = Calendar.getInstance()
-                val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm")
+                val formatter = SimpleDateFormat("yyyy/MM/dd HH:mm")
                 val timeComplete = formatter.format(currentDate.time)
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 10F, this)
                 locationManager.getProviders(true)

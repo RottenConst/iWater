@@ -36,6 +36,9 @@ class CompleteListOrdersAdapter(
         fun bindCompleteOrders(completeOrders: CompleteOrder, position: Int) {
             val time = completeOrders.timeComplete.split(" ")
             itemView.tv_num_order.text = (position + 1).toString()
+            if (completeOrders.timeComplete.isEmpty()) {
+
+            }
             "№${completeOrders.id} ${completeOrders.date} Завершен в ${time[1]}, ${completeOrders.address}".also { itemView.tv_info_order.text = it }
         }
     }
