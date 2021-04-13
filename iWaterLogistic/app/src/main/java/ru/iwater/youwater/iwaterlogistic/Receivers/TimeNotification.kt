@@ -44,14 +44,14 @@ class TimeNotification : BroadcastReceiver() {
             orderListRepository.checkDbOrder()
             dbOrders = orderListRepository.getDBOrders().size
             orderNet = orderListRepository.getOrders().size
-        }
-
-        if (orderNet > dbOrders) {
-            notificationSender.sendNotification(
-                "Появились новые заказы, пожалуйста обновите список заказов",
-                orderNet + 100,
-                false
-            )
+            Timber.d("Order net $orderNet, OrderDB $dbOrders")
+            if (orderNet > dbOrders) {
+                notificationSender.sendNotification(
+                    "Появились новые заказы, пожалуйста обновите список заказов",
+                    orderNet + 100,
+                    false
+                )
+            }
         }
 
         if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0 && notifycationOrders.coutNotifycation != 3) {
@@ -59,7 +59,7 @@ class TimeNotification : BroadcastReceiver() {
             notifycationOrders.coutNotifycation++
         }
 
-        Timber.d("Order net $orderNet, OrderDB ${notifycationOrders.notifyOrders.size}")
+
         for (dbOrder in notifycationOrders.notifyOrders) {
             for (notify in notifycationOrders.isNotify) {
                 if (notify == dbOrder.id) dbOrder.notification = true

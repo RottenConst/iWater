@@ -29,7 +29,7 @@ class ListCurrentOrdersPreview (
 
         fun bindOrders(order: Order, position: Int) {
             itemView.num_order_prev.text = (position + 1).toString()
-            "Заказ ${order.timeStart} - ${order.timeEnd}, ${order.address}, ${order.product}".also { itemView.tv_order_text.text = it }
+            "Заказ: ${order.timeStart} - ${order.timeEnd},\n${order.address}\n${order.product}".also { itemView.tv_order_text.text = it }
             if (UtilsMethods.timeDifference(order.timeEnd, UtilsMethods.getFormatedDate()) > 7200) {
                 itemView.num_order_prev.setBackgroundResource(R.drawable.circle_green)
             }

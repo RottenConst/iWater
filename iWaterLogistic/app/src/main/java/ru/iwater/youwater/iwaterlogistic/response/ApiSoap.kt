@@ -206,17 +206,17 @@ class OrderCurrent: DescriptionApi {
         soapEnvelope = getSoapEnvelop(request)
     }
 
-    suspend fun getFactAddress(): String = withContext(Dispatchers.Default) {
+    suspend fun getFactAddress(): SoapObject = withContext(Dispatchers.Default) {
         try {
             httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
             val answer = soapEnvelope.response as SoapObject
             val factAddress = answer.getProperty(0) as SoapObject
-            Timber.d(factAddress.getPropertyAsString("fact_address"))
-            return@withContext factAddress.getPropertyAsString("fact_address")
+            Timber.d(factAddress.toString())
+            return@withContext factAddress
         } catch (e: HttpResponseException) {
             Timber.e(e.fillInStackTrace(), "Status code${e.statusCode}")
         }
-        return@withContext ""
+        return@withContext SoapObject()
     }
 }
 

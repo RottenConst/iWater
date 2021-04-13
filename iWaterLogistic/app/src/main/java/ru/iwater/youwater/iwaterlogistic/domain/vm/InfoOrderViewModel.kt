@@ -35,8 +35,9 @@ class InfoOrderViewModel @Inject constructor(
     fun getOrderInfo(id: Int) {
         orderListRepository.orderCurrent.setProperty(id)
         uiScope.launch {
+            val infoAddress = orderListRepository.getFactAddress()
             orderInfo = orderListRepository.getDBOrderOnId(id)
-            orderInfo.address = orderListRepository.getFactAddress()
+            orderInfo.address = "${infoAddress[1]} \n${infoAddress[0]}"
             mOrder.value = orderInfo
         }
     }
@@ -54,20 +55,21 @@ class InfoOrderViewModel @Inject constructor(
      * парсит в моссив телефоны клиента
      **/
     fun getPhoneNumberClient(): Array<String> {
-        if (orderInfo.contact.isNullOrEmpty()) {
-            return when {
-                orderInfo.contact.contains(",") -> {
-                    orderInfo.contact.split(",").toTypedArray()
-                }
+        var contacts = mutableListOf<String>()
+        if (orderInfo.contact.isNotEmpty()) {
+            contacts = when {
                 orderInfo.contact.contains(";") -> {
-                    orderInfo.contact.split(";").toTypedArray()
+                    orderInfo.contact.split(";") as MutableList<String>
+                }
+                orderInfo.contact.contains(",") -> {
+                    orderInfo.contact.split(",") as MutableList<String>
                 }
                 else -> {
-                    arrayOf(orderInfo.contact)
+                    arrayListOf(orderInfo.contact)
                 }
             }
         }
-        return arrayOf(orderInfo.contact)
+        return contacts.toTypedArray()
     }
 
     /**

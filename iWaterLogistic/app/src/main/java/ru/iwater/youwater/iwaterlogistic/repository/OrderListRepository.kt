@@ -23,7 +23,7 @@ class  OrderListRepository @Inject constructor(
     val driverWayBill = DriverWayBill() //api запрос инфо о заказах
     val orderCurrent = OrderCurrent()
 
-    private val ordersList = mutableListOf<Order>() //загруженные заказы
+    val ordersList = mutableListOf<Order>() //загруженные заказы
     private val orderDao: OrderDao = IWaterDB.orderDao() //обьект бд
 
 
@@ -47,6 +47,11 @@ class  OrderListRepository @Inject constructor(
                     }
                 }
                 if (orderDb.date != UtilsMethods.getTodayDateString()) deleteOrder(orderDb)
+            }
+        }
+        if (orders.isEmpty()) {
+            for (orderDb in ordersDb) {
+                deleteOrder(orderDb)
             }
         }
     }
@@ -135,8 +140,16 @@ class  OrderListRepository @Inject constructor(
     /**
      * получить фактический адресс
      */
-    suspend fun getFactAddress(): String {
-        return orderCurrent.getFactAddress()
+    suspend fun getFactAddress(): List<String> {
+        val answer = orderCurrent.getFactAddress()
+        val infoCurrent = mutableListOf<String>()
+        for (i in 0 until answer.propertyCount / 3) {
+            val contact = if (answer.getPropertyAsString(0).equals("anyType{}")) "" else answer.getPropertyAsString(0)
+            val factAddress = if (answer.getPropertyAsString(1).equals("anyType{}")) "" else answer.getPropertyAsString(1)
+            infoCurrent.add(contact)
+            infoCurrent.add(factAddress)
+        }
+        return infoCurrent
     }
 
     /**
@@ -149,21 +162,17 @@ class  OrderListRepository @Inject constructor(
         Timber.d("${answer.propertyCount}")
         for (i in 0 until answer.propertyCount / 13) {
             val id = answer.getPropertyAsString(element).toIntOrNull()
-            val name = answer.getPropertyAsString(element + 1) ?: ""
-            val product = answer.getPropertyAsString(element + 2) ?: ""
+            val name = if (answer.getPropertyAsString(element + 1).equals("anyType")) "" else answer.getPropertyAsString(element + 1)
+            val product = if (answer.getPropertyAsString(element + 2).equals("anyType{}")) "" else answer.getPropertyAsString(element + 2)
             val cash = answer.getPropertyAsString(element + 3).toFloatOrNull()
             val cash_b = answer.getPropertyAsString(element + 4).toFloatOrNull()
-            val time = answer.getPropertyAsString(element + 5).split("-")
-            val contact = if (answer.getPropertyAsString(element + 6).equals("anyType{}")) "" else answer.getPropertyAsString(
-                element + 6
-            )
-            val notice = if (answer.getPropertyAsString(element + 7).equals("anyType{}")) "" else answer.getPropertyAsString(
-                element + 7
-            )
-            val date = answer.getPropertyAsString(element + 8) ?: ""
-            val period = answer.getPropertyAsString(element + 9) ?: ""
-            val address = answer.getPropertyAsString(element + 10) ?: ""
-            val coordinates = answer.getPropertyAsString(element + 11).split(",")
+            val time = if (answer.getPropertyAsString(element + 5).equals("anyType{}")) "00:00-00:00".split("-") else answer.getPropertyAsString(element + 5).split("-")
+            val contact = if (answer.getPropertyAsString(element + 6).equals("anyType{}")) "" else answer.getPropertyAsString(element + 6)
+            val notice = if (answer.getPropertyAsString(element + 7).equals("anyType{}")) "" else answer.getPropertyAsString(element + 7)
+            val date = if (answer.getPropertyAsString(element + 8).equals("anyType{}")) "" else answer.getPropertyAsString(element + 8)
+            val period = if (answer.getPropertyAsString(element + 9).equals("anyType{}")) "" else answer.getPropertyAsString(element + 9)
+            val address = if (answer.getPropertyAsString(element + 10).equals("anyType{}")) "" else answer.getPropertyAsString(element + 10)
+            val coordinates = if (answer.getPropertyAsString(element + 11).equals("anyType{}")) "0.0,0.0".split(",") else answer.getPropertyAsString(element + 11).split(",")
             val status = answer.getPropertyAsString(element + 12).toIntOrNull()
             ordersList.add(
                 Order(
