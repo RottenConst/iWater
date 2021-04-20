@@ -132,18 +132,16 @@ class ShipmentsFragment: BaseFragment(), LocationListener {
                 locationManager.getProviders(true)
                 Timber.d(myCoordinates)
                 viewModel.setCompleteOrder(
+                    id,
                     cash, typeCash,
                     et_tank_to_back.text.toString().toInt(),
                     timeComplete,
                     et_note_order_ship.text.toString(),
                     myCoordinates.split("-"),
-                    myCoordinates
+                    myCoordinates,
+                    this.context
                 )
-                val intent = Intent(this.context, CompleteShipActivity::class.java)
-                intent.putExtra("id", id)
-                intent.putExtra("time", timeComplete)
-                intent.putExtra("address", viewModel.order.value?.address)
-                CompleteShipActivity.start(this.context, intent)
+//                CompleteShipActivity.start(this.context, intent)
                 activity?.finish()
             }
         }

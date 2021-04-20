@@ -121,9 +121,10 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     fun infoOrderMarker() {
         mMap.setOnMarkerClickListener { marker ->
             val info = marker.title.split(";")
-            tv_name_marker.text = info[1]
-            tv_time_order_marker.text = info[2]
-            tv_product_name_order.text = info[3]
+            tv_num_marker.text = "#${info[1]}"
+            tv_name_marker.text = "#${info[0]} ${info[2]}"
+            tv_time_order_marker.text = info[3]
+            tv_product_name_order.text = info[4]
             bt_to_info_order.setOnClickListener {
                 viewModel.getAboutOrder(this, info[0].toInt())
             }
@@ -174,7 +175,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_red)
                         )
-                    ).title("${order.id};${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
+                    ).title("${order.id};$num;${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
                         "${order.timeStart} - ${order.timeEnd}"
                     )
                     mMap.addMarker(marker)
@@ -185,7 +186,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_yellow)
                         )
-                    ).title("${order.id};${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
+                    ).title("${order.id};$num;${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
                         "${order.timeStart} - ${order.timeEnd}"
                     )
                     mMap.addMarker(marker)
@@ -196,7 +197,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_green)
                         )
-                    ).title("${order.id};${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
+                    ).title("${order.id};$num;${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
                         "${order.timeStart} - ${order.timeEnd}"
                     )
                     mMap.addMarker(marker)
@@ -207,7 +208,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_violet)
                         )
-                    ).title("${order.id};${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
+                    ).title("${order.id};$num;${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
                         "${order.timeStart} - ${order.timeEnd}"
                     )
                     mMap.addMarker(marker)
@@ -218,7 +219,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_blue)
                         )
-                    ).title("${order.id};${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
+                    ).title("${order.id};$num;${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
                         "${order.timeStart} - ${order.timeEnd}"
                     )
                     mMap.addMarker(marker)
@@ -229,7 +230,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_grey)
                         )
-                    ).title("${order.id};${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
+                    ).title("${order.id};$num;${order.address};${order.timeStart} - ${order.timeEnd};${order.product}").snippet(
                         "${order.timeStart} - ${order.timeEnd}"
                     )
                     mMap.addMarker(marker)

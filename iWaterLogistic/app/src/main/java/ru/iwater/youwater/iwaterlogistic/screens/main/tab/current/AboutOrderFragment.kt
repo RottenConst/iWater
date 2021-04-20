@@ -21,6 +21,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.domain.vm.InfoOrderViewModel
+import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import javax.inject.Inject
 
 class AboutOrderFragment : BaseFragment() {
@@ -56,6 +57,11 @@ class AboutOrderFragment : BaseFragment() {
         }
         //кнопка "посмотреть на карте"
         btn_see_on_map.setOnClickListener {
+            val intent = Intent(this.context, MapsActivity::class.java)
+            startActivity(intent)
+        }
+        //кнопка в навигатор
+        btn_navigator.setOnClickListener {
             val openApp = Intent(Intent.ACTION_VIEW)
             openApp.data = Uri.parse(
                 "geo:" + "${viewModel.order.value?.coordinates?.get(0)}, ${

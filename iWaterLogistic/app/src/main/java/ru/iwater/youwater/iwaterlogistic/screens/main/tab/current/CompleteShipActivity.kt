@@ -17,10 +17,19 @@ class CompleteShipActivity: BaseActivity() {
         val intent = intent
         val id = intent.getIntExtra("id", 0)
         val address = intent.getStringExtra("address")
+        val answer = intent.getStringExtra("answer")
         val time = intent.getStringExtra("time")?.split(" ")
-        tv_complete_order.text = "Заказ № $id, ${time?.get(0)}"
-        tv_time_complete.text = "Время отгрузки: ${time?.get(1)}"
-        tv_adress_order.text = "$address"
+        if (answer == "[0, Success.]") {
+            iv_complete.setImageResource(R.drawable.ic_green_check_circle_90)
+            tv_complete_order.text = "Заказ № $id, ${time?.get(0)}"
+            tv_time_complete.text = "Время отгрузки: ${time?.get(1)}"
+            tv_adress_order.text = "$address"
+        } else {
+            iv_complete.setImageResource(R.drawable.ic_order_cancel_90)
+            tv_complete_order.text = "Заказ № $id, ${time?.get(0)}"
+            tv_time_complete.text = "Отгузить не удалось"
+            tv_adress_order.text = "Что-то пошло не так, попробуйте перезапустить приложение и отрузить еще раз"
+        }
         btn_complete.setOnClickListener {
             MainActivity.start(this)
             finish()

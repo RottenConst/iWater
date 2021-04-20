@@ -180,15 +180,16 @@ class Accept: DescriptionApi {
         soapEnvelope = getSoapEnvelop(request)
     }
 
-    suspend fun acceptOrder(): List<String> = withContext(Dispatchers.Default) {
+    suspend fun acceptOrder(): String = withContext(Dispatchers.Default) {
         try {
             httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
             val answer = soapEnvelope.response.toString()
-            return@withContext answer.split(",")
+            Timber.d(answer)
+            return@withContext answer
         } catch (e: HttpResponseException) {
             Timber.e(e.fillInStackTrace(), "Status code ${e.statusCode}")
         }
-        return@withContext arrayListOf<String>()
+        return@withContext ""
     }
 }
 
@@ -235,7 +236,7 @@ class ReportInsert: DescriptionApi {
     override lateinit var soapEnvelope: SoapSerializationEnvelope
     override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
 
-    fun setPropertyReport(nameDriver: String, orderId: Int, typeClient: String?, paymentType: String, payment: Float, numberContainers: Int, ordersDelivered: Int, totalMoney: Float, company: String) {
+    fun setPropertyReport(nameDriver: String, orderId: Int?, typeClient: String?, paymentType: String, payment: Float, numberContainers: Int, ordersDelivered: Int, totalMoney: Float, company: String) {
         request.addProperty("name", nameDriver)
         request.addProperty("order_id", orderId)
         request.addProperty("type_client", typeClient)

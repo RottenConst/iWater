@@ -1,5 +1,7 @@
 package ru.iwater.youwater.iwaterlogistic.domain.vm
 
+import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,6 +16,7 @@ import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.response.TypeClient
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CompleteShipActivity
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import javax.inject.Inject
 
@@ -50,39 +53,44 @@ class ShipmentsViewModel @Inject constructor(
         }
     }
 
-    fun setCompleteOrder(cash: Float, typeCash: String, tank: Int, timeComplete: String, noticeDriver: String, shipCoordinate: List<String>, shipCoord: String) {
-        val orderId = order.value?.id
-        if (orderId != null) {
-            completeOrdersRepository.accept.setProperty(orderId, tank, noticeDriver, shipCoord)
+    fun setCompleteOrder(id: Int?, cash: Float, typeCash: String, tank: Int, timeComplete: String, noticeDriver: String, shipCoordinate: List<String>, shipCoord: String, context: Context?) {
+        if (id != null) {
+            completeOrdersRepository.accept.setProperty(id, tank, noticeDriver, shipCoord)
         }
         uiScope.launch {
-            orderId?.let {
-                val orderDelivered = completeOrdersRepository.getCompleteListOrders(UtilsMethods.getTodayDateString()).size
-                val totalMoney = completeOrdersRepository.getSumCashFullCompleteOrder(UtilsMethods.getTodayDateString())
-                completeOrdersRepository.reportInsert.setPropertyReport(nameDriver, orderId, typeClient.value, typeCash, cash, tank, orderDelivered, totalMoney, company)
-                val order = orderListRepository.getDBOrderOnId(it)
-                val completeOrder = CompleteOrder(
-                    order.id,
-                    order.name,
-                    order.product,
-                    cash, typeCash, tank,
-                    order.timeStart,
-                    order.timeEnd,
-                    timeComplete,
-                    order.contact,
-                    order.notice,
-                    noticeDriver,
-                    order.date,
-                    order.period,
-                    order.address,
-                    status = 1,
-                    order.coordinates,
-                    shipCoordinate )
+            val orderDelivered = completeOrdersRepository.getCompleteListOrders(UtilsMethods.getTodayDateString()).size
+            val totalMoney = completeOrdersRepository.getSumCashFullCompleteOrder(UtilsMethods.getTodayDateString())
+            completeOrdersRepository.reportInsert.setPropertyReport(nameDriver, id, typeClient.value, typeCash, cash, tank, orderDelivered, totalMoney, company)
+            val order = orderListRepository.getDBOrderOnId(id)
+            val completeOrder = CompleteOrder(
+                order.id,
+                order.name,
+                order.product,
+                cash, typeCash, tank,
+                order.timeStart,
+                order.timeEnd,
+                timeComplete,
+                order.contact,
+                order.notice,
+                noticeDriver,
+                order.date,
+                order.period,
+                order.address,
+                status = 1,
+                order.coordinates,
+                shipCoordinate )
+            val answer = completeOrdersRepository.accept.acceptOrder()
+            if (answer == "[0, Success.]") {
                 completeOrdersRepository.saveCompleteOrder(completeOrder)
                 orderListRepository.deleteOrder(order)
-                completeOrdersRepository.accept.acceptOrder()
                 completeOrdersRepository.reportInsert.sendReport()
             }
+            val intent = Intent(context, CompleteShipActivity::class.java)
+            intent.putExtra("id", id)
+            intent.putExtra("time", timeComplete)
+            intent.putExtra("answer", answer)
+            intent.putExtra("address", order.address)
+            CompleteShipActivity.start(context, intent)
         }
     }
 
