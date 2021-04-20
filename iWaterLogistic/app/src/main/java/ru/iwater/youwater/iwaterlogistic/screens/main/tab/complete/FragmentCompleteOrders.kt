@@ -46,10 +46,6 @@ class FragmentCompleteOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListe
         initRecyclerView()
         observeVW()
         viewModel.getCompleteListOrders()
-
-//        btn_report.setOnClickListener {
-//            this.context?.let { it1 -> viewModel.getReportActivity(it1) }
-//        }
     }
 
 
@@ -79,7 +75,7 @@ class FragmentCompleteOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListe
         adapter.notifyDataSetChanged()
         rv_complete_orders.adapter = adapter
         adapter.onOrderClick = {
-            context?.let { it1 -> viewModel.getAboutOrder(it1, it) }
+            viewModel.getAboutOrder(this.context, it)
         }
     }
 

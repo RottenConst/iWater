@@ -17,8 +17,11 @@ interface CompleteOrderDao {
     @Query("SELECT * FROM `completeorder` WHERE date IS :date ORDER BY timeComplete" )
     fun load(date: String): List<CompleteOrder>
 
+    @Query("SELECT * FROM `completeorder`")
+    fun loadAll(): List<CompleteOrder>
+
     @Query("SELECT * FROM `completeorder` WHERE id IS :id" )
-    fun getCompleteOrderById(id: Int): CompleteOrder
+    fun getCompleteOrderById(id: Int?): CompleteOrder
 
     @Query("SELECT count(id) FROM 'completeorder' WHERE date IS :date")
     fun getCountCompleteOrder(date: String): Int

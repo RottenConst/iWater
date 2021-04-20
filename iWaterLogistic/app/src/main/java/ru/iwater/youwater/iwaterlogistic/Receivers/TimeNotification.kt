@@ -8,6 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
+import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.util.HelpNotification
@@ -29,8 +30,8 @@ class TimeNotification : BroadcastReceiver() {
     }
 
 
-    var orderNet = 0
-    private var dbOrders = 0
+    private lateinit var ordersNet: List<Order>
+    private lateinit var dbOrders: List<Order>
 
     lateinit var notificationSender: NotificationSender
 
@@ -42,20 +43,27 @@ class TimeNotification : BroadcastReceiver() {
         CoroutineScope(Dispatchers.Main).launch {
             orderListRepository.getLoadOrderList()
             orderListRepository.checkDbOrder()
-            dbOrders = orderListRepository.getDBOrders().size
-            orderNet = orderListRepository.getOrders().size
-            Timber.d("Order net $orderNet, OrderDB $dbOrders")
-            if (orderNet > dbOrders) {
-                notificationSender.sendNotification(
-                    "Появились новые заказы, пожалуйста обновите список заказов",
-                    orderNet + 100,
-                    false
-                )
+            dbOrders = orderListRepository.getDBOrders()
+            ordersNet = orderListRepository.getOrders()
+            Timber.d("Order net ${ordersNet.size}, OrderDB ${dbOrders.size}")
+            if (ordersNet.size > dbOrders.size) {
+                for (dbOrder in dbOrders) {
+                    for (orderNet in ordersNet) {
+                        if (dbOrder.id != orderNet.id) {
+                            notificationSender.sendNotification(
+                                "Появились новые заказы, пожалуйста обновите список заказов",
+                                ordersNet.size + 100,
+                                false
+                            )
+                        }
+                    }
+                }
+
             }
         }
 
         if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0 && notifycationOrders.coutNotifycation != 3) {
-            notificationSender.sendNotification("По завершению всех заказов не забудьте закончить день и отправить отчет" , orderNet + 200, false)
+            notificationSender.sendNotification("По завершению всех заказов не забудьте закончить день и отправить отчет" , ordersNet.size + 200, false)
             notifycationOrders.coutNotifycation++
         }
 

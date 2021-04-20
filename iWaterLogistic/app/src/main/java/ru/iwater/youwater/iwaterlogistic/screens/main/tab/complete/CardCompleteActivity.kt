@@ -34,8 +34,10 @@ class CardCompleteActivity: BaseActivity() {
     }
 
     companion object {
-        fun start(context: Context, intent: Intent) {
-            ContextCompat.startActivity(context, intent, null)
+        fun start(context: Context?, intent: Intent) {
+            if (context != null) {
+                ContextCompat.startActivity(context, intent, null)
+            }
         }
     }
 }

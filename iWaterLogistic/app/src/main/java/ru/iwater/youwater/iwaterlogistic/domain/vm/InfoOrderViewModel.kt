@@ -32,12 +32,12 @@ class InfoOrderViewModel @Inject constructor(
     /**
      * возвращает заказ по id
      **/
-    fun getOrderInfo(id: Int) {
+    fun getOrderInfo(id: Int?) {
         orderListRepository.orderCurrent.setProperty(id)
         uiScope.launch {
             val infoAddress = orderListRepository.getFactAddress()
             orderInfo = orderListRepository.getDBOrderOnId(id)
-            orderInfo.address = "${infoAddress[1]} \n${infoAddress[0]}"
+            orderInfo.address = "${infoAddress[1]}; \n${infoAddress[0]}"
             mOrder.value = orderInfo
         }
     }

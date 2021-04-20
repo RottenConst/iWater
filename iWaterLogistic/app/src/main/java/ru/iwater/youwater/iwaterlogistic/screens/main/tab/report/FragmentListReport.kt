@@ -74,6 +74,7 @@ class FragmentListReport : BaseFragment() {
                                 true
                             )
                             viewModel.sendGeneralReport()
+//                            viewModel.clearOldCompleteOrder()
                             viewModel.saveTodayReport()
                             val service = Intent(
                                 activity?.applicationContext,

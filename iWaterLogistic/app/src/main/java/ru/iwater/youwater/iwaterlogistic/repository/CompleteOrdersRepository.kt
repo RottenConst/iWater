@@ -3,12 +3,8 @@ package ru.iwater.youwater.iwaterlogistic.repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.iwater.youwater.iwaterlogistic.bd.CompleteOrderDao
-import ru.iwater.youwater.iwaterlogistic.bd.ExpensesDao
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
-import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
-import ru.iwater.youwater.iwaterlogistic.domain.Expenses
-import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.response.Accept
 import ru.iwater.youwater.iwaterlogistic.response.ReportInsert
 import timber.log.Timber
@@ -31,10 +27,14 @@ class CompleteOrdersRepository @Inject constructor(
         completeOrderDao.save(completeOrder)
     }
 
+    suspend fun deleteCompleteOrder(completeOrder: CompleteOrder) {
+        completeOrderDao.delete(completeOrder)
+    }
+
     /**
      * Получить выполненный заказ из базы по id
      */
-    suspend fun getCompleteOrder(id: Int): CompleteOrder = withContext(Dispatchers.Default){
+    suspend fun getCompleteOrder(id: Int?): CompleteOrder = withContext(Dispatchers.Default){
         return@withContext completeOrderDao.getCompleteOrderById(id)
     }
 
@@ -43,6 +43,10 @@ class CompleteOrdersRepository @Inject constructor(
      */
     suspend fun getCompleteListOrders(date: String): List<CompleteOrder> = withContext(Dispatchers.Default) {
         return@withContext completeOrderDao.load(date)
+    }
+
+    suspend fun getAllCompleteOrders():List<CompleteOrder> = withContext(Dispatchers.Default) {
+        return@withContext completeOrderDao.loadAll()
     }
 
     /**

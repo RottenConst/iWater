@@ -135,8 +135,10 @@ class MainActivity : BaseActivity() {
 
 //        private var mCounterValue3 = 0
 
-        fun start(context: Context) {
-            ContextCompat.startActivity(context, Intent(context, MainActivity::class.java), null)
+        fun start(context: Context?) {
+            if (context != null) {
+                ContextCompat.startActivity(context, Intent(context, MainActivity::class.java), null)
+            }
         }
     }
 }

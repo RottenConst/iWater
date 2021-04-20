@@ -39,7 +39,7 @@ class FragmentCompleteOrderInfo: BaseFragment() {
         val arg = arguments
         val id = arg?.getInt("id")
         observeVM()
-        id?.let { viewModel.getCompleteOrder(it) }
+        viewModel.getCompleteOrder(id)
     }
 
     private fun observeVM() {

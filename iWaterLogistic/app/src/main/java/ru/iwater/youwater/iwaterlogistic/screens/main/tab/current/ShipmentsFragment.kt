@@ -64,8 +64,8 @@ class ShipmentsFragment: BaseFragment(), LocationListener {
         val arg = arguments
         val id = arg?.getInt("id")
         observeVM()
-        id?.let { viewModel.getTypeClient(it) }
-        id?.let { viewModel.getOrderInfo(it) }
+        viewModel.getTypeClient(id)
+        viewModel.getOrderInfo(id)
         initDocuments()
 
         radio_cash_group.setOnCheckedChangeListener { _, checkedId ->
@@ -143,13 +143,13 @@ class ShipmentsFragment: BaseFragment(), LocationListener {
                 intent.putExtra("id", id)
                 intent.putExtra("time", timeComplete)
                 intent.putExtra("address", viewModel.order.value?.address)
-                this.context?.let { it1 -> CompleteShipActivity.start(it1, intent) }
+                CompleteShipActivity.start(this.context, intent)
                 activity?.finish()
             }
         }
 
         btn_no_ship_order.setOnClickListener {
-            this.context?.let { it1 -> MainActivity.start(it1) }
+            MainActivity.start(this.context)
         }
 
     }

@@ -49,7 +49,7 @@ class CompleteOrdersViewModel @Inject constructor(
     /**
      * возвращает заказ по id
      **/
-    fun getCompleteOrder(id: Int) {
+    fun getCompleteOrder(id: Int?) {
         uiScope.launch {
             mOrder.value = completeOrdersRepository.getCompleteOrder(id)
         }
@@ -68,14 +68,14 @@ class CompleteOrdersViewModel @Inject constructor(
     /**
      * сохраняет заказ в бд и запускает экран с информацией о заказе с возможностью отгрузки
      **/
-    fun getAboutOrder(context: Context, completeOrder: CompleteOrder) {
+    fun getAboutOrder(context: Context?, completeOrder: CompleteOrder) {
         val intent = Intent(context, CardCompleteActivity::class.java)
         intent.putExtra("id", completeOrder.id)
         CardCompleteActivity.start(context, intent)
     }
 
     /**
-     * сохраняет в базу завершенные заказы есди их нет базе
+     * сохраняет в базу завершенные заказы если их нет базе
      */
     fun getCompleteOrderCRM() {
         uiScope.launch {

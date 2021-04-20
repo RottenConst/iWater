@@ -5,14 +5,15 @@ import kotlinx.coroutines.withContext
 import org.ksoap2.HeaderProperty
 import org.ksoap2.SoapEnvelope
 import org.ksoap2.serialization.SoapObject
+import org.ksoap2.serialization.SoapPrimitive
 import org.ksoap2.serialization.SoapSerializationEnvelope
 import org.ksoap2.transport.HttpResponseException
 import org.ksoap2.transport.HttpTransportSE
 import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import timber.log.Timber
 
-const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl" //test
-//const val URL = "http://dev.iwatercrm.ru/iwater_logistic/driver/server.php?wsdl" //prod
+//const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl" //test
+const val URL = "http://dev.iwatercrm.ru/iwater_logistic/driver/server.php?wsdl" //prod
 
 /**
  * базоаый класс для связи с api
@@ -109,7 +110,7 @@ class DriverWayBill : DescriptionApi {
             val answer = soapEnvelope.response as SoapObject
             return@withContext answer.getProperty(0) as SoapObject
         } catch (e: Exception) {
-            Timber.e(e.fillInStackTrace())
+            Timber.e(e)
         }
         return@withContext SoapObject()
     }
@@ -130,7 +131,7 @@ class TypeClient: DescriptionApi {
     /**
      * устанавливает id заказа в запрос
      **/
-    fun setProperty(idOrder: Int) {
+    fun setProperty(idOrder: Int?) {
         request.addProperty("id", idOrder)
         soapEnvelope = getSoapEnvelop(request)
     }
@@ -144,6 +145,8 @@ class TypeClient: DescriptionApi {
         try {
             httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
             val answer = soapEnvelope.response as SoapObject
+            Timber.d("type client ${answer.getProperty(0)}")
+
             val type = answer.getProperty(0) as SoapObject
             return@withContext type.getPropertyAsString("period")
         } catch (e: HttpResponseException) {
@@ -201,7 +204,7 @@ class OrderCurrent: DescriptionApi {
     override lateinit var soapEnvelope: SoapSerializationEnvelope
     override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
 
-    fun setProperty(idOrder: Int) {
+    fun setProperty(idOrder: Int?) {
         request.addProperty("id", idOrder)
         soapEnvelope = getSoapEnvelop(request)
     }

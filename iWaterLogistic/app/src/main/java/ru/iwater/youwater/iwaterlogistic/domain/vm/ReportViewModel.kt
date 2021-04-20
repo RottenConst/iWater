@@ -159,6 +159,18 @@ class ReportViewModel @Inject constructor(
         }
     }
 
+    //очистить выполненные заказы
+    fun clearOldCompleteOrder() {
+        uiScope.launch {
+            val completeOrders = completeOrdersRepository.getAllCompleteOrders()
+            for (completeOrder in completeOrders) {
+                if (completeOrder.date != timeComplete) {
+                    completeOrdersRepository.deleteCompleteOrder(completeOrder)
+                }
+            }
+        }
+    }
+
     /**
      * отправить расход в в црм
      */

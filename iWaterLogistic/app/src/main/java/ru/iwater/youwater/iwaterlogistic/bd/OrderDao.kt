@@ -22,5 +22,5 @@ interface OrderDao {
     fun getLoadCurrentOrder(date: String): List<Order>
 
     @Query("SELECT * FROM 'order' WHERE id IS :id")
-    fun getOrderOnId(id: Int): Order
+    fun getOrderOnId(id: Int?): Order
 }

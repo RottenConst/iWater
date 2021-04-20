@@ -44,7 +44,7 @@ class ShipmentsViewModel @Inject constructor(
     /**
      * возвращает заказ по id
      **/
-    fun getOrderInfo(id: Int) {
+    fun getOrderInfo(id: Int?) {
         uiScope.launch {
             mOrder.value = orderListRepository.getDBOrderOnId(id)
         }
@@ -96,7 +96,7 @@ class ShipmentsViewModel @Inject constructor(
     /**
      * запрашивает и устанавливает тип клиента
      **/
-    fun getTypeClient(id: Int) {
+    fun getTypeClient(id: Int?) {
         val typeClient = TypeClient()
         typeClient.setProperty(id)
         uiScope.launch {

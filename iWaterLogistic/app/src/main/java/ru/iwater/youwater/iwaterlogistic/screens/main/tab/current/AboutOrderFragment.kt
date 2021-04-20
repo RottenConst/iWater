@@ -49,7 +49,7 @@ class AboutOrderFragment : BaseFragment() {
         val arg = arguments
         val id = arg?.getInt("id")
         observeVM()
-        id?.let { viewModel.getOrderInfo(it) }
+        viewModel.getOrderInfo(id)
         //кнопка "позвонить клиенту"
         btn_call_client.setOnClickListener {
             callClient(viewModel.getPhoneNumberClient())
@@ -66,9 +66,10 @@ class AboutOrderFragment : BaseFragment() {
         }
         //кнопка "копировать адрес"
         btn_copy_address.setOnClickListener {
+            val address = viewModel.order.value?.address?.split(";")
             val clipBoard =
                 activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clipData = ClipData.newPlainText("", viewModel.order.value?.address)
+            val clipData = ClipData.newPlainText("", address?.get(0))
             clipBoard.setPrimaryClip(clipData)
             getToast("адресс скопирован")
         }

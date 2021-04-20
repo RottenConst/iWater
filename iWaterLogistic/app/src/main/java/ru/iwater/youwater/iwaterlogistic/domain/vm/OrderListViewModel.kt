@@ -12,6 +12,7 @@ import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
+import ru.iwater.youwater.iwaterlogistic.response.TypeClient
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CardOrderActivity
 import timber.log.Timber
 import java.io.IOException
@@ -79,13 +80,12 @@ class OrderListViewModel @Inject constructor(
     /**
      * сохраняет заказ в бд и запускает экран с информацией о заказе с возможностью отгрузки
      **/
-    fun getAboutOrder(context: Context, order: Order) {
+    fun getAboutOrder(context: Context?, id: Int) {
         val intent = Intent(context, CardOrderActivity::class.java)
-        intent.putExtra("id", order.id)
-        uiScope.launch {
-            orderListRepository.saveOrder(order)
+        intent.putExtra("id", id)
+        if (context != null) {
+            CardOrderActivity.start(context, intent)
         }
-        CardOrderActivity.start(context, intent)
     }
 
     /**

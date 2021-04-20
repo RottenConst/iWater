@@ -36,6 +36,7 @@ class  OrderListRepository @Inject constructor(
         }
     }
 
+    //проверка на дублирование
     suspend fun checkDbOrder() {
         val ordersDb = getDBOrders()
         val orders = getOrders()
@@ -126,7 +127,7 @@ class  OrderListRepository @Inject constructor(
     /**
      * вернуть заказы из бд по id
      */
-    suspend fun getDBOrderOnId(id: Int): Order = withContext(Dispatchers.Default) {
+    suspend fun getDBOrderOnId(id: Int?): Order = withContext(Dispatchers.Default) {
         return@withContext orderDao.getOrderOnId(id)
     }
 

@@ -76,5 +76,7 @@
     <string name="current_orders">Заказы</string>
     <string name="cash_many_to_report">Наличных к сдаче</string>
     <string name="reports">Oтчеты</string>
-    <string name="address_text">адрес</string>>
+    <string name="address_text">адрес</string>
+    <string name="open_card_order">открыть карточку заказа</string>
+    <string name="time">Время</string>>
 </resources>
