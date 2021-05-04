@@ -59,35 +59,39 @@ class FragmentListReport : BaseFragment() {
 
         btn_end_this_day.setOnClickListener {
             if (isComplete) {
-                this.context?.let { it1 ->
-                    AlertDialog.Builder(it1)
+                    AlertDialog.Builder(this.context!!)
                         .setMessage(R.string.confirmEndDay)
                         .setPositiveButton(
                             R.string.yes
                         ) { _, _ ->
-                            val intent = Intent(it1, SplashActivity::class.java)
+                            val intent = Intent(this.context, SplashActivity::class.java)
                             intent.flags =
                                 Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                             HelpLoadingProgress.setLoginProgress(
-                                it1,
+                                this.context!!,
                                 HelpState.IS_WORK_START,
                                 true
                             )
-                            viewModel.sendGeneralReport()
+                            AlertDialog.Builder(this.context!!)
+                                .setMessage("Не забудте сделать сверку итогов в терминале")
+                                .setPositiveButton("Ок") {
+                                    _, _ ->
+                                    viewModel.sendGeneralReport()
 //                            viewModel.clearOldCompleteOrder()
-                            viewModel.saveTodayReport()
-                            val service = Intent(
-                                activity?.applicationContext,
-                                TimeListenerService::class.java
-                            )
-                            activity?.stopService(service)
-                            activity?.finish()
-                            startActivity(intent)
+                                    viewModel.saveTodayReport()
+                                    val service = Intent(
+                                        activity?.applicationContext,
+                                        TimeListenerService::class.java
+                                    )
+                                    activity?.stopService(service)
+                                    activity?.finish()
+                                    startActivity(intent)
+                                }.create().show()
                         }
                         .setNegativeButton(R.string.no) { dialog, _ ->
                             dialog.cancel()
                         }.create().show()
-                }
+
             } else {
                 this.context?.let { it1 ->
                     AlertDialog.Builder(it1)

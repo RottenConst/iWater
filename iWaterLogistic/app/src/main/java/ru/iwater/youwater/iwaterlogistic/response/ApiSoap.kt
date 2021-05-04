@@ -12,8 +12,8 @@ import org.ksoap2.transport.HttpTransportSE
 import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import timber.log.Timber
 
-//const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl" //test
-const val URL = "http://dev.iwatercrm.ru/iwater_logistic/driver/server.php?wsdl" //prod
+const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl" //test
+//const val URL = "http://dev.iwatercrm.ru/iwater_logistic/driver/server.php?wsdl" //prod
 
 /**
  * базоаый класс для связи с api

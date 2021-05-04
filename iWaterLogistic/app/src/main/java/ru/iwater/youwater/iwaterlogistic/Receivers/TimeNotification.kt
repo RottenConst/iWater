@@ -47,8 +47,8 @@ class TimeNotification : BroadcastReceiver() {
             ordersNet = orderListRepository.getOrders()
             Timber.d("Order net ${ordersNet.size}, OrderDB ${dbOrders.size}")
             if (ordersNet.size > dbOrders.size) {
-                for (dbOrder in dbOrders) {
-                    for (orderNet in ordersNet) {
+                for (orderNet in ordersNet) {
+                    for (dbOrder in dbOrders) {
                         if (dbOrder.id != orderNet.id) {
                             notificationSender.sendNotification(
                                 "Появились новые заказы, пожалуйста обновите список заказов",

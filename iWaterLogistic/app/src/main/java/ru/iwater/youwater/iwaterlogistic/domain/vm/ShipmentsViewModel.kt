@@ -82,8 +82,8 @@ class ShipmentsViewModel @Inject constructor(
             val answer = completeOrdersRepository.accept.acceptOrder()
             if (answer == "[0, Success.]") {
                 completeOrdersRepository.saveCompleteOrder(completeOrder)
-                orderListRepository.deleteOrder(order)
                 completeOrdersRepository.reportInsert.sendReport()
+                orderListRepository.deleteOrder(order)
             }
             val intent = Intent(context, CompleteShipActivity::class.java)
             intent.putExtra("id", id)

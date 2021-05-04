@@ -11,6 +11,7 @@ import android.graphics.Color
 import android.os.Build
 import ru.iwater.youwater.iwaterlogistic.BuildConfig
 import ru.iwater.youwater.iwaterlogistic.R
+import ru.iwater.youwater.iwaterlogistic.base.CHANEL_SERVICE_ID
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 
 class NotificationSender(private val context: Context?) {
@@ -27,7 +28,7 @@ class NotificationSender(private val context: Context?) {
     fun sendNotification(text: String?, NOTIFY_ID: Int, isNotify: Boolean) {
         notificationIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
         val builder: Notification.Builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(context, CHANEL_ID)
+            Notification.Builder(context, CHANEL_SERVICE_ID)
         } else {
             Notification.Builder(context)
         }
@@ -71,6 +72,6 @@ class NotificationSender(private val context: Context?) {
     }
 
     init {
-        createChanelIfNeeded(notificationManager, CHANEL_ID)
+//        createChanelIfNeeded(notificationManager, CHANEL_SERVICE_ID)
     }
 }

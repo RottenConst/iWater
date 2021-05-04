@@ -83,6 +83,8 @@
             android:parentActivityName=".screens.main.MainActivity"/>
 
         <service android:name=".service.TimeListenerService" />
+
+
     </application>
 
 </manifest>

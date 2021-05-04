@@ -56,7 +56,7 @@ class CompleteOrdersViewModel @Inject constructor(
     }
 
     /**
-     * возвращает выполненнык заказы за текущий день
+     * возвращает выполненные заказы за текущий день
      **/
     fun getCompleteListOrders() {
         uiScope.launch {
@@ -106,8 +106,8 @@ class CompleteOrdersViewModel @Inject constructor(
                     completeOrdersRepository.saveCompleteOrder(completeCRM)
                 } else {
                     for (completeOrder in completeOrders) {
-                        if (completeOrder.id != completeCRM.id) {
-                            completeOrdersRepository.saveCompleteOrder(completeOrder)
+                        if (completeOrder.id != orderCRM.id) {
+                            completeOrdersRepository.saveCompleteOrder(completeCRM)
                         }
                     }
                 }

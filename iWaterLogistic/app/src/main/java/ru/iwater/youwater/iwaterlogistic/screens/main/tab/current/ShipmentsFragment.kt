@@ -142,7 +142,7 @@ class ShipmentsFragment: BaseFragment(), LocationListener {
                     this.context
                 )
 //                CompleteShipActivity.start(this.context, intent)
-                activity?.finish()
+//                activity?.finish()
             }
         }
 

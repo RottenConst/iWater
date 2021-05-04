@@ -39,7 +39,7 @@ class MainActivity : BaseActivity() {
         accountRepository = AccountRepository(screenComponent.accountStorage())
 
         val service = Intent(this.applicationContext, TimeListenerService::class.java)
-        startService(service)
+        this.startService(service)
         Timber.d("account = ${accountRepository.getAccount().login}")
 
         bottom_bar_navigation.menu[1].isChecked = true
@@ -137,7 +137,11 @@ class MainActivity : BaseActivity() {
 
         fun start(context: Context?) {
             if (context != null) {
-                ContextCompat.startActivity(context, Intent(context, MainActivity::class.java), null)
+                ContextCompat.startActivity(
+                    context,
+                    Intent(context, MainActivity::class.java),
+                    null
+                )
             }
         }
     }

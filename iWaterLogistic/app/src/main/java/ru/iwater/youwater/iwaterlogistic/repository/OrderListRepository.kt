@@ -165,8 +165,8 @@ class  OrderListRepository @Inject constructor(
             val id = answer.getPropertyAsString(element).toIntOrNull()
             val name = if (answer.getPropertyAsString(element + 1).equals("anyType")) "" else answer.getPropertyAsString(element + 1)
             val product = if (answer.getPropertyAsString(element + 2).equals("anyType{}")) "" else answer.getPropertyAsString(element + 2)
-            val cash = answer.getPropertyAsString(element + 3).toFloatOrNull()
-            val cash_b = answer.getPropertyAsString(element + 4).toFloatOrNull()
+            val cash = if (answer.getPropertyAsString(element + 3).equals("anyType{}")) 0.0F else if (answer.getPropertyAsString(element + 3) == "NaN") 0.0F else answer.getPropertyAsString(element + 3).toFloat()
+            val cash_b = if (answer.getPropertyAsString(element + 4).equals("anyType{}")) 0.0F else if (answer.getPropertyAsString(element + 4) == "NaN") 0.0F else answer.getPropertyAsString(element + 4).toFloat()
             val time = if (answer.getPropertyAsString(element + 5).equals("anyType{}")) "00:00-00:00".split("-") else answer.getPropertyAsString(element + 5).split("-")
             val contact = if (answer.getPropertyAsString(element + 6).equals("anyType{}")) "" else answer.getPropertyAsString(element + 6)
             val notice = if (answer.getPropertyAsString(element + 7).equals("anyType{}")) "" else answer.getPropertyAsString(element + 7)
@@ -180,8 +180,8 @@ class  OrderListRepository @Inject constructor(
                     id ?: 0,
                     name,
                     product,
-                    cash ?: 0.00F,
-                    cash_b ?: 0.00F,
+                    cash,
+                    cash_b,
                     time[0],
                     time[1],
                     contact,
