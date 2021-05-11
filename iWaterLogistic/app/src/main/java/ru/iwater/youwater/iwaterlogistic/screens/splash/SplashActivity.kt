@@ -12,9 +12,10 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.screens.login.LoginActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.StartWorkActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.getLoginShow
-import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin
-import ru.iwater.youwater.iwaterlogistic.util.HelpStateLogin.*
+import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.getStartDayShow
+import ru.iwater.youwater.iwaterlogistic.util.HelpState.*
 
 class SplashActivity : BaseActivity()  {
 
@@ -30,6 +31,7 @@ class SplashActivity : BaseActivity()  {
         delay(500)
         when {
             getLoginShow(this, ACCOUNT_SAVED) -> LoginActivity.start(this)
+            getStartDayShow(this, IS_WORK_START) -> StartWorkActivity.start(this)
             else -> MainActivity.start(this)
         }
         finish()

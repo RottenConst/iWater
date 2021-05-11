@@ -21,15 +21,19 @@ class PreferencesUtils(private val context: Context) {
     fun getPrefLong(res: Int, defValue: Long) = context.getSharedPreferences(res.toString(), Context.MODE_PRIVATE)
             .getLong(res.toString(), defValue)
 
-    fun getPrefStringSet(res: Int, defValue: MutableSet<String>): MutableSet<String> =
+    fun getPrefString(res: Int, defValue: String?) =
             context.getSharedPreferences(res.toString(), Context.MODE_PRIVATE)
-                    .getStringSet(res.toString(), defValue)!!
+                    .getString(res.toString(), defValue)
 
     fun setPrefBoolean(res: Int, value: Boolean) {
         context.getSharedPreferences(res.toString(), Context.MODE_PRIVATE)
                 .edit()
                 .putBoolean(res.toString(), value)
                 .apply()
+    }
+
+    fun checkProperty(res: Int, value: String) : Boolean {
+        return context.getSharedPreferences(res.toString(), Context.MODE_PRIVATE).contains(value)
     }
 
     fun setPrefInt(res: Int, value: Int) {

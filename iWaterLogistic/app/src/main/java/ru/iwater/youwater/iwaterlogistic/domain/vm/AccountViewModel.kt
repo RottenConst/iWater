@@ -1,4 +1,4 @@
-package ru.iwater.youwater.iwaterlogistic.domain
+package ru.iwater.youwater.iwaterlogistic.domain.vm
 
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
@@ -8,8 +8,6 @@ import ru.iwater.youwater.iwaterlogistic.response.Authorisation
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import javax.inject.Provider
-import javax.inject.Singleton
 
 @OnScreen
 class AccountViewModel @Inject constructor(
@@ -21,6 +19,9 @@ class AccountViewModel @Inject constructor(
     val messageLD: LiveData<String>
         get() = mMessageLD
 
+    /**
+     * авторизация волителя
+     */
     fun auth(company: String, login: String, password: String) {
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = System.currentTimeMillis()

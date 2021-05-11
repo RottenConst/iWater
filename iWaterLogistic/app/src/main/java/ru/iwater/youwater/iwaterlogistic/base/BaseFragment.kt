@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import ru.iwater.youwater.iwaterlogistic.util.Logger
 
-class BaseFragment : Fragment() {
+open class BaseFragment : Fragment() {
 
     private lateinit var logger: Logger
 

@@ -11,5 +11,18 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#7C7C7C</color>
+    <color name="shipmentBackground">#FFE4E4</color>
     <color name="transperent">#00000000</color>
+
+    //цвета для иконок
+    <color name="yellow">#FFEB3B</color>
+    <color name="green_day">#33E33A</color>
+    <color name="red_morning">#F1190A</color>
+    <color name="purple_twogay">#BA14E8</color>
+    <color name="evening_blue">#2196F3</color>
+    <color name="grey_night">#BECABE</color>
+
+    //иконка с уведомлением
+    <color name="counter_background_color">@android:color/holo_red_light</color>
+    <color name="counter_text_color">@android:color/white</color>
 </resources>

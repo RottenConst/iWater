@@ -4,13 +4,13 @@
     <item
         android:id="@+id/complete_order"
         android:icon="@drawable/ic_grey_bill"
-        android:title="@string/completeOrder" />
+        android:title="@string/ProcessedOrders" />
     <item
         android:id="@+id/orders"
         android:icon="@drawable/ic_grey_orders"
-        android:title="@string/orders" />
+        android:title="@string/inWork" />
     <item
-        android:id="@+id/history"
+        android:id="@+id/report"
         android:icon="@drawable/ic_grey_notification"
-        android:title="@string/history" />
+        android:title="@string/report" />
 </menu>
