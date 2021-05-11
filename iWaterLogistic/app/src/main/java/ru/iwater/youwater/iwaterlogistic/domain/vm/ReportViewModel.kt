@@ -15,8 +15,11 @@ import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
 import ru.iwater.youwater.iwaterlogistic.repository.ReportRepository
+import ru.iwater.youwater.iwaterlogistic.response.DriverDayClose
+import ru.iwater.youwater.iwaterlogistic.response.MonitorDriverDay
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportActivity
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
+import timber.log.Timber
 import javax.inject.Inject
 
 @OnScreen
@@ -115,6 +118,23 @@ class ReportViewModel @Inject constructor(
                     completeOrdersRepository.getCountCompleteOrder(timeComplete) )
             )
         }
+    }
+
+    fun setDriverCloseMonitor() {
+        uiScope.launch {
+            val getDriverMonitor = MonitorDriverDay()
+            getDriverMonitor.setMonitorDriverClose(idDriver)
+            val idDay = getDriverMonitor.driverDay().split("</id>")
+            val id = idDay[0].replace("\\s+|<info>|<id>".toRegex(), "")
+            driverCloseDay(id.toInt())
+        }
+    }
+
+    suspend fun driverCloseDay(idDay: Int) {
+        val closeMonitorDriver = DriverDayClose()
+        closeMonitorDriver.setDriverDayClose(idDay)
+        val message = closeMonitorDriver.driverDayClose()
+        Timber.d(message)
     }
 
     /**

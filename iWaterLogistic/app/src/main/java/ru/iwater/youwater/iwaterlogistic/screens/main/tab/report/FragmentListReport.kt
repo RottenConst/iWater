@@ -79,6 +79,7 @@ class FragmentListReport : BaseFragment() {
                                     viewModel.sendGeneralReport()
 //                            viewModel.clearOldCompleteOrder()
                                     viewModel.saveTodayReport()
+//                                    viewModel.setDriverCloseMonitor()
                                     val service = Intent(
                                         activity?.applicationContext,
                                         TimeListenerService::class.java

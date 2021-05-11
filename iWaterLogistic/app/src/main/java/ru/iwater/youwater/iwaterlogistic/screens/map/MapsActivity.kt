@@ -168,9 +168,10 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
             num += 1
             val point = LatLng(latitude, longitude)
             Timber.d("$latitude, $longitude")
-
+            val hour = order.timeEnd.split(":")
+            val color = hour[0].toInt()
             when {
-                order.period.contains("8:00-11:59") -> {
+                color < 12 -> {
                     val marker = MarkerOptions().position(point).icon(
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_red)
@@ -181,7 +182,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
-                order.period.contains("9:00-13:59") -> {
+                color in 12..13 -> {
                     val marker = MarkerOptions().position(point).icon(
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_yellow)
@@ -192,7 +193,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
-                order.period.contains("9:00-17:59") -> {
+                color in 14..16 -> {
                     val marker = MarkerOptions().position(point).icon(
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_green)
@@ -203,7 +204,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
-                order.period.contains("13:00-17:59") -> {
+                color in 17..19 -> {
                     val marker = MarkerOptions().position(point).icon(
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_violet)
@@ -214,7 +215,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
-                order.period.contains("18:00-20:59") -> {
+                color in 20..21 -> {
                     val marker = MarkerOptions().position(point).icon(
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(num, R.drawable.marker_blue)

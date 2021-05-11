@@ -12,8 +12,8 @@ import org.ksoap2.transport.HttpTransportSE
 import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import timber.log.Timber
 
-const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl" //test
-//const val URL = "http://dev.iwatercrm.ru/iwater_logistic/driver/server.php?wsdl" //prod
+//const val URL = "http://dev.iwatercrm.ru/iwater_api/driver/server.php?wsdl" //test
+const val URL = "http://dev.iwatercrm.ru/iwater_logistic/driver/server.php?wsdl" //prod
 
 /**
  * базоаый класс для связи с api
@@ -326,6 +326,87 @@ class DriverCloseDay: DescriptionApi {
             val answer = soapEnvelope.response.toString()
             Timber.d("$answer")
             return@withContext answer
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code${e.statusCode}")
+        }
+        return@withContext ""
+    }
+}
+
+class MonitorDriverOpening: DescriptionApi {
+    override val SOAP_ACTION: String = "urn:info#monitor_driver_opening"
+    override val METHOD_NAME: String = "monitor_driver_opening"
+    override val NAME_SPACE: String = "urn:info"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    fun setMonitorDriverOpening(driverId: Int) {
+        request.addProperty("driver_id", driverId)
+        soapEnvelope = getSoapEnvelop(request)
+    }
+
+    suspend fun driverOpeningDay(): String = withContext(Dispatchers.Default) {
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response
+            answer
+            Timber.d("${answer.toString()}")
+            return@withContext answer.toString()
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code${e.statusCode}")
+        }
+        return@withContext ""
+    }
+}
+
+
+class MonitorDriverDay: DescriptionApi {
+    override val SOAP_ACTION: String = "urn:info#get_monitor_driver"
+    override val METHOD_NAME: String = "get_monitor_driver"
+    override val NAME_SPACE: String = "urn:info"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    fun setMonitorDriverClose(driverId: Int) {
+        request.addProperty("id", driverId)
+        soapEnvelope = getSoapEnvelop(request)
+    }
+
+    suspend fun driverDay(): String = withContext(Dispatchers.Default) {
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response
+            Timber.d("${answer}")
+            return@withContext answer.toString()
+        } catch (e: HttpResponseException) {
+            Timber.e(e.fillInStackTrace(), "Status code${e.statusCode}")
+        }
+        return@withContext ""
+    }
+}
+
+
+class DriverDayClose: DescriptionApi {
+    override val SOAP_ACTION: String = "urn:info#monitor_driver_close"
+    override val METHOD_NAME: String = "monitor_driver_close"
+    override val NAME_SPACE: String = "urn:info"
+    override val request: SoapObject = getRequest(NAME_SPACE, METHOD_NAME)
+    override lateinit var soapEnvelope: SoapSerializationEnvelope
+    override val httpTransport: HttpTransportSE = HttpTransportSE(URL)
+
+    fun setDriverDayClose(id: Int) {
+        request.addProperty("id", id)
+        soapEnvelope = getSoapEnvelop(request)
+    }
+
+    suspend fun driverDayClose(): String = withContext(Dispatchers.Default) {
+        try {
+            httpTransport.call(SOAP_ACTION, soapEnvelope, getHttpTransport())
+            val answer = soapEnvelope.response
+            Timber.d("${answer}")
+            return@withContext answer.toString()
         } catch (e: HttpResponseException) {
             Timber.e(e.fillInStackTrace(), "Status code${e.statusCode}")
         }

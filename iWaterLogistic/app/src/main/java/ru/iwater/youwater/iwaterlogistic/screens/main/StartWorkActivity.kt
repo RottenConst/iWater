@@ -64,10 +64,7 @@ class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         btn_start_day.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            HelpLoadingProgress.setLoginProgress(this, HelpState.IS_WORK_START, false)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(intent)
+            viewModel.openDriverDay(this)
         }
     }
 

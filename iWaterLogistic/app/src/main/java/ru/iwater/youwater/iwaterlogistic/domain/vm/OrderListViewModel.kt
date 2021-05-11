@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.location.Geocoder
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -12,8 +13,12 @@ import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
+import ru.iwater.youwater.iwaterlogistic.response.MonitorDriverOpening
 import ru.iwater.youwater.iwaterlogistic.response.TypeClient
+import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CardOrderActivity
+import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
+import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import timber.log.Timber
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -29,11 +34,14 @@ class OrderListViewModel @Inject constructor(
     accountRepository: AccountRepository
 ) : ViewModel() {
 
+//    val openDriverMonitor = MonitorDriverOpening()
+
     /**
      * при инициализации устанавливаем сессию
      */
     init {
         orderListRepository.driverWayBill.setProperty(accountRepository.getAccount().session)
+//        openDriverMonitor.setMonitorDriverOpening(accountRepository.getAccount().id)
     }
 
     /**
@@ -67,6 +75,17 @@ class OrderListViewModel @Inject constructor(
             val orders = orderListRepository.getOrders()
             orderListRepository.saveOrders(orders)
             mListOrder.value = orderListRepository.getDBOrders()
+        }
+    }
+
+    fun openDriverDay(context: Context) {
+        uiScope.launch {
+//           val answer = openDriverMonitor.driverOpeningDay()
+//           Timber.d(answer)
+           val intent = Intent(context, MainActivity::class.java)
+           HelpLoadingProgress.setLoginProgress(context, HelpState.IS_WORK_START, false)
+           intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+           startActivity(context, intent, null)
         }
     }
 
