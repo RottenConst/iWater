@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="ru.iwater.youwater.iwaterlogistic">
 
     <!--
@@ -25,7 +26,8 @@
         android:roundIcon="@drawable/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.IWaterLogistic"
-        android:usesCleartextTraffic="true">
+        android:usesCleartextTraffic="true"
+        >
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -59,31 +61,31 @@
             android:name=".screens.main.StartWorkActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
-        <activity
-            android:name=".screens.main.tab.current.CardOrderActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/about_order"
-            android:parentActivityName=".screens.main.MainActivity" />
-        <activity
-            android:name=".screens.main.tab.complete.CardCompleteActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/about_order"
-            android:parentActivityName=".screens.main.MainActivity" />
-        <activity
-            android:name=".screens.main.tab.current.CompleteShipActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="Отгруженный заказ" />
-        <activity android:name=".screens.main.tab.report.ReportActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/report"
-            android:parentActivityName=".screens.main.MainActivity"/>
-        <activity
-            android:name=".screens.map.MapsActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:label="@string/map"
-            android:parentActivityName=".screens.main.MainActivity"/>
+<!--        <activity-->
+<!--            android:name=".screens.main.tab.current.CardOrderActivity"-->
+<!--            android:configChanges="keyboardHidden|orientation|screenSize"-->
+<!--            android:label="@string/about_order"-->
+<!--            android:parentActivityName=".screens.main.MainActivity" />-->
+<!--        <activity-->
+<!--            android:name=".screens.main.tab.complete.CardCompleteActivity"-->
+<!--            android:configChanges="keyboardHidden|orientation|screenSize"-->
+<!--            android:label="@string/about_order"-->
+<!--            android:parentActivityName=".screens.main.MainActivity" />-->
+<!--        <activity-->
+<!--            android:name=".screens.main.tab.current.CompleteShipActivity"-->
+<!--            android:configChanges="keyboardHidden|orientation|screenSize"-->
+<!--            android:label="Отгруженный заказ" />-->
+<!--        <activity android:name=".screens.main.tab.report.ReportActivity"-->
+<!--            android:configChanges="keyboardHidden|orientation|screenSize"-->
+<!--            android:label="@string/report"-->
+<!--            android:parentActivityName=".screens.main.MainActivity"/>-->
+<!--        <activity-->
+<!--            android:name=".screens.map.MapsActivity"-->
+<!--            android:configChanges="keyboardHidden|orientation|screenSize"-->
+<!--            android:label="@string/map"-->
+<!--            android:parentActivityName=".screens.main.MainActivity"/>-->
 
-        <service android:name=".service.TimeListenerService" />
+<!--        <service android:name=".service.TimeListenerService" />-->
 
 
     </application>

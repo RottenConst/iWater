@@ -1,11 +1,11 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * Класс аккаунта
  **/
 data class Account(
-    var id: Int,
-    var login: String,
     var session: String,
-    var company: String
+    var id: Int
 )

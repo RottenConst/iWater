@@ -1,9 +1,15 @@
 package ru.iwater.youwater.iwaterlogistic.repository
 
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.domain.Account
 import ru.iwater.youwater.iwaterlogistic.iteractor.StorageStateAccount
-import ru.iwater.youwater.iwaterlogistic.response.Authorisation
+import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
+import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
 
 /**
@@ -13,28 +19,52 @@ class AccountRepository @Inject constructor(
     private val accountStorage: StorageStateAccount
 ) {
 
-    suspend fun getAuth(
-        authorisation: Authorisation,
-        login: String,
-        company: String
-    ): Pair<String, Account> {
-        val answer = authorisation.auth()
+    val service: ApiRequest = RetrofitFactory.makeRetrofit()
+
+    suspend fun authDriver(company: String, login: String, password: String, notification: String): Pair<String, Account?> {
         var message = ""
-        var account = Account(0, "", "", "")
-        if (answer.first == 0) {
-            val arg = answer.second.split("</session>")
-            val session = arg[0].replace("\\s+|<session>".toRegex(), "")
-            val id = arg[1].replace("\\s+|<id>|</id>".toRegex(), "")
-            account = Account(id.toInt(), login, session, company)
-        } else {
-            message = "Ошибка авторизации"
+        var account: Account? = Account("", 0)
+        val response = service.authDriver(login, company, password, notification)
+        try {
+            if (response.isSuccessful) {
+                if (response.body()?.session != null) {
+                    account = response.body()
+                } else {
+                    message = "Неверный логин или пароль"
+                }
+            } else {
+                message = response.message()
+            }
+        } catch (e: HttpException) {
+            Timber.e(e.message())
         }
-        Timber.d("$message, ${account.id}")
         return Pair(message, account)
     }
 
-    fun setAccount(account: Account) {
-        accountStorage.save(account)
+//    suspend fun getAuth(
+//        authorisation: Authorisation,
+//        login: String,
+//        company: String
+//    ): Pair<String, Account> {
+//        val answer = authorisation.auth()
+//        var message = ""
+//        var account = Account(0, "", "", "")
+//        if (answer.first == 0) {
+//            val arg = answer.second.split("</session>")
+//            val session = arg[0].replace("\\s+|<session>".toRegex(), "")
+//            val id = arg[1].replace("\\s+|<id>|</id>".toRegex(), "")
+//            account = Account(id.toInt(), login, session, company)
+//        } else {
+//            message = "Ошибка авторизации"
+//        }
+//        Timber.d("$message, ${account.id}")
+//        return Pair(message, account)
+//    }
+
+    fun setAccount(account: Account?) {
+        if (account != null) {
+            accountStorage.save(account)
+        }
     }
 
     fun deleteAccount() {

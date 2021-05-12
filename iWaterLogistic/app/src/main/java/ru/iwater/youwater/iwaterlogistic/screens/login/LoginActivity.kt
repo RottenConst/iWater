@@ -18,6 +18,7 @@ import ru.iwater.youwater.iwaterlogistic.domain.vm.AccountViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.StartWorkActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState.ACCOUNT_SAVED
+import timber.log.Timber
 import javax.inject.Inject
 
 /**
@@ -51,7 +52,7 @@ class LoginActivity : BaseActivity() {
 
     private fun authListener() {
         btn_enter.setOnClickListener {
-            viewModel.auth(
+            viewModel.authDriver(
                     company = et_company.text.toString(),
                     login = et_login.text.toString(),
                     password = et_password.text.toString(),
@@ -61,8 +62,9 @@ class LoginActivity : BaseActivity() {
 
     private fun observeViewModel() {
         viewModel.messageLD.observe(this, {
-            if (it.isNotEmpty()) {
-                showToast(it)
+            Timber.d(it)
+            if (it.isNotEmpty() && it != null) {
+                Toast.makeText(this, it, Toast.LENGTH_LONG).show()
             } else {
                 val intent = Intent(this, StartWorkActivity::class.java)
                 setLoginProgress(this, ACCOUNT_SAVED, false)

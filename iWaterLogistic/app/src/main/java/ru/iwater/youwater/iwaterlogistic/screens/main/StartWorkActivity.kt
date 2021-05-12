@@ -22,6 +22,7 @@ import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
+import timber.log.Timber
 import javax.inject.Inject
 
 class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -42,7 +43,7 @@ class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
         srl_refresh_current_orders.setOnRefreshListener(this)
         initRecyclerView()
         observeVW()
-        viewModel.getLoadOrder()
+        viewModel.getLoadCurrent()
 
         btn_exit_account.setOnClickListener {
             AlertDialog.Builder(this)
@@ -64,13 +65,13 @@ class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         btn_start_day.setOnClickListener {
-            viewModel.openDriverDay(this)
+//            viewModel.openDriverDay(this)
         }
     }
 
     override fun onRefresh() {
-        viewModel.getLoadOrder()
-        srl_refresh_current_orders.isRefreshing = false
+//        viewModel.getLoadOrder()
+//        srl_refresh_current_orders.isRefreshing = false
     }
 
     private fun observeVW() {

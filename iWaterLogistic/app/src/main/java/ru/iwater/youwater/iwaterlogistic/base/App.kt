@@ -6,7 +6,6 @@ import android.app.NotificationManager
 import android.os.Build
 import ru.iwater.youwater.iwaterlogistic.di.AccountStorageModule
 import ru.iwater.youwater.iwaterlogistic.di.ContextModule
-import ru.iwater.youwater.iwaterlogistic.di.DataBaseModule
 import ru.iwater.youwater.iwaterlogistic.di.components.AppComponent
 import ru.iwater.youwater.iwaterlogistic.di.components.DaggerAppComponent
 import ru.iwater.youwater.iwaterlogistic.di.components.DaggerScreenComponent
@@ -34,7 +33,7 @@ class App : Application() {
     private fun initAppComponent() {
         appComponent = DaggerAppComponent.builder()
             .contextModule(ContextModule(this))
-            .dataBaseModule(DataBaseModule())
+//            .dataBaseModule(DataBaseModule())
             .accountStorageModule(AccountStorageModule())
             .build()
     }

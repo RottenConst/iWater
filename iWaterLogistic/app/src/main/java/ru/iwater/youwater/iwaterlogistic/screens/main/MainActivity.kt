@@ -17,10 +17,7 @@ import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrders
-import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
-import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListReport
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
-import ru.iwater.youwater.iwaterlogistic.service.TimeListenerService
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState.ACCOUNT_SAVED
 import timber.log.Timber
@@ -38,12 +35,12 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.main_container_activity)
         accountRepository = AccountRepository(screenComponent.accountStorage())
 
-        val service = Intent(this.applicationContext, TimeListenerService::class.java)
-        this.startService(service)
-        Timber.d("account = ${accountRepository.getAccount().login}")
+//        val service = Intent(this.applicationContext, TimeListenerService::class.java)
+//        this.startService(service)
+//        Timber.d("account = ${accountRepository.getAccount().login}")
 
         bottom_bar_navigation.menu[1].isChecked = true
-        loadFragment(FragmentCurrentOrders.newInstance())
+//        loadFragment(FragmentCurrentOrders.newInstance())
         bottom_bar_navigation.setOnNavigationItemSelectedListener(bottomNavFragment)
     }
 
@@ -87,11 +84,11 @@ class MainActivity : BaseActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.orders -> {
-                loadFragment(FragmentCurrentOrders.newInstance())
+//                loadFragment(FragmentCurrentOrders.newInstance())
                 return@OnNavigationItemSelectedListener true
             }
             R.id.report -> {
-                loadFragment(FragmentListReport.newInstance())
+//                loadFragment(FragmentListReport.newInstance())
                 return@OnNavigationItemSelectedListener true
             }
         }

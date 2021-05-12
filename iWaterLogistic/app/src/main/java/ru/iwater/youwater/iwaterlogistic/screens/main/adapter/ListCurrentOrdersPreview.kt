@@ -29,20 +29,20 @@ class ListCurrentOrdersPreview (
 
         fun bindOrders(order: Order, position: Int) {
             itemView.num_order_prev.text = (position + 1).toString()
-            "Заказ: ${order.timeStart} - ${order.timeEnd},\n${order.address}\n${order.product}".also { itemView.tv_order_text.text = it }
-            if (UtilsMethods.timeDifference(order.timeEnd, UtilsMethods.getFormatedDate()) > 7200) {
+            "Заказ: ${order.timeStart} - ${order.timeStart},\n${order.address}\n${order.product}".also { itemView.tv_order_text.text = it }
+            if (UtilsMethods.timeDifference(order.timeStart, UtilsMethods.getFormatedDate()) > 7200) {
                 itemView.num_order_prev.setBackgroundResource(R.drawable.circle_green)
             }
 
-            if (UtilsMethods.timeDifference(order.timeEnd, UtilsMethods.getFormatedDate()) in 3601..7199) {
+            if (UtilsMethods.timeDifference(order.timeStart, UtilsMethods.getFormatedDate()) in 3601..7199) {
                 itemView.num_order_prev.setBackgroundResource(R.drawable.circle_yellow)
             }
 
-            if (UtilsMethods.timeDifference(order.timeEnd, UtilsMethods.getFormatedDate()) < 3600) {
+            if (UtilsMethods.timeDifference(order.timeStart, UtilsMethods.getFormatedDate()) < 3600) {
                 itemView.num_order_prev.setBackgroundResource(R.drawable.circle_red)
             }
 
-            if (UtilsMethods.timeDifference(order.timeEnd, UtilsMethods.getFormatedDate()) < 0) {
+            if (UtilsMethods.timeDifference(order.timeStart, UtilsMethods.getFormatedDate()) < 0) {
                 itemView.num_order_prev.setBackgroundResource(R.drawable.circle_grey)
             }
         }

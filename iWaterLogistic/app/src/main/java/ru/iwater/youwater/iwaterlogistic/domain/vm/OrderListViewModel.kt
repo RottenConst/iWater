@@ -10,13 +10,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.Account
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
-import ru.iwater.youwater.iwaterlogistic.response.MonitorDriverOpening
-import ru.iwater.youwater.iwaterlogistic.response.TypeClient
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
-import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CardOrderActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import timber.log.Timber
@@ -35,12 +33,13 @@ class OrderListViewModel @Inject constructor(
 ) : ViewModel() {
 
 //    val openDriverMonitor = MonitorDriverOpening()
+    private var account: Account = accountRepository.getAccount()
 
     /**
      * при инициализации устанавливаем сессию
      */
     init {
-        orderListRepository.driverWayBill.setProperty(accountRepository.getAccount().session)
+        account = accountRepository.getAccount()
 //        openDriverMonitor.setMonitorDriverOpening(accountRepository.getAccount().id)
     }
 
@@ -68,15 +67,15 @@ class OrderListViewModel @Inject constructor(
      * загружаем инфу о заказах
      * и обновляем liveData
      */
-    fun getLoadOrder() {
-        uiScope.launch {
-            orderListRepository.getLoadOrderList()
-            orderListRepository.checkDbOrder()
-            val orders = orderListRepository.getOrders()
-            orderListRepository.saveOrders(orders)
-            mListOrder.value = orderListRepository.getDBOrders()
-        }
-    }
+//    fun getLoadOrder() {
+//        uiScope.launch {
+//            orderListRepository.getLoadOrderList()
+//            orderListRepository.checkDbOrder()
+//            val orders = orderListRepository.getOrders()
+//            orderListRepository.saveOrders(orders)
+//            mListOrder.value = orderListRepository.getDBOrders()
+//        }
+//    }
 
     fun openDriverDay(context: Context) {
         uiScope.launch {
@@ -89,23 +88,32 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun getLoadOrderWithFactAddress() {
+    fun getLoadCurrent() {
+        Timber.d(account.session)
         uiScope.launch {
-            orderListRepository.getLoadOrderList()
-            mListOrder.value = orderListRepository.getOrders()
+            Timber.d("${account.id}, weqweqweqweqeqweqweqwe")
+            orderListRepository.getLoadCurrentOrders(account.session)
+            mListOrder.value = orderListRepository.ordersList
         }
     }
+
+//    fun getLoadOrderWithFactAddress() {
+//        uiScope.launch {
+//            orderListRepository.getLoadOrderList()
+//            mListOrder.value = orderListRepository.getOrders()
+//        }
+//    }
 
     /**
      * сохраняет заказ в бд и запускает экран с информацией о заказе с возможностью отгрузки
      **/
-    fun getAboutOrder(context: Context?, id: Int) {
-        val intent = Intent(context, CardOrderActivity::class.java)
-        intent.putExtra("id", id)
-        if (context != null) {
-            CardOrderActivity.start(context, intent)
-        }
-    }
+//    fun getAboutOrder(context: Context?, id: Int) {
+//        val intent = Intent(context, CardOrderActivity::class.java)
+//        intent.putExtra("id", id)
+//        if (context != null) {
+//            CardOrderActivity.start(context, intent)
+//        }
+//    }
 
     /**
      * Получить координаты для заказа
@@ -120,7 +128,7 @@ class OrderListViewModel @Inject constructor(
                 if (addressList != null && addressList.size > 0) {
                     val address = addressList[0]
                     val coordinate = "${address.latitude}-${address.longitude}"
-                    order.coordinates = coordinate.split("-")
+//                    order.coordinates = coordinate.split("-")
                     orderListRepository.saveOrder(order)
                     Timber.d("coordinate = $")
                 }
@@ -138,7 +146,7 @@ class OrderListViewModel @Inject constructor(
         val formatter = SimpleDateFormat("dd/MM/yyyy")
         val timeComplete = formatter.format(currentDate.time)
         uiScope.launch {
-            mDbListOrder.value = orderListRepository.getDBLoadCurrentOrder(timeComplete)
+//            mDbListOrder.value = orderListRepository.getDBLoadCurrentOrder(timeComplete)
         }
     }
 
