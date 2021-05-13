@@ -4,12 +4,7 @@ import android.app.Notification
 import android.app.Service
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.Build
 import android.os.IBinder
-import android.util.Log
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.Receivers.TimeNotification
 import ru.iwater.youwater.iwaterlogistic.base.CHANEL_SERVICE_ID
@@ -40,9 +35,6 @@ class TimeListenerService : Service() {
         intentFilter.addAction(Intent.ACTION_TIME_TICK)
         registerReceiver(timeNotification, intentFilter)
         Timber.d("START SERVICE")
-        Thread {
-            while (true) { }
-        }.start()
         return START_STICKY
     }
 
