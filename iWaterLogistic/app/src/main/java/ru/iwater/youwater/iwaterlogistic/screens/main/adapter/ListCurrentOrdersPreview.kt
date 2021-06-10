@@ -3,7 +3,6 @@ package ru.iwater.youwater.iwaterlogistic.screens.main.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_current_order.view.*
 import kotlinx.android.synthetic.main.item_current_order_prev.view.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.domain.Order
@@ -29,20 +28,24 @@ class ListCurrentOrdersPreview (
 
         fun bindOrders(order: Order, position: Int) {
             itemView.num_order_prev.text = (position + 1).toString()
-            "Заказ: ${order.timeStart} - ${order.timeStart},\n${order.address}\n${order.product}".also { itemView.tv_order_text.text = it }
-            if (UtilsMethods.timeDifference(order.timeStart, UtilsMethods.getFormatedDate()) > 7200) {
+            "Заказ: ${order.time},\n${order.address}".also { itemView.tv_order_text.text = it }
+            for (product in order.products) {
+                itemView.tv_order_text.append("\n${product.name} - ${product.count}шт.")
+            }
+            val time = order.time.split("-")[1]
+            if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) > 7200) {
                 itemView.num_order_prev.setBackgroundResource(R.drawable.circle_green)
             }
 
-            if (UtilsMethods.timeDifference(order.timeStart, UtilsMethods.getFormatedDate()) in 3601..7199) {
+            if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) in 3601..7199) {
                 itemView.num_order_prev.setBackgroundResource(R.drawable.circle_yellow)
             }
 
-            if (UtilsMethods.timeDifference(order.timeStart, UtilsMethods.getFormatedDate()) < 3600) {
+            if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) < 3600) {
                 itemView.num_order_prev.setBackgroundResource(R.drawable.circle_red)
             }
 
-            if (UtilsMethods.timeDifference(order.timeStart, UtilsMethods.getFormatedDate()) < 0) {
+            if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) < 0) {
                 itemView.num_order_prev.setBackgroundResource(R.drawable.circle_grey)
             }
         }

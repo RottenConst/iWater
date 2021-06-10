@@ -25,20 +25,20 @@ abstract class ViewModelFactoryModule {
     @ViewModelKey(OrderListViewModel::class)
     abstract fun bindOrderListViewModel(orderListViewModel: OrderListViewModel): ViewModel
 
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(InfoOrderViewModel::class)
-//    abstract fun bindInfoOrderViewModel(infoOrderViewModel: InfoOrderViewModel): ViewModel
-//
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(ShipmentsViewModel::class)
-//    abstract fun bindShipmentsOrderViewModel(shipmentsViewModel: ShipmentsViewModel): ViewModel
-//
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(CompleteOrdersViewModel::class)
-//    abstract fun bindCompleteOrderViewModel(completeOrdersViewModel: CompleteOrdersViewModel): ViewModel
+    @Binds
+    @IntoMap
+    @ViewModelKey(InfoOrderViewModel::class)
+    abstract fun bindInfoOrderViewModel(infoOrderViewModel: InfoOrderViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ShipmentsViewModel::class)
+    abstract fun bindShipmentsOrderViewModel(shipmentsViewModel: ShipmentsViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(CompleteOrdersViewModel::class)
+    abstract fun bindCompleteOrderViewModel(completeOrdersViewModel: CompleteOrdersViewModel): ViewModel
 //
 //    @Binds
 //    @IntoMap

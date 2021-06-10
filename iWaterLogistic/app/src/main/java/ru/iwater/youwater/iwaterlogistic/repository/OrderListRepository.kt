@@ -1,43 +1,40 @@
 package ru.iwater.youwater.iwaterlogistic.repository
 
-import android.widget.Toast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-//import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
-//import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
+import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
+import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
-import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
-import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @OnScreen
 class  OrderListRepository @Inject constructor(
-//    IWaterDB: IWaterDB
+    IWaterDB: IWaterDB
 )
 {
 //    val driverWayBill = DriverWayBill() //api запрос инфо о заказах
 //    val orderCurrent = OrderCurrent()
 
     val service: ApiRequest = RetrofitFactory.makeRetrofit()
-    var ordersList = listOf<Order>() //загруженные заказы
-//    private val orderDao: OrderDao = IWaterDB.orderDao() //обьект бд
+    var ordersList = mutableListOf<Order>() //загруженные заказы
+    private val orderDao: OrderDao = IWaterDB.orderDao() //обьект бд
+//    private val productDao: ProductDao = IWaterDB.productDao()
 
 
     /**
      * сохранить загруженые заказы в бд
      */
-    suspend fun saveOrders(orders: List<Order>) {
-        for (order in orders) {
-//            orderDao.save(order)
-        }
-    }
+//    suspend fun saveOrders(orders: List<Order>) {
+//        for (order in orders) {
+////            orderDao.save(order)
+//        }
+//    }
 
     //проверка на дублирование
 //    suspend fun checkDbOrder() {
@@ -61,10 +58,10 @@ class  OrderListRepository @Inject constructor(
 //    }
 
     /**
-     * сохранить заказ в бд
+     * сохранить заказы в бд
      */
-    suspend fun saveOrder(order: Order) {
-//        orderDao.save(order)
+    suspend fun saveOrders(orders: List<Order>) {
+        orderDao.save(orders)
     }
 
     /**
@@ -94,18 +91,28 @@ class  OrderListRepository @Inject constructor(
     /**
      * возвращает выполненые заказы за сегодня
      */
-//    fun getCompleteOrder(): List<Order> {
-//        val orders = ordersList
-//        val completeOrder = mutableListOf<Order>()
-//        orders.sortBy { order -> order.timeEnd }
-//        orders.asReversed()
-//        for (order in orders) {
-//            if (order.status == 1) {
-//                completeOrder.add(order)
-//            }
-//        }
-//        return completeOrder
-//    }
+    fun getCompleteOrder(): List<Order> {
+        val orders = ordersList
+        val completeOrder = mutableListOf<Order>()
+        orders.sortBy { order -> order.time }
+        orders.asReversed()
+        for (order in orders) {
+            if (order.status == 2) {
+                completeOrder.add(order)
+            }
+        }
+        return completeOrder
+    }
+
+    private fun checkCompleteOrder() {
+        val iterator = ordersList.iterator()
+        while (iterator.hasNext()) {
+            val order = iterator.next()
+            if (order.status == 2) {
+                iterator.remove()
+            }
+        }
+    }
 
     /**
      * обновить заказы в бд
@@ -130,9 +137,9 @@ class  OrderListRepository @Inject constructor(
     /**
      * вернуть заказы из бд по id
      */
-//    suspend fun getDBOrderOnId(id: Int?): Order = withContext(Dispatchers.Default) {
-////        return@withContext orderDao.getOrderOnId(id)
-//    }
+    suspend fun getDBOrderOnId(id: Int?): Order = withContext(Dispatchers.Default) {
+        return@withContext orderDao.getOrderOnId(id)
+    }
 
     /**
      * вернуть все не доставленные заказы из бд
@@ -160,7 +167,12 @@ class  OrderListRepository @Inject constructor(
         val answer = service.getDriverOrders(session)
         try {
             if (answer.isSuccessful) {
-                ordersList = answer.body()!!
+                ordersList.clear()
+                ordersList.addAll(answer.body()!!)
+                if (ordersList.isNotEmpty()) {
+                    checkCompleteOrder()
+                    saveOrders(ordersList)
+                }
             }
         } catch (e: HttpException) {
             Timber.d(e.message())
@@ -168,47 +180,28 @@ class  OrderListRepository @Inject constructor(
 
     }
 
-    /**
-     * запрос информации о текущих заказах
-     */
-//    suspend fun getLoadOrderList() {
-//        val answer = driverWayBill.loadOrders()
-//        ordersList.clear()
-//        var element = 0
-//        Timber.d("${answer.propertyCount}")
-//        for (i in 0 until answer.propertyCount / 13) {
-//            val id = answer.getPropertyAsString(element).toIntOrNull()
-//            val name = if (answer.getPropertyAsString(element + 1).equals("anyType")) "" else answer.getPropertyAsString(element + 1)
-//            val product = if (answer.getPropertyAsString(element + 2).equals("anyType{}")) "" else answer.getPropertyAsString(element + 2)
-//            val cash = if (answer.getPropertyAsString(element + 3).equals("anyType{}")) 0.0F else if (answer.getPropertyAsString(element + 3) == "NaN") 0.0F else answer.getPropertyAsString(element + 3).toFloat()
-//            val cash_b = if (answer.getPropertyAsString(element + 4).equals("anyType{}")) 0.0F else if (answer.getPropertyAsString(element + 4) == "NaN") 0.0F else answer.getPropertyAsString(element + 4).toFloat()
-//            val time = if (answer.getPropertyAsString(element + 5).equals("anyType{}")) "00:00-00:00".split("-") else answer.getPropertyAsString(element + 5).split("-")
-//            val contact = if (answer.getPropertyAsString(element + 6).equals("anyType{}")) "" else answer.getPropertyAsString(element + 6)
-//            val notice = if (answer.getPropertyAsString(element + 7).equals("anyType{}")) "" else answer.getPropertyAsString(element + 7)
-//            val date = if (answer.getPropertyAsString(element + 8).equals("anyType{}")) "" else answer.getPropertyAsString(element + 8)
-//            val period = if (answer.getPropertyAsString(element + 9).equals("anyType{}")) "" else answer.getPropertyAsString(element + 9)
-//            val address = if (answer.getPropertyAsString(element + 10).equals("anyType{}")) "" else answer.getPropertyAsString(element + 10)
-//            val coordinates = if (answer.getPropertyAsString(element + 11).equals("anyType{}")) "0.0,0.0".split(",") else answer.getPropertyAsString(element + 11).split(",")
-//            val status = answer.getPropertyAsString(element + 12).toIntOrNull()
-//            ordersList.add(
-//                Order(
-//                    id ?: 0,
-//                    name,
-//                    product,
-//                    cash,
-//                    cash_b,
-//                    time[0],
-//                    time[1],
-//                    contact,
-//                    notice,
-//                    date,
-//                    period,
-//                    address,
-//                    status ?: 0,
-//                    coordinates
-//                )
-//            )
-//            element += 13
-//        }
-//    }
+    suspend fun getLoadOrderInfo(orderId: Int?): OrderInfo? {
+       val answer = service.getOrderInfo(orderId)
+        try {
+            if (answer.isSuccessful) {
+                return answer.body()
+            }
+        }catch (e: HttpException) {
+            Timber.e(e.message())
+        }
+        return null
+    }
+
+    suspend fun getTypeClient(clientId: Int?): String? {
+        val answer = service.getTypeClient(clientId)
+        try {
+            if (answer.isSuccessful) {
+                Timber.d("${answer.body()?.length}")
+                return answer.body()?.get(7).toString()
+            }
+        }catch (e: HttpException) {
+            Timber.e(e.message())
+        }
+        return "500"
+    }
 }

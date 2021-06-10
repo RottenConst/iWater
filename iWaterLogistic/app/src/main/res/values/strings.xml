@@ -79,5 +79,6 @@
     <string name="address_text">адрес</string>
     <string name="open_card_order">открыть карточку заказа</string>
     <string name="time">Время</string>
-    <string name="in_navigator">В навигатор</string>>
+    <string name="in_navigator">В навигатор</string>
+    <string name="product">Товар</string>>
 </resources>

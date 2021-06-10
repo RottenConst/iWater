@@ -15,6 +15,7 @@ import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CardOrderActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import timber.log.Timber
@@ -107,13 +108,13 @@ class OrderListViewModel @Inject constructor(
     /**
      * сохраняет заказ в бд и запускает экран с информацией о заказе с возможностью отгрузки
      **/
-//    fun getAboutOrder(context: Context?, id: Int) {
-//        val intent = Intent(context, CardOrderActivity::class.java)
-//        intent.putExtra("id", id)
-//        if (context != null) {
-//            CardOrderActivity.start(context, intent)
-//        }
-//    }
+    fun getAboutOrder(context: Context?, id: Int) {
+        val intent = Intent(context, CardOrderActivity::class.java)
+        intent.putExtra("id", id)
+        if (context != null) {
+            CardOrderActivity.start(context, intent)
+        }
+    }
 
     /**
      * Получить координаты для заказа
@@ -129,7 +130,7 @@ class OrderListViewModel @Inject constructor(
                     val address = addressList[0]
                     val coordinate = "${address.latitude}-${address.longitude}"
 //                    order.coordinates = coordinate.split("-")
-                    orderListRepository.saveOrder(order)
+//                    orderListRepository.saveOrder(order)
                     Timber.d("coordinate = $")
                 }
             } catch (e: IOException) {

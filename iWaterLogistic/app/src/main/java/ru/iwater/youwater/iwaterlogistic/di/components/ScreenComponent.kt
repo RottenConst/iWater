@@ -6,6 +6,11 @@ import ru.iwater.youwater.iwaterlogistic.di.viewmodel.ViewModelFactoryModule
 import ru.iwater.youwater.iwaterlogistic.iteractor.StorageStateAccount
 import ru.iwater.youwater.iwaterlogistic.screens.login.LoginActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.StartWorkActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrderInfo
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrders
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.AboutOrderFragment
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.ShipmentsFragment
 
 
 @OnScreen
@@ -16,11 +21,11 @@ interface ScreenComponent {
         fun inject(loginActivity: LoginActivity)
 //        fun inject(mapsActivity: MapsActivity)
         fun inject(startWorkActivity: StartWorkActivity)
-//        fun inject(fragmentCurrentOrders: FragmentCurrentOrders)
-//        fun inject(aboutOrderFragment: AboutOrderFragment)
-//        fun inject(shipmentsFragment: ShipmentsFragment)
-//        fun inject(completeOrders: FragmentCompleteOrders)
-//        fun inject(completeOrders: FragmentCompleteOrderInfo)
+        fun inject(fragmentCurrentOrders: FragmentCurrentOrders)
+        fun inject(aboutOrderFragment: AboutOrderFragment)
+        fun inject(shipmentsFragment: ShipmentsFragment)
+        fun inject(completeOrders: FragmentCompleteOrders)
+        fun inject(completeOrders: FragmentCompleteOrderInfo)
 //        fun inject(reportFragment: ReportFragment)
 //        fun inject(fragmentListReport: FragmentListReport)
 }

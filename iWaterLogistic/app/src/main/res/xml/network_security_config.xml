@@ -3,4 +3,5 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">api.iwatercrm.ru:8000/iwater</domain>
     </domain-config>
+    <base-config cleartextTrafficPermitted="true"/>
 </network-security-config>

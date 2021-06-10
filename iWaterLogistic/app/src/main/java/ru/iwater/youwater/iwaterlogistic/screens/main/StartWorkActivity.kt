@@ -22,7 +22,6 @@ import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
-import timber.log.Timber
 import javax.inject.Inject
 
 class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
@@ -65,7 +64,7 @@ class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         btn_start_day.setOnClickListener {
-//            viewModel.openDriverDay(this)
+            viewModel.openDriverDay(this)
         }
     }
 

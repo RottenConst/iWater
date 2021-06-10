@@ -8,6 +8,8 @@ import kotlinx.android.synthetic.main.item_current_order.view.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import java.text.SimpleDateFormat
+import java.util.*
 
 class CompleteListOrdersAdapter(
     val completeOrders: MutableList<CompleteOrder> = mutableListOf()
@@ -34,9 +36,11 @@ class CompleteListOrdersAdapter(
             }
 
         fun bindCompleteOrders(completeOrders: CompleteOrder, position: Int) {
-            val time = completeOrders.timeComplete.split(" ")
+            val sdf = SimpleDateFormat("HH:mm:ss")
+            val time = Date(completeOrders.timeComplete * 1000)
+            val date = sdf.format(time)
             itemView.tv_num_order.text = (position + 1).toString()
-            "№${completeOrders.id} ${completeOrders.date} Завершен в ${time[1]}, ${completeOrders.address}".also { itemView.tv_info_order.text = it }
+            "№${completeOrders.id} ${completeOrders.time} Завершен в ${date}, ${completeOrders.address}".also { itemView.tv_info_order.text = it }
         }
     }
 
