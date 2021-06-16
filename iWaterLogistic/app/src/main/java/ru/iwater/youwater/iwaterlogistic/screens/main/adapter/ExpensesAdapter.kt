@@ -26,8 +26,8 @@ class ExpensesAdapter(
         RecyclerView.ViewHolder(inflater.inflate(resource, parent, false)) {
 
             fun bindExpenses(expenses: Expenses) {
-                itemView.tv_name_expenses.text = expenses.name
-                itemView.tv_expenses_cost.text = "${expenses.cost}"
+                itemView.tv_name_expenses.text = expenses.expens
+                itemView.tv_expenses_cost.text = "${expenses.money}"
             }
 
         }

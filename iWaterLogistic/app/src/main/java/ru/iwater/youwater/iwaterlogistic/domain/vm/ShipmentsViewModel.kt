@@ -57,6 +57,7 @@ class ShipmentsViewModel @Inject constructor(
         uiScope.launch {
 
             val answer = completeOrdersRepository.updateStatusOrder(id)
+            val order = orderListRepository.getDBOrderOnId(id)
 
             if (answer?.error == 0 && answer.oper == "Запись изменена") {
                 val order = orderListRepository.getDBOrderOnId(id)
@@ -77,7 +78,9 @@ class ShipmentsViewModel @Inject constructor(
                     order.address,
                     2,
                 )
+                order.status = 2
                 completeOrdersRepository.saveCompleteOrder(completeOrder)
+                orderListRepository.updateStatus(order)
                 completeOrdersRepository.addReport(
                     reportOrder
                 )

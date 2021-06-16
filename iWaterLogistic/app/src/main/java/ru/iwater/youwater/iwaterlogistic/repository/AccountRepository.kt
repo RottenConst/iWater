@@ -23,12 +23,14 @@ class AccountRepository @Inject constructor(
 
     suspend fun authDriver(company: String, login: String, password: String, notification: String): Pair<String, Account?> {
         var message = ""
-        var account: Account? = Account("", 0)
+        var account: Account? = Account("", 0, company)
         val response = service.authDriver(login, company, password, notification)
         try {
             if (response.isSuccessful) {
                 if (response.body()?.session != null) {
-                    account = response.body()
+                    val idDriver = response.body()?.id
+                    val session = response.body()?.session
+                    account = Account(session!!, idDriver!!, company)
                 } else {
                     message = "Неверный логин или пароль"
                 }
@@ -40,26 +42,6 @@ class AccountRepository @Inject constructor(
         }
         return Pair(message, account)
     }
-
-//    suspend fun getAuth(
-//        authorisation: Authorisation,
-//        login: String,
-//        company: String
-//    ): Pair<String, Account> {
-//        val answer = authorisation.auth()
-//        var message = ""
-//        var account = Account(0, "", "", "")
-//        if (answer.first == 0) {
-//            val arg = answer.second.split("</session>")
-//            val session = arg[0].replace("\\s+|<session>".toRegex(), "")
-//            val id = arg[1].replace("\\s+|<id>|</id>".toRegex(), "")
-//            account = Account(id.toInt(), login, session, company)
-//        } else {
-//            message = "Ошибка авторизации"
-//        }
-//        Timber.d("$message, ${account.id}")
-//        return Pair(message, account)
-//    }
 
     fun setAccount(account: Account?) {
         if (account != null) {

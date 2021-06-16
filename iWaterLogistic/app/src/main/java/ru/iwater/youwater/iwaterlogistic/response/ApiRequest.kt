@@ -36,20 +36,47 @@ interface ApiRequest {
         @Path("id") idOrder: Int?
     ): Response<OrderInfo>
 
+    /*
+        получить тип клиента по его id
+     */
     @GET("/iwater/getTypeClient/{id}/")
     suspend fun getTypeClient(
         @Path("id") idClient: Int?
     ): Response<String>
 
+    /*
+        отправить отчет по конкретному заказу
+     */
     @Headers( "Content-Type: application/json" )
     @POST("iwaterDcontrol_list/")
     suspend fun reportOrderInsert(
          @Body request: DecontrolReport
     ): Response<JsonObject>
 
+    /*
+        обновить статус заказа
+     */
     @Headers( "Content-Type: application/json" )
     @POST("update-status/{id}/")
     suspend fun updateStatus(
         @Path("id") id: Int?,
     ): Response<AnswerUpdateStatus>
+
+    @Headers( "Content-Type: application/json" )
+    @POST("iwaterExpenses_list/")
+    suspend fun addExpenses(
+        @Body request: Expenses
+    ): Response<Expenses>
+
+    @Headers( "Content-Type: application/json" )
+    @POST("iwaterReportApp_list/")
+    suspend fun addReport(
+        @Body request: ReportDay
+    ) : Response<ReportDay>
+
+    @Headers( "Content-Type: application/json" )
+    @POST("iwaterDriverCloseDay_list/")
+    suspend fun sendTotalReport(
+        @Body request: DayReport
+    ): Response<DayReport>
 }

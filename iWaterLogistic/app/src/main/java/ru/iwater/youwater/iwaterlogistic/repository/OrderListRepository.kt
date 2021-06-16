@@ -117,10 +117,14 @@ class  OrderListRepository @Inject constructor(
     /**
      * обновить заказы в бд
      */
-    fun updateOrder() {
-        for (order in ordersList) {
+//    fun updateOrder() {
+//        for (order in ordersList) {
 //            orderDao.update(order)
-        }
+//        }
+//    }
+
+    suspend fun updateStatus(order: Order){
+        orderDao.update(order)
     }
 
     suspend fun deleteOrder(order: Order) = withContext(Dispatchers.Default) {
@@ -169,7 +173,7 @@ class  OrderListRepository @Inject constructor(
             if (answer.isSuccessful) {
                 ordersList.clear()
                 ordersList.addAll(answer.body()!!)
-                if (ordersList.isNotEmpty()) {
+                if (!ordersList.isNullOrEmpty()) {
                     checkCompleteOrder()
                     saveOrders(ordersList)
                 }

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
@@ -18,6 +19,7 @@ import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListReport
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState.ACCOUNT_SAVED
@@ -45,10 +47,10 @@ class MainActivity : BaseActivity() {
         bottom_bar_navigation.setOnNavigationItemSelectedListener(bottomNavFragment)
     }
 
-//    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
 //        initThirdCounter(menu)
-//        return super.onPrepareOptionsMenu(menu)
-//    }
+        return super.onPrepareOptionsMenu(menu)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -89,7 +91,7 @@ class MainActivity : BaseActivity() {
                 return@OnNavigationItemSelectedListener true
             }
             R.id.report -> {
-//                loadFragment(FragmentListReport.newInstance())
+                loadFragment(FragmentListReport.newInstance())
                 return@OnNavigationItemSelectedListener true
             }
         }

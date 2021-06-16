@@ -10,14 +10,14 @@ interface OrderDao {
     suspend fun save(orders: List<Order>)
 
     @Update
-    fun update(order: Order)
+    suspend fun update(order: Order)
 
     @Delete
     fun delete(order: Order)
 
-//    @Query("SELECT * FROM `order` ORDER BY time" )
-//    fun load(): List<Order>
-//
+    @Query("SELECT * FROM `order` ORDER BY time" )
+    fun load(): List<Order>
+
     @Query("SELECT * FROM `order` WHERE status IS 0 ORDER BY time" )
     fun getLoadCurrentOrder(): List<Order>
 //

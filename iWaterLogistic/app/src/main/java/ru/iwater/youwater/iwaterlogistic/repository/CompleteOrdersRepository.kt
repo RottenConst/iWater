@@ -44,9 +44,9 @@ class CompleteOrdersRepository @Inject constructor(
     /**
      * Получить все выполненные заказы из базы за выбранную дату
      */
-//    suspend fun getCompleteListOrders(date: String): List<CompleteOrder> = withContext(Dispatchers.Default) {
-//        return@withContext completeOrderDao.load(date)
-//    }
+    suspend fun getCompleteListOrders(): List<CompleteOrder> = withContext(Dispatchers.Default) {
+        return@withContext completeOrderDao.load()
+    }
 
     suspend fun getAllCompleteOrders():List<CompleteOrder> = withContext(Dispatchers.Default) {
         return@withContext completeOrderDao.loadAll()
@@ -55,30 +55,30 @@ class CompleteOrdersRepository @Inject constructor(
     /**
      * Получить колличество выполненных заказов за выбранную дату
      */
-//    suspend fun getCountCompleteOrder(date: String): Int = withContext(Dispatchers.Default) {
-//        return@withContext completeOrderDao.getCountCompleteOrder(date)
-//    }
+    suspend fun getCountCompleteOrder(date: String): Int = withContext(Dispatchers.Default) {
+        return@withContext completeOrderDao.getCountCompleteOrder()
+    }
 
     /**
      * Получить сумму деннег из таблицы выполненных заказов полученных определённым образом
      */
-//    suspend fun getSumCashCompleteOrder(typeOfCash: String, date: String): Float = withContext(Dispatchers.Default) {
-//        return@withContext completeOrderDao.getSumCashOf(typeOfCash, date)
-//    }
+    suspend fun getSumCashCompleteOrder(typeOfCash: String): Float = withContext(Dispatchers.Default) {
+        return@withContext completeOrderDao.getSumCashOf(typeOfCash)
+    }
 
     /**
      * Получить сумму деннег из таблицы выполненных заказов
      */
-//    suspend fun getSumCashFullCompleteOrder(date: String): Float = withContext(Dispatchers.Default) {
-//        return@withContext completeOrderDao.getSumCashFull(date)
-//    }
+    suspend fun getSumCashFullCompleteOrder(date: String): Float = withContext(Dispatchers.Default) {
+        return@withContext completeOrderDao.getSumCashFull()
+    }
 
     /**
      * Получить сумму забранных пустых бутелей у клиентов из таблицы выполненных заказов
      */
-//    suspend fun getTankCompleteOrder(date: String): Int = withContext(Dispatchers.Default) {
-//        return@withContext completeOrderDao.getTankOfOrders(date)
-//    }
+    suspend fun getTankCompleteOrder(): Int = withContext(Dispatchers.Default) {
+        return@withContext completeOrderDao.getTankOfOrders()
+    }
 
     suspend fun addReport(reportOrder: DecontrolReport) {
         val answer = service.reportOrderInsert(reportOrder)

@@ -8,13 +8,13 @@ import androidx.room.TypeConverters
 import ru.iwater.youwater.iwaterlogistic.domain.*
 import ru.iwater.youwater.iwaterlogistic.util.ProductConverter
 
-@Database(entities = [Order::class, CompleteOrder::class], version = 1)
+@Database(entities = [Order::class, CompleteOrder::class, ReportDay::class, Expenses::class], version = 1)
 @TypeConverters(ProductConverter::class)
 abstract class IWaterDB : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun completeOrderDao(): CompleteOrderDao
-//    abstract fun reportDayDao(): ReportDayDao
-//    abstract fun ExpensesDao(): ExpensesDao
+    abstract fun reportDayDao(): ReportDayDao
+    abstract fun ExpensesDao(): ExpensesDao
 //
     companion object {
         var INSTANCE: IWaterDB? = null

@@ -11,6 +11,8 @@ import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompl
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.AboutOrderFragment
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.ShipmentsFragment
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListReport
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportFragment
 
 
 @OnScreen
@@ -26,6 +28,6 @@ interface ScreenComponent {
         fun inject(shipmentsFragment: ShipmentsFragment)
         fun inject(completeOrders: FragmentCompleteOrders)
         fun inject(completeOrders: FragmentCompleteOrderInfo)
-//        fun inject(reportFragment: ReportFragment)
-//        fun inject(fragmentListReport: FragmentListReport)
+        fun inject(reportFragment: ReportFragment)
+        fun inject(fragmentListReport: FragmentListReport)
 }

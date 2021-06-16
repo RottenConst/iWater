@@ -12,10 +12,10 @@ interface CompleteOrderDao {
     fun update(completeOrder: CompleteOrder)
 
     @Delete
-    fun delete(completeOrder: CompleteOrder)
+    suspend fun delete(completeOrder: CompleteOrder)
 
-//    @Query("SELECT * FROM `completeorder` WHERE date IS :date ORDER BY timeComplete" )
-//    fun load(date: String): List<CompleteOrder>
+    @Query("SELECT * FROM `completeorder` ORDER BY timeComplete" )
+    fun load(): List<CompleteOrder>
 
     @Query("SELECT * FROM `completeorder`")
     fun loadAll(): List<CompleteOrder>
@@ -23,15 +23,15 @@ interface CompleteOrderDao {
     @Query("SELECT * FROM `completeorder` WHERE id IS :id" )
     fun getCompleteOrderById(id: Int?): CompleteOrder
 
-//    @Query("SELECT count(id) FROM 'completeorder' WHERE date IS :date")
-//    fun getCountCompleteOrder(date: String): Int
+    @Query("SELECT count(id) FROM 'completeorder'")
+    fun getCountCompleteOrder(): Int
 
-//    @Query("SELECT sum(cash) FROM 'completeorder' WHERE typeOfCash IS :typeOfCash AND date IS :date")
-//    fun getSumCashOf(typeOfCash: String, date: String): Float
-//
-//    @Query("SELECT sum(cash) FROM 'completeorder' WHERE date IS :date")
-//    fun getSumCashFull(date: String): Float
-//
-//    @Query("SELECT sum(tank) FROM 'completeorder' WHERE date IS :date")
-//    fun getTankOfOrders(date: String): Int
+    @Query("SELECT sum(cash) FROM 'completeorder' WHERE typeOfCash IS :typeOfCash")
+    fun getSumCashOf(typeOfCash: String): Float
+
+    @Query("SELECT sum(cash) FROM 'completeorder' ")
+    fun getSumCashFull(): Float
+
+    @Query("SELECT sum(tank) FROM 'completeorder' ")
+    fun getTankOfOrders(): Int
 }
