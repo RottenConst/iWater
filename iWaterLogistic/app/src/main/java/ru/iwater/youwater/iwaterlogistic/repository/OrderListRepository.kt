@@ -3,11 +3,13 @@ package ru.iwater.youwater.iwaterlogistic.repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
+import ru.iwater.youwater.iwaterlogistic.domain.mapdata.MapData
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
@@ -61,7 +63,11 @@ class  OrderListRepository @Inject constructor(
      * сохранить заказы в бд
      */
     suspend fun saveOrders(orders: List<Order>) {
-        orderDao.save(orders)
+        orderDao.saveAll(orders)
+    }
+
+    suspend fun saveOrder(order: Order) {
+        orderDao.save(order)
     }
 
     /**
@@ -106,8 +112,11 @@ class  OrderListRepository @Inject constructor(
 
     private fun checkCompleteOrder() {
         val iterator = ordersList.iterator()
+        var num = 0
         while (iterator.hasNext()) {
             val order = iterator.next()
+            num += 1
+            order.num = num
             if (order.status == 2) {
                 iterator.remove()
             }
@@ -123,7 +132,7 @@ class  OrderListRepository @Inject constructor(
 //        }
 //    }
 
-    suspend fun updateStatus(order: Order){
+    suspend fun updateOrder(order: Order){
         orderDao.update(order)
     }
 
@@ -134,9 +143,9 @@ class  OrderListRepository @Inject constructor(
     /**
      * вернуть заказы из бд
      */
-//    suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
-////        return@withContext orderDao.load()
-//    }
+    suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
+        return@withContext orderDao.load()
+    }
 
     /**
      * вернуть заказы из бд по id
@@ -168,14 +177,14 @@ class  OrderListRepository @Inject constructor(
 //    }
 
     suspend fun getLoadCurrentOrders(session: String) {
-        val answer = service.getDriverOrders(session)
+        val answer = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
         try {
             if (answer.isSuccessful) {
                 ordersList.clear()
                 ordersList.addAll(answer.body()!!)
                 if (!ordersList.isNullOrEmpty()) {
+                    ordersList.sortBy { order -> order.time }
                     checkCompleteOrder()
-                    saveOrders(ordersList)
                 }
             }
         } catch (e: HttpException) {
@@ -185,7 +194,7 @@ class  OrderListRepository @Inject constructor(
     }
 
     suspend fun getLoadOrderInfo(orderId: Int?): OrderInfo? {
-       val answer = service.getOrderInfo(orderId)
+       val answer = service.getOrderInfo("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
         try {
             if (answer.isSuccessful) {
                 return answer.body()
@@ -196,8 +205,25 @@ class  OrderListRepository @Inject constructor(
         return null
     }
 
+    suspend fun getCoordinates(address: String): MapData? {
+        val answer = service.getCoordinatesPlace(
+            "https://maps.googleapis.com/maps/api/place/textsearch/json",
+            address,
+            "AIzaSyCOfJNzyHVWg8Ru0naTMQrbP9ECERZokTg"
+        )
+        try {
+            if (answer.isSuccessful) {
+                Timber.d("${answer.body()?.status}")
+                return answer.body()
+            }
+        } catch (e: HttpException) {
+            Timber.e(e.message())
+        }
+        return null
+    }
+
     suspend fun getTypeClient(clientId: Int?): String? {
-        val answer = service.getTypeClient(clientId)
+        val answer = service.getTypeClient("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", clientId)
         try {
             if (answer.isSuccessful) {
                 Timber.d("${answer.body()?.length}")

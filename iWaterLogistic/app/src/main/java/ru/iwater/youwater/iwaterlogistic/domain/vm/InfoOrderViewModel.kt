@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
+import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import timber.log.Timber
 import javax.inject.Inject
@@ -37,9 +38,15 @@ class InfoOrderViewModel @Inject constructor(
     fun getOrderInfo(id: Int?) {
         uiScope.launch {
             val orderInfoDetail = orderListRepository.getLoadOrderInfo(id)
-            Timber.d("${orderInfoDetail?.address} ${orderInfoDetail?.client_id}")
+//            Timber.d("info id = ${orderInfoDetail?.id}")
             orderInfo = orderListRepository.getDBOrderOnId(id)
-            Timber.d(orderInfo.contact)
+            if (orderInfo.cash.isNotBlank() && orderInfo.cash != null) {
+                orderInfo.cash = (orderInfoDetail?.cash ?: 0) as String
+            } else {
+                orderInfo.cash_b = (orderInfoDetail?.cash ?: 0) as String
+            }
+            val location = getCoordinate(orderInfo.address)
+            orderInfo.location = location
             if (orderInfo.contact.isNotBlank()) {
                 orderInfo.address = "${orderInfoDetail?.address} ${
                     orderInfoDetail?.contact?.split(",")
@@ -51,16 +58,26 @@ class InfoOrderViewModel @Inject constructor(
                     orderInfoDetail?.contact
                 }"
             }
+            updateOrder()
             mOrder.value = orderInfo
+        }
+    }
+
+    suspend fun getCoordinate(address: String): Location {
+        val mapData = orderListRepository.getCoordinates(address)
+        return if (mapData != null) {
+            mapData.results[0].geometry.location
+        } else {
+            Location(0.0, 0.0)
         }
     }
 
     /**
      * сохранить заказ
      **/
-    fun saveOrder() {
+    fun updateOrder() {
         uiScope.launch {
-//            orderListRepository.saveOrder(orderInfo)
+            orderListRepository.updateOrder(orderInfo)
         }
     }
 

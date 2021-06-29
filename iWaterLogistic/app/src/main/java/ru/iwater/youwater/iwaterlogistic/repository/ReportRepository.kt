@@ -97,7 +97,7 @@ class ReportRepository @Inject constructor(
     }
 
     suspend fun sendExpenses(expenses: Expenses) {
-        val answer = service.addExpenses(expenses)
+        val answer = service.addExpenses("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", expenses)
         try {
             if (answer.isSuccessful) {
                 Timber.d("OK! + ${answer.body()?.date_created}")
@@ -108,7 +108,7 @@ class ReportRepository @Inject constructor(
     }
 
     suspend fun addReport(reportDay: ReportDay) {
-        val answer = service.addReport(reportDay)
+        val answer = service.addReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", reportDay)
         try {
             if (answer.isSuccessful) {
                 Timber.d("OK! + ${answer.body()?.totalMoney}")
@@ -119,7 +119,7 @@ class ReportRepository @Inject constructor(
     }
 
     suspend fun sendDayReport(dayReport: DayReport) {
-        val answer = service.sendTotalReport(dayReport)
+        val answer = service.sendTotalReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", dayReport)
         try {
             if (answer.isSuccessful) {
                 Timber.d("${answer.body()?.date}")

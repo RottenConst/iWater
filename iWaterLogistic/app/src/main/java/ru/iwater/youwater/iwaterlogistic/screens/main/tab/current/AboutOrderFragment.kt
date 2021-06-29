@@ -57,19 +57,23 @@ class AboutOrderFragment : BaseFragment() {
             callClient(viewModel.getPhoneNumberClient())
         }
         //кнопка "посмотреть на карте"
-//        btn_see_on_map.setOnClickListener {
+        btn_see_on_map.setOnClickListener {
 //            val intent = Intent(this.context, MapsActivity::class.java)
 //            startActivity(intent)
-//        }
+        }
         //кнопка в навигатор
         btn_navigator.setOnClickListener {
             val openApp = Intent(Intent.ACTION_VIEW)
-//            openApp.data = Uri.parse(
-//                "geo:" + "${viewModel.order.value?.coordinates?.get(0)}, ${
-//                    viewModel.order.value?.coordinates?.get(1)
-//                }"
-//            )
-            startActivity(openApp)
+            if (viewModel.order.value?.location?.lat == 0.0 && viewModel.order.value?.location?.lng == 0.0) {
+                Toast.makeText(this.context, "Не удалось определить координаты", Toast.LENGTH_LONG).show()
+            } else {
+                openApp.data = Uri.parse(
+                    "geo:" + "${viewModel.order.value?.location?.lng}, ${
+                        viewModel.order.value?.location?.lat
+                    }"
+                )
+                startActivity(openApp)
+            }
         }
         //кнопка "копировать адрес"
         btn_copy_address.setOnClickListener {
@@ -108,6 +112,7 @@ class AboutOrderFragment : BaseFragment() {
             } else {
                 "Безналичные: ${order.cash_b}".also { tv_price_order.text = it }
             }
+            "Точка #${order.num}".also { tv_number_point.text = it }
             "${order.name}; \n${order.address};".also { tv_about_client.text = it }
             tv_phone_number_client.text = order.contact
             tv_note_order.text = order.notice

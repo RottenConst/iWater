@@ -5,6 +5,7 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import ru.iwater.youwater.iwaterlogistic.domain.Product
+import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import java.lang.reflect.Type
 import java.util.*
 import java.util.stream.Collectors
@@ -42,12 +43,20 @@ class ProductConverter {
 }
 
 class CoordinateConverter {
+
+    val gson = Gson()
+
     @TypeConverter
-    fun coordinateToString(list: List<String>): String {
-        return "${list[0]};${list[1]}"
+    fun coordinateToString(location: Location?): String {
+        return gson.toJson(location)
     }
+
     @TypeConverter
-    fun stringToCoordinateList(string: String): List<String> {
-        return string.split(";")
+    fun stringToCoordinate(string: String?): Location {
+        if (string == null) {
+            return Location(0.0, 0.0)
+        }
+        val location: Type = object : TypeToken<Location>() {}.type
+        return gson.fromJson(string, location)
     }
 }

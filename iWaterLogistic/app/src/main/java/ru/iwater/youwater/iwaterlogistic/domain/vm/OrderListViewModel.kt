@@ -12,6 +12,7 @@ import kotlinx.coroutines.*
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Account
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
@@ -49,6 +50,8 @@ class OrderListViewModel @Inject constructor(
      */
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
+
+    private lateinit var orderFromDb: List<Order>
 
     private val mCoordinate: MutableLiveData<String> = MutableLiveData()
 
@@ -94,8 +97,42 @@ class OrderListViewModel @Inject constructor(
         uiScope.launch {
             Timber.d("${account.id}, weqweqweqweqeqweqweqwe")
             orderListRepository.getLoadCurrentOrders(account.session)
-            mListOrder.value = orderListRepository.ordersList
+            val orders = orderListRepository.ordersList
+            getLoadOrderCurrentOrderFromBd()
+            val dbOrder = orderFromDb
+            Timber.d("orders ${orderFromDb.size}")
+            if (dbOrder.isNullOrEmpty()) {
+                Timber.d("test2!!!!")
+                orderListRepository.saveOrders(orders)
+                mListOrder.value = orders
+            } else {
+                Timber.d("test!!!!!")
+                if (dbOrder.size < orders.size) {
+                    val iterator = orders.iterator()
+                    while (iterator.hasNext()) {
+                        val order = iterator.next()
+                        var count = 0
+                        for (orderSaved in dbOrder) {
+                            if (order.id == orderSaved.id) {
+                                count += 1
+                                Timber.d("test!!!!! $count ${order.products.size} ${orderSaved.products.size}")
+                                if (order.products.size != orderSaved.products.size) {
+                                    orderListRepository.updateOrder(order)
+                                }
+                            }
+                            if (count == 0) {
+                                orderListRepository.saveOrder(order)
+                            }
+                        }
+                    }
+                }
+                mListOrder.value = orders
+            }
         }
+    }
+
+    suspend fun updateOrder(order: Order) {
+            orderListRepository.updateOrder(order)
     }
 
 //    fun getLoadOrderWithFactAddress() {
@@ -104,6 +141,31 @@ class OrderListViewModel @Inject constructor(
 //            mListOrder.value = orderListRepository.getOrders()
 //        }
 //    }
+
+    private suspend fun getCoordinate(address: String): Location {
+        val mapData = orderListRepository.getCoordinates(address)
+        return if (mapData != null) {
+            mapData.results[0].geometry.location
+        } else {
+            Location(0.0, 0.0)
+        }
+    }
+
+    fun getLocation(order: Order) {
+        uiScope.launch {
+            val location = getCoordinate(order.address)
+            if (location.lat != 0.0 && location.lng != 0.0) {
+                order.location = location
+                updateOrder(order)
+            }
+        }
+    }
+
+    fun getLoadOrderFromDB() {
+        uiScope.launch {
+            mDbListOrder.value = orderListRepository.getDBOrders()
+        }
+    }
 
     /**
      * сохраняет заказ в бд и запускает экран с информацией о заказе с возможностью отгрузки
@@ -142,13 +204,8 @@ class OrderListViewModel @Inject constructor(
     /**
      * Получить заказы за выбранную дату из бд
      */
-    fun getLoadOrderCurrentOrderFromBd() {
-        val currentDate = Calendar.getInstance()
-        val formatter = SimpleDateFormat("dd/MM/yyyy")
-        val timeComplete = formatter.format(currentDate.time)
-        uiScope.launch {
-//            mDbListOrder.value = orderListRepository.getDBLoadCurrentOrder(timeComplete)
-        }
+    private suspend fun getLoadOrderCurrentOrderFromBd() {
+        orderFromDb = orderListRepository.getDBOrders()
     }
 
     /**

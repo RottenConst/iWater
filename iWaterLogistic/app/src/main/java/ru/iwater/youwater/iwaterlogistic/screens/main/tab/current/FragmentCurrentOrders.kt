@@ -1,5 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.screens.main.tab.current
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 //import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
+import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -45,11 +47,11 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
         refresh_container.setOnRefreshListener(this)
         initRecyclerView()
         observeVW()
-        viewModel.getLoadCurrent()
-//        btn_general_map.setOnClickListener {
-//            val intent = Intent(this.context, MapsActivity::class.java)
-//            startActivity(intent)
-//        }
+
+        btn_general_map.setOnClickListener {
+            val intent = Intent(this.context, MapsActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onRefresh() {
@@ -58,6 +60,7 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
     }
 
     private fun observeVW() {
+        viewModel.getLoadCurrent()
         viewModel.listOrder.observe(viewLifecycleOwner, {
             if (it.isNullOrEmpty()) {
                 tv_not_current_orders.visibility = View.VISIBLE

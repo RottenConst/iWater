@@ -7,7 +7,10 @@ import ru.iwater.youwater.iwaterlogistic.domain.Order
 @Dao
 interface OrderDao {
     @Insert(onConflict = REPLACE)
-    suspend fun save(orders: List<Order>)
+    suspend fun saveAll(orders: List<Order>)
+
+    @Insert(onConflict = REPLACE)
+    suspend fun save(order: Order)
 
     @Update
     suspend fun update(order: Order)

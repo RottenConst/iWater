@@ -69,7 +69,7 @@ class ReportViewModel @Inject constructor(
                 completeOrdersRepository.getSumCashCompleteOrder("На сайте"),
                 completeOrdersRepository.getSumCashCompleteOrder("Оплата через терминал"),
                 completeOrdersRepository.getSumCashCompleteOrder("Без наличные"),
-                completeOrdersRepository.getSumCashCompleteOrder("Наличные"), //- reportRepository.getSumOfCostExpenses(timeComplete),
+                completeOrdersRepository.getSumCashCompleteOrder("Наличные") - reportRepository.getSumOfCostExpenses(timeComplete),
                 completeOrdersRepository.getTankCompleteOrder(),
                 completeOrdersRepository.getCountCompleteOrder(timeComplete) )
         }
@@ -106,7 +106,7 @@ class ReportViewModel @Inject constructor(
                     completeOrdersRepository.getSumCashCompleteOrder("На сайте"),
                     completeOrdersRepository.getSumCashCompleteOrder("Оплата через терминал"),
                     completeOrdersRepository.getSumCashCompleteOrder("Без наличные"),
-                    completeOrdersRepository.getSumCashCompleteOrder("Наличные"), //- reportRepository.getSumOfCostExpenses(),
+                    completeOrdersRepository.getSumCashCompleteOrder("Наличные") - reportRepository.getSumOfCostExpenses(timeComplete),
                     completeOrdersRepository.getTankCompleteOrder(),
                     completeOrdersRepository.getCountCompleteOrder(timeComplete) )
             )

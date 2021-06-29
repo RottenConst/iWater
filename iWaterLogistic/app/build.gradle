@@ -77,9 +77,9 @@ dependencies {
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01'
     kapt 'com.google.dagger:dagger-compiler:2.32'
     kapt 'com.google.dagger:dagger-android-processor:2.32'
-//    implementation 'com.google.maps.android:android-maps-utils:2.2.0'
-//    implementation 'com.google.android.gms:play-services-maps:17.0.0'
-//    implementation 'com.google.android.gms:play-services-location:18.0.0'
+    implementation 'com.google.maps.android:android-maps-utils:2.2.0'
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.android.support:multidex:1.0.3'
 
 

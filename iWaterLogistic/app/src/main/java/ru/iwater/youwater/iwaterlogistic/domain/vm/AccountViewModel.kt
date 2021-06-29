@@ -1,14 +1,12 @@
 package ru.iwater.youwater.iwaterlogistic.domain.vm
 
-import android.media.MediaSession2Service
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
-import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
-import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject

@@ -31,7 +31,7 @@ class ListOrdersAdapter(
             }
 
         fun bindOrders(order: Order, position: Int) {
-            itemView.num_order.text = (position + 1).toString()
+            itemView.num_order.text = order.num.toString()
             "Заказ: ${order.time},\n${order.address}".also { itemView.order_info.text = it }
             for (product in order.products) {
                 itemView.order_info.append("\n${product.name} - ${product.count}шт.")

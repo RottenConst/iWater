@@ -81,7 +81,7 @@ class CompleteOrdersRepository @Inject constructor(
     }
 
     suspend fun addReport(reportOrder: DecontrolReport) {
-        val answer = service.reportOrderInsert(reportOrder)
+        val answer = service.reportOrderInsert("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", reportOrder)
         try {
             if (answer.isSuccessful) {
                 Timber.d("${answer.code()}")
@@ -92,7 +92,7 @@ class CompleteOrdersRepository @Inject constructor(
     }
 
     suspend fun updateStatusOrder(idOrder: Int?): AnswerUpdateStatus? {
-        val answer = service.updateStatus(idOrder)
+        val answer = service.updateStatus("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", idOrder)
         try {
             if (answer.isSuccessful) {
                 return answer.body()

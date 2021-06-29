@@ -6,6 +6,7 @@ import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.*
 import ru.iwater.youwater.iwaterlogistic.domain.*
+import ru.iwater.youwater.iwaterlogistic.domain.mapdata.MapData
 
 interface ApiRequest {
 
@@ -14,6 +15,7 @@ interface ApiRequest {
      */
     @POST("auth/{login}/{company}/{password}/{notification}/")
     suspend fun authDriver(
+        @Header("X-Authorization") key: String,
         @Path("login") login: String,
         @Path("company") company: String,
         @Path("password") password: String,
@@ -25,6 +27,7 @@ interface ApiRequest {
      */
     @GET("getDriverList/{session}/")
     suspend fun getDriverOrders(
+        @Header("X-Authorization") key: String,
         @Path("session") session: String
     ): Response<List<Order>>
 
@@ -33,6 +36,7 @@ interface ApiRequest {
      */
     @GET("iwaterOrders_detail/{id}/")
     suspend fun getOrderInfo(
+        @Header("X-Authorization") key: String,
         @Path("id") idOrder: Int?
     ): Response<OrderInfo>
 
@@ -41,6 +45,7 @@ interface ApiRequest {
      */
     @GET("/iwater/getTypeClient/{id}/")
     suspend fun getTypeClient(
+        @Header("X-Authorization") key: String,
         @Path("id") idClient: Int?
     ): Response<String>
 
@@ -50,6 +55,7 @@ interface ApiRequest {
     @Headers( "Content-Type: application/json" )
     @POST("iwaterDcontrol_list/")
     suspend fun reportOrderInsert(
+         @Header("X-Authorization") key: String,
          @Body request: DecontrolReport
     ): Response<JsonObject>
 
@@ -59,24 +65,35 @@ interface ApiRequest {
     @Headers( "Content-Type: application/json" )
     @POST("update-status/{id}/")
     suspend fun updateStatus(
+        @Header("X-Authorization") key: String,
         @Path("id") id: Int?,
     ): Response<AnswerUpdateStatus>
 
     @Headers( "Content-Type: application/json" )
     @POST("iwaterExpenses_list/")
     suspend fun addExpenses(
+        @Header("X-Authorization") key: String,
         @Body request: Expenses
     ): Response<Expenses>
 
     @Headers( "Content-Type: application/json" )
     @POST("iwaterReportApp_list/")
     suspend fun addReport(
+        @Header("X-Authorization") key: String,
         @Body request: ReportDay
     ) : Response<ReportDay>
 
     @Headers( "Content-Type: application/json" )
     @POST("iwaterDriverCloseDay_list/")
     suspend fun sendTotalReport(
+        @Header("X-Authorization") key: String,
         @Body request: DayReport
     ): Response<DayReport>
+
+    @GET
+    suspend fun getCoordinatesPlace(
+        @Url url: String,
+        @Query("query") address: String,
+        @Query("key") key: String
+    ): Response<MapData>
 }

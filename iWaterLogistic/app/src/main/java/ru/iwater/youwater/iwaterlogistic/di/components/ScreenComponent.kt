@@ -13,6 +13,7 @@ import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurren
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.ShipmentsFragment
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListReport
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportFragment
+import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 
 
 @OnScreen
@@ -21,7 +22,7 @@ interface ScreenComponent {
         fun appContext(): Context
         fun accountStorage(): StorageStateAccount
         fun inject(loginActivity: LoginActivity)
-//        fun inject(mapsActivity: MapsActivity)
+        fun inject(mapsActivity: MapsActivity)
         fun inject(startWorkActivity: StartWorkActivity)
         fun inject(fragmentCurrentOrders: FragmentCurrentOrders)
         fun inject(aboutOrderFragment: AboutOrderFragment)

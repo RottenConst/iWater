@@ -80,7 +80,7 @@ class ShipmentsViewModel @Inject constructor(
                 )
                 order.status = 2
                 completeOrdersRepository.saveCompleteOrder(completeOrder)
-                orderListRepository.updateStatus(order)
+                orderListRepository.updateOrder(order)
                 completeOrdersRepository.addReport(
                     reportOrder
                 )

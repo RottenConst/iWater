@@ -24,7 +24,7 @@ class AccountRepository @Inject constructor(
     suspend fun authDriver(company: String, login: String, password: String, notification: String): Pair<String, Account?> {
         var message = ""
         var account: Account? = Account("", 0, company)
-        val response = service.authDriver(login, company, password, notification)
+        val response = service.authDriver("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", login, company, password, notification)
         try {
             if (response.isSuccessful) {
                 if (response.body()?.session != null) {
