@@ -35,8 +35,6 @@ class ShipmentsViewModel @Inject constructor(
 
     private val mOrder: MutableLiveData<OrderInfo> = MutableLiveData()
     private val mTypeClient: MutableLiveData<TypeClient> = MutableLiveData()
-//    private var nameDriver: String = accountRepository.getAccount().login
-//    private var company: String = accountRepository.getAccount().company
 
     val typeClient: LiveData<TypeClient>
         get() = mTypeClient
@@ -53,15 +51,14 @@ class ShipmentsViewModel @Inject constructor(
         }
     }
 
-    fun setCompleteOrder(context: Context?, id: Int?, typeCash: String, cash: Float, tank: Int, timeComplete: Long, noticeDriver: String, shipCoord: String) {
+    fun setCompleteOrder(context: Context?, id: Int, typeCash: String, cash: Float, tank: Int, timeComplete: Long, noticeDriver: String, shipCoord: String) {
         uiScope.launch {
 
             val answer = completeOrdersRepository.updateStatusOrder(id)
-            val order = orderListRepository.getDBOrderOnId(id)
 
             if (answer?.error == 0 && answer.oper == "Запись изменена") {
                 val order = orderListRepository.getDBOrderOnId(id)
-                val reportOrder = DecontrolReport(id, timeComplete, "57.8046651;28.3571715", tank, noticeDriver)
+                val reportOrder = DecontrolReport(id, timeComplete, shipCoord, tank, noticeDriver)
                 val completeOrder = CompleteOrder(
                     order.id,
                     order.name,
@@ -81,6 +78,7 @@ class ShipmentsViewModel @Inject constructor(
                 order.status = 2
                 completeOrdersRepository.saveCompleteOrder(completeOrder)
                 orderListRepository.updateOrder(order)
+                orderListRepository.deleteOrder(order)
                 completeOrdersRepository.addReport(
                     reportOrder
                 )

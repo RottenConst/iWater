@@ -27,8 +27,10 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.Product
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.util.ProductConverter
+import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -77,9 +79,6 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-//        observeCoordinate()
-//        observeOrders(mMap)
-
         observeDBOrder()
 
 
@@ -127,7 +126,11 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
             tv_num_marker.text = "#${info[1]}"
             tv_name_marker.text = "#${info[0]} ${info[2]}"
             tv_time_order_marker.text = info[3]
-//            tv_product_name_order.text = info[4]
+            tv_product_name_order.text = ""
+            val productAll = info[4].split("+")
+            for (product in productAll) {
+                tv_product_name_order.append("$product \n")
+            }
             bt_to_info_order.setOnClickListener {
                 viewModel.getAboutOrder(this, info[0].toInt())
             }
@@ -137,23 +140,6 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
 
             true
         }
-    }
-
-
-    private fun observeCoordinate() {
-        viewModel.coordinate.observe(this, {
-            coordinate = it
-        })
-    }
-
-    private fun observeOrders(mMap: GoogleMap) {
-//        viewModel.getLoadOrder()
-        viewModel.listOrder.observe(this, {
-            for (order in it) {
-                viewModel.getCoordinatesOnAddressOrder(order, applicationContext)
-            }
-            observeDBOrder()
-        })
     }
 
     private fun observeDBOrder(){
@@ -174,13 +160,18 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
             val point = LatLng(order.location?.lat!!, order.location?.lng!!)
             val hour = order.time.split("-")[1]
             val color = hour.split(":")[0].toInt()
+            val orderProduct: String by lazy {
+                UtilsMethods.productToStringMap(order.products)
+            }
+
             when {
                 color < 12 -> {
                     val marker = MarkerOptions().position(point).icon(
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(order.num, R.drawable.marker_red)
                         )
-                    ).title("${order.id};${order.num};${order.address};")
+                    ).title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
+                    Timber.d("orderproduct $orderProduct")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -189,7 +180,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(order.num, R.drawable.marker_yellow)
                         )
-                    ).title("${order.id};${order.num};${order.address};${order.products}")
+                    ).title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -198,7 +189,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(order. num, R.drawable.marker_green)
                         )
-                    ).title("${order.id};${order.num};${order.address};")
+                    ).title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -207,7 +198,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(order.num, R.drawable.marker_violet)
                         )
-                    ).title("${order.id};${order.num};${order.address};${ProductConverter().someObjectListToString(order.products)}")
+                    ).title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -216,7 +207,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(order.num, R.drawable.marker_blue)
                         )
-                    ).title("${order.id};${order.num};${order.address};")
+                    ).title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -225,7 +216,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                         BitmapDescriptorFactory.fromBitmap(
                             getCustomIcon(order.num, R.drawable.marker_grey)
                         )
-                    ).title("${order.id};${order.num};${order.address};")
+                    ).title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }

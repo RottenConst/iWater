@@ -69,8 +69,8 @@ class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
-//        viewModel.getLoadOrder()
-//        srl_refresh_current_orders.isRefreshing = false
+        viewModel.getLoadCurrent()
+        srl_refresh_current_orders.isRefreshing = false
     }
 
     private fun observeVW() {

@@ -42,15 +42,12 @@ class FragmentCompleteOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListe
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         refresh_container_complete.setOnRefreshListener(this)
-//        viewModel.getCompleteOrderCRM()
         initRecyclerView()
         observeVW()
-//        viewModel.getCompleteListOrders()
     }
 
 
     override fun onRefresh() {
-//        viewModel.getCompleteOrderCRM()
         viewModel.getCompleteListOrders()
         refresh_container_complete.isRefreshing = false
     }

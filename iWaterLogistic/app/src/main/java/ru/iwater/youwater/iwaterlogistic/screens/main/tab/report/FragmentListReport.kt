@@ -17,6 +17,7 @@ import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import ru.iwater.youwater.iwaterlogistic.domain.vm.ReportViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ReportListAdapter
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
+import ru.iwater.youwater.iwaterlogistic.service.TimeListenerService
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
@@ -73,20 +74,20 @@ class FragmentListReport : BaseFragment() {
                                 HelpState.IS_WORK_START,
                                 true
                             )
+                            viewModel.saveTodayReport()
+                            viewModel.sendGeneralReport(reportDay)
+                            val report = viewModel.getDriverCloseMonitor()
+                            viewModel.driverCloseDay(report)
                             AlertDialog.Builder(this.context!!)
                                 .setMessage("Не забудте сделать сверку итогов в терминале")
                                 .setPositiveButton("Ок") {
                                     _, _ ->
-                                    viewModel.sendGeneralReport(reportDay)
-                                    val report = viewModel.getDriverCloseMonitor()
-                                    viewModel.driverCloseDay(report)
                                     viewModel.clearOldCompleteOrder()
-                                    viewModel.saveTodayReport()
-//                                    val service = Intent(
-//                                        activity?.applicationContext,
-//                                        TimeListenerService::class.java
-//                                    )
-//                                    activity?.stopService(service)
+                                    val service = Intent(
+                                        activity?.applicationContext,
+                                        TimeListenerService::class.java
+                                    )
+                                    activity?.stopService(service)
                                     activity?.finish()
                                     startActivity(intent)
                                 }.create().show()

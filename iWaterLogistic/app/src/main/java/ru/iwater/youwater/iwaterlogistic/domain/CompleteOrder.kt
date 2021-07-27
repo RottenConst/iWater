@@ -1,5 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
@@ -8,6 +9,7 @@ import ru.iwater.youwater.iwaterlogistic.util.TimeConverter
 
 @Entity
 @TypeConverters(TimeConverter::class)
+@Keep
 data class CompleteOrder(
     @PrimaryKey(autoGenerate = false)
     val id: Int?,

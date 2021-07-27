@@ -1,5 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import androidx.annotation.Keep
 import androidx.room.*
 import com.google.gson.annotations.SerializedName
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
@@ -7,7 +8,8 @@ import ru.iwater.youwater.iwaterlogistic.util.CoordinateConverter
 import ru.iwater.youwater.iwaterlogistic.util.ProductConverter
 
 @Entity
-
+@TypeConverters(ProductConverter::class, CoordinateConverter::class)
+@Keep
 data class Order(
     var address: String = "",
     var cash: String = "",
@@ -16,7 +18,7 @@ data class Order(
     var name: String  = "",
     var notice: String = "",
     @SerializedName("order")
-    @TypeConverters(ProductConverter::class)
+
     var products: List<Product> = mutableListOf(),
     @SerializedName("order_id")
     @PrimaryKey(autoGenerate = false)
@@ -24,6 +26,7 @@ data class Order(
     var period: String = "",
     var status: Int = 0,
     var time: String = "",
+
     var location: Location? = Location(0.0, 0.0),
     var num: Int = 0,
 )

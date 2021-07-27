@@ -1,5 +1,8 @@
 package ru.iwater.youwater.iwaterlogistic.domain.mapdata
 
+import androidx.annotation.Keep
+
+@Keep
 data class Result(
     val formatted_address: String,
     val geometry: Geometry,

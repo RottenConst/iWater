@@ -26,7 +26,7 @@ class InfoOrderViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private var orderInfo: Order = Order()
+    private var orderInfo = Order(cash = "", cash_b = "")
     private val mOrder: MutableLiveData<Order> = MutableLiveData()
 
     val order: LiveData<Order>
@@ -35,15 +35,16 @@ class InfoOrderViewModel @Inject constructor(
     /**
      * возвращает заказ по id
      **/
-    fun getOrderInfo(id: Int?) {
+    fun getOrderInfo(id: Int) {
         uiScope.launch {
             val orderInfoDetail = orderListRepository.getLoadOrderInfo(id)
-//            Timber.d("info id = ${orderInfoDetail?.id}")
+
             orderInfo = orderListRepository.getDBOrderOnId(id)
-            if (orderInfo.cash.isNotBlank() && orderInfo.cash != null) {
-                orderInfo.cash = (orderInfoDetail?.cash ?: 0) as String
+            Timber.d("info id = ${orderInfo.cash}")
+            if (orderInfo.cash.isNotEmpty() && orderInfo.cash != null) {
+                orderInfo.cash = (orderInfoDetail?.cash ?: 0).toString()
             } else {
-                orderInfo.cash_b = (orderInfoDetail?.cash ?: 0) as String
+                orderInfo.cash_b = (orderInfoDetail?.cash ?: 0).toString()
             }
             val location = getCoordinate(orderInfo.address)
             orderInfo.location = location
@@ -65,7 +66,7 @@ class InfoOrderViewModel @Inject constructor(
 
     suspend fun getCoordinate(address: String): Location {
         val mapData = orderListRepository.getCoordinates(address)
-        return if (mapData != null) {
+        return if (mapData != null && mapData.status != "ZERO_RESULTS") {
             mapData.results[0].geometry.location
         } else {
             Location(0.0, 0.0)

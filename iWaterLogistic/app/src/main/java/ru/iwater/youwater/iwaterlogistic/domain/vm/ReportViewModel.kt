@@ -18,6 +18,7 @@ import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
 import ru.iwater.youwater.iwaterlogistic.repository.ReportRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportActivity
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
+import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
@@ -72,6 +73,7 @@ class ReportViewModel @Inject constructor(
                 completeOrdersRepository.getSumCashCompleteOrder("Наличные") - reportRepository.getSumOfCostExpenses(timeComplete),
                 completeOrdersRepository.getTankCompleteOrder(),
                 completeOrdersRepository.getCountCompleteOrder(timeComplete) )
+
         }
     }
 
@@ -144,10 +146,9 @@ class ReportViewModel @Inject constructor(
     fun getReports() {
         uiScope.launch {
             val reports = reportRepository.loadAllReport()
-            for (report in reports) {
-                if (report.date == UtilsMethods.getTodayDateString()) {
-                    reportRepository.deleteReport(report)
-                }
+            Timber.d("TODAY = ${UtilsMethods.getTodayDateString()}")
+            if (reports.size > 1) {
+                reportRepository.deleteReport(reports[0])
             }
             mReportsDay.value = reports
         }

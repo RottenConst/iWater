@@ -115,7 +115,7 @@ class OrderListViewModel @Inject constructor(
                         for (orderSaved in dbOrder) {
                             if (order.id == orderSaved.id) {
                                 count += 1
-                                Timber.d("test!!!!! $count ${order.products.size} ${orderSaved.products.size}")
+                                Timber.d("1test!!!!! $count ${order.products.size} ${orderSaved.products.size}")
                                 if (order.products.size != orderSaved.products.size) {
                                     orderListRepository.updateOrder(order)
                                 }
@@ -126,6 +126,9 @@ class OrderListViewModel @Inject constructor(
                         }
                     }
                 }
+                for (order in orders) {
+                    orderListRepository.getUpdateDBNum(order)
+                }
                 mListOrder.value = orders
             }
         }
@@ -135,16 +138,9 @@ class OrderListViewModel @Inject constructor(
             orderListRepository.updateOrder(order)
     }
 
-//    fun getLoadOrderWithFactAddress() {
-//        uiScope.launch {
-//            orderListRepository.getLoadOrderList()
-//            mListOrder.value = orderListRepository.getOrders()
-//        }
-//    }
-
     private suspend fun getCoordinate(address: String): Location {
         val mapData = orderListRepository.getCoordinates(address)
-        return if (mapData != null) {
+        return if (mapData != null && mapData.status != "ZERO_RESULTS") {
             mapData.results[0].geometry.location
         } else {
             Location(0.0, 0.0)

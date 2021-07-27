@@ -67,8 +67,12 @@ class ReportRepository @Inject constructor(
         expensesDao.save(expenses)
     }
 
+    suspend fun deleteExpenses(expenses: Expenses) {
+        expensesDao.delete(expenses)
+    }
+
     /**
-     * загрузить расходы за текущий день
+     * загрузить расходы за текущий дату
      */
     suspend fun loadExpenses(date: String) : List<Expenses> = withContext(Dispatchers.Default) {
         return@withContext expensesDao.load(date)

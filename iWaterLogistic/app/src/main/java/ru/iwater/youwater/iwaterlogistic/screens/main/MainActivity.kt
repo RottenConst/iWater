@@ -21,6 +21,7 @@ import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompl
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListReport
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
+import ru.iwater.youwater.iwaterlogistic.service.TimeListenerService
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState.ACCOUNT_SAVED
 import timber.log.Timber
@@ -38,9 +39,9 @@ class MainActivity : BaseActivity() {
         setContentView(R.layout.main_container_activity)
         accountRepository = AccountRepository(screenComponent.accountStorage())
 
-//        val service = Intent(this.applicationContext, TimeListenerService::class.java)
-//        this.startService(service)
-//        Timber.d("account = ${accountRepository.getAccount().login}")
+        val service = Intent(this.applicationContext, TimeListenerService::class.java)
+        this.startService(service)
+        Timber.d("account = ${accountRepository.getAccount().id}")
 
         bottom_bar_navigation.menu[1].isChecked = true
         loadFragment(FragmentCurrentOrders.newInstance())
@@ -104,32 +105,6 @@ class MainActivity : BaseActivity() {
         transaction.addToBackStack(null)
         transaction.commit()
     }
-
-
-//    private fun initThirdCounter(menu: Menu?) {
-//        val counterItem = menu?.findItem(R.id.action_counter_3)
-//        val counter: View? = counterItem?.actionView
-//        counter?.setOnClickListener { _ -> onThirdCounterClick() }
-//        updateThirdCounter(mCounterValue3)
-//    }
-//
-//    private fun onThirdCounterClick() {
-//        updateThirdCounter(++mCounterValue3)
-//    }
-//
-//    private fun updateThirdCounter(newCounterValue: Int) {
-//        if (icon_badge == null || counter == null) {
-//            return
-//        }
-//        if (newCounterValue == 0) {
-//            icon_badge.setImageResource(R.drawable.ic_grey_notification)
-//            counter.visibility = View.GONE
-//        } else {
-//            icon_badge.setImageResource(R.drawable.ic_grey_notification)
-//            counter.visibility = View.VISIBLE
-//            counter.text = newCounterValue.toString()
-//        }
-//    }
 
     companion object {
 

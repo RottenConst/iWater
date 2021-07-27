@@ -1,5 +1,8 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import androidx.annotation.Keep
+
+@Keep
 data class OrderInfo(
     val id : Int,
     val client_id : Int,

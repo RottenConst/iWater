@@ -2,6 +2,7 @@ package ru.iwater.youwater.iwaterlogistic.util
 
 import android.content.Context
 import android.widget.Toast
+import ru.iwater.youwater.iwaterlogistic.domain.Product
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,5 +41,15 @@ object UtilsMethods {
 
     fun showToast(context: Context?, value: String) {
         Toast.makeText(context, value, Toast.LENGTH_LONG).show()
+    }
+
+    fun productToStringMap(products: List<Product>): String {
+        var nameProduct = ""
+        val iterator = products.iterator()
+        while (iterator.hasNext()) {
+            val product = iterator.next()
+            nameProduct += "${product.name} - ${product.count}шт.+"
+        }
+        return nameProduct
     }
 }

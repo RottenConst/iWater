@@ -1,7 +1,8 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import androidx.annotation.Keep
 import java.util.*
-
+@Keep
 data class DayReport(
     val driver_id: Int,
     val taken_bottles: Int,

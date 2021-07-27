@@ -26,38 +26,7 @@ class  OrderListRepository @Inject constructor(
     val service: ApiRequest = RetrofitFactory.makeRetrofit()
     var ordersList = mutableListOf<Order>() //загруженные заказы
     private val orderDao: OrderDao = IWaterDB.orderDao() //обьект бд
-//    private val productDao: ProductDao = IWaterDB.productDao()
 
-
-    /**
-     * сохранить загруженые заказы в бд
-     */
-//    suspend fun saveOrders(orders: List<Order>) {
-//        for (order in orders) {
-////            orderDao.save(order)
-//        }
-//    }
-
-    //проверка на дублирование
-//    suspend fun checkDbOrder() {
-//        val ordersDb = getDBOrders()
-//        val orders = getOrders()
-//        if (orders.size < ordersDb.size) {
-//            for (orderDb in ordersDb) {
-//                for (order in orders) {
-//                    if (order.id != orderDb.id) {
-//                        deleteOrder(orderDb)
-//                    }
-//                }
-//                if (orderDb.date != UtilsMethods.getTodayDateString()) deleteOrder(orderDb)
-//            }
-//        }
-//        if (orders.isEmpty()) {
-//            for (orderDb in ordersDb) {
-//                deleteOrder(orderDb)
-//            }
-//        }
-//    }
 
     /**
      * сохранить заказы в бд
@@ -66,33 +35,12 @@ class  OrderListRepository @Inject constructor(
         orderDao.saveAll(orders)
     }
 
+    /**
+     * сохранить заказ в бд
+     */
     suspend fun saveOrder(order: Order) {
         orderDao.save(order)
     }
-
-    /**
-     * вернуть информацию о загруженых заказах
-     */
-//    fun getOrders(): List<Order> {
-//        val orders = ordersList
-//        val currentOrder = mutableListOf<Order>()
-//        orders.sortBy { order -> order.timeEnd }
-//        orders.asReversed()
-//        TimeNotification.notifycationOrders.notifyOrders.clear()
-//        for (order in orders) {
-//            if (order.status == 0) {
-//                currentOrder.add(order)
-//                TimeNotification.notifycationOrders.notifyOrders.add(
-//                    NotifyOrder(
-//                        order.id, order.timeEnd, order.date, order.address,
-//                        notification = false,
-//                        fail = false
-//                    )
-//                )
-//            }
-//        }
-//        return currentOrder
-//    }
 
     /**
      * возвращает выполненые заказы за сегодня
@@ -137,7 +85,7 @@ class  OrderListRepository @Inject constructor(
     }
 
     suspend fun deleteOrder(order: Order) = withContext(Dispatchers.Default) {
-//        orderDao.delete(order)
+        orderDao.delete(order)
     }
 
     /**
@@ -147,34 +95,16 @@ class  OrderListRepository @Inject constructor(
         return@withContext orderDao.load()
     }
 
-    /**
-     * вернуть заказы из бд по id
-     */
-    suspend fun getDBOrderOnId(id: Int?): Order = withContext(Dispatchers.Default) {
-        return@withContext orderDao.getOrderOnId(id)
+    suspend fun getUpdateDBNum(order: Order) {
+        orderDao.updateNum(order.num, order.id)
     }
 
     /**
-     * вернуть все не доставленные заказы из бд
+     * вернуть заказы из бд по id
      */
-//    suspend fun getDBLoadCurrentOrder(date: String): List<Order> = withContext(Dispatchers.Default) {
-////        return@withContext orderDao.getLoadCurrentOrder(date)
-//    }
-
-    /**
-     * получить фактический адресс
-     */
-//    suspend fun getFactAddress(): List<String> {
-//        val answer = orderCurrent.getFactAddress()
-//        val infoCurrent = mutableListOf<String>()
-//        for (i in 0 until answer.propertyCount / 3) {
-//            val contact = if (answer.getPropertyAsString(0).equals("anyType{}")) "" else answer.getPropertyAsString(0)
-//            val factAddress = if (answer.getPropertyAsString(1).equals("anyType{}")) "" else answer.getPropertyAsString(1)
-//            infoCurrent.add(contact)
-//            infoCurrent.add(factAddress)
-//        }
-//        return infoCurrent
-//    }
+    suspend fun getDBOrderOnId(id: Int): Order = withContext(Dispatchers.Default) {
+        return@withContext orderDao.getOrderOnId(id)
+    }
 
     suspend fun getLoadCurrentOrders(session: String) {
         val answer = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
@@ -222,8 +152,8 @@ class  OrderListRepository @Inject constructor(
         return null
     }
 
-    suspend fun getTypeClient(clientId: Int?): String? {
-        val answer = service.getTypeClient("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", clientId)
+    suspend fun getTypeClient(orderId: Int?): String? {
+        val answer = service.getTypeClient("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
         try {
             if (answer.isSuccessful) {
                 Timber.d("${answer.body()?.length}")

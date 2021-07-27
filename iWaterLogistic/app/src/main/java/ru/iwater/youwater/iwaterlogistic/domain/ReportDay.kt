@@ -1,9 +1,11 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
+@Keep
 data class ReportDay(
     val date: String,
     val totalMoney: Float,

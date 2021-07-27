@@ -81,4 +81,8 @@
     <string name="time">Время</string>
     <string name="in_navigator">В навигатор</string>
     <string name="product">Товар</string>>
+    
+    <string name="permission_rationale">
+        Необходимо разрешение на определение вашего местоположения
+    </string>
 </resources>

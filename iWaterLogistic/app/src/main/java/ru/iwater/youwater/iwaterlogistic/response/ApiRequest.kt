@@ -41,7 +41,7 @@ interface ApiRequest {
     ): Response<OrderInfo>
 
     /*
-        получить тип клиента по его id
+        получить тип клиента по id заказа
      */
     @GET("/iwater/getTypeClient/{id}/")
     suspend fun getTypeClient(

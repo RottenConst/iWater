@@ -15,6 +15,9 @@ interface OrderDao {
     @Update
     suspend fun update(order: Order)
 
+    @Query("UPDATE `order` SET num=:num WHERE id = :idOrder")
+    suspend fun updateNum(num: Int, idOrder: Int)
+
     @Delete
     fun delete(order: Order)
 
@@ -24,6 +27,6 @@ interface OrderDao {
     @Query("SELECT * FROM `order` WHERE status IS 0 ORDER BY time" )
     fun getLoadCurrentOrder(): List<Order>
 //
-    @Query("SELECT * FROM 'order' WHERE id IS :id")
-    fun getOrderOnId(id: Int?): Order
+    @Query("SELECT * FROM 'Order' WHERE id IS :id")
+    fun getOrderOnId(id: Int): Order
 }

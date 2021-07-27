@@ -1,10 +1,12 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
 
 @Entity
+@Keep
 data class Expenses(
     val driver_id: Int,
     val expens: String,

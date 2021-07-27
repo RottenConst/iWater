@@ -21,6 +21,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.domain.vm.InfoOrderViewModel
+import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import javax.inject.Inject
 
 class AboutOrderFragment : BaseFragment() {
@@ -48,8 +49,7 @@ class AboutOrderFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         val arg = arguments
         val id = arg?.getInt("id")
-
-        viewModel.getOrderInfo(id)
+        if (id != null) viewModel.getOrderInfo(id)
         observeVM()
 
         //кнопка "позвонить клиенту"
@@ -58,8 +58,8 @@ class AboutOrderFragment : BaseFragment() {
         }
         //кнопка "посмотреть на карте"
         btn_see_on_map.setOnClickListener {
-//            val intent = Intent(this.context, MapsActivity::class.java)
-//            startActivity(intent)
+            val intent = Intent(this.context, MapsActivity::class.java)
+            startActivity(intent)
         }
         //кнопка в навигатор
         btn_navigator.setOnClickListener {
@@ -68,8 +68,8 @@ class AboutOrderFragment : BaseFragment() {
                 Toast.makeText(this.context, "Не удалось определить координаты", Toast.LENGTH_LONG).show()
             } else {
                 openApp.data = Uri.parse(
-                    "geo:" + "${viewModel.order.value?.location?.lng}, ${
-                        viewModel.order.value?.location?.lat
+                    "geo:" + "${viewModel.order.value?.location?.lat}, ${
+                        viewModel.order.value?.location?.lng
                     }"
                 )
                 startActivity(openApp)
