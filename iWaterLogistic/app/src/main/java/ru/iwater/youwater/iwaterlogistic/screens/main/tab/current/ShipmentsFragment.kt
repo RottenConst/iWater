@@ -6,10 +6,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
-import android.location.LocationProvider
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -18,17 +15,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.BaseTransientBottomBar.LENGTH_INDEFINITE
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.shipment_order_fragment.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.R.color.transperent
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
+import ru.iwater.youwater.iwaterlogistic.databinding.ShipmentOrderFragmentBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.ShipmentsViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import timber.log.Timber
@@ -56,64 +54,53 @@ class ShipmentsFragment: BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         screenComponent.inject(this)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.context)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(screenComponent.appContext())
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.shipment_order_fragment, container, false)
-    }
+    ): View {
+        val binding = DataBindingUtil.inflate<ShipmentOrderFragmentBinding>(inflater, R.layout.shipment_order_fragment, container, false)
 
-    override fun onStart() {
-        super.onStart()
-        if (!checkPermissions()) {
-            requestPermissions()
-        } else {
-            getLastLocation()
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         val arg = arguments
         val id = arg?.getInt("id")
         viewModel.getOrderInfo(id)
-        observeVM()
-        initDocuments()
-        radio_cash_group.setOnCheckedChangeListener { _, checkedId ->
-            radio_cash_group.setBackgroundColor(resources.getColor(R.color.transperent))
+        observeVM(binding)
+        initDocuments(binding)
+
+        binding.radioCashGroup.setOnCheckedChangeListener { _, checkedId ->
+            binding.radioCashGroup.setBackgroundColor(resources.getColor(transperent))
             when (checkedId) {
                 R.id.radio_cash -> {
-                    et_note_order_ship.text.clear()
-                    et_note_order_ship.text.insert(0, "Оплата наличными, ")
+                    binding.etNoteOrderShip.text.clear()
+                    binding.etNoteOrderShip.text.insert(0, "Оплата наличными, ")
                     typeCash = "Наличные"
                 }
                 R.id.radio_on_site -> {
-                    et_note_order_ship.text.clear()
-                    et_note_order_ship.text.insert(0, "Оплата на сайте, ")
+                    binding.etNoteOrderShip.text.clear()
+                    binding.etNoteOrderShip.text.insert(0, "Оплата на сайте, ")
                     typeCash = "На сайте"
                 }
                 R.id.radio_terminal -> {
-                    et_note_order_ship.text.clear()
-                    et_note_order_ship.text.insert(0, "Оплата через терминал, ")
+                    binding.etNoteOrderShip.text.clear()
+                    binding.etNoteOrderShip.text.insert(0, "Оплата через терминал, ")
                     typeCash = "Оплата через терминал"
                 }
             }
         }
 
-        et_tank_to_back.addTextChangedListener(object : TextWatcher {
+        binding.etTankToBack.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                et_tank_to_back.setBackgroundColor(resources.getColor(transperent))
+                binding.etTankToBack.setBackgroundColor(resources.getColor(transperent))
             }
 
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        btn_ship_order.setOnClickListener {
+        binding.btnShipOrder.setOnClickListener {
             val locationManager = screenComponent.appContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
             if (ActivityCompat.checkSelfPermission(
                     screenComponent.appContext(),
@@ -125,20 +112,20 @@ class ShipmentsFragment: BaseFragment() {
             ) {
                 showSnack("Включите GPS")
             }
-            if (et_tank_to_back.text.toString().isEmpty() && typeCash.isEmpty() ) {
+            if (binding.etTankToBack.text.toString().isEmpty() && typeCash.isEmpty() ) {
                 showSnack("Укажиете количество бутылок к возврату и тип оплаты")
-                radio_cash_group.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
-                et_tank_to_back.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
-            } else if (et_tank_to_back.text.toString().isEmpty()) {
+                binding.radioCashGroup.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
+                binding.etTankToBack.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
+            } else if (binding.etTankToBack.text.toString().isEmpty()) {
                 showSnack("Укажиете количество бутылок к возврату и тип оплаты")
-                et_tank_to_back.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
+                binding.etTankToBack.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
             } else if (typeCash.isEmpty()) {
                 showSnack("Укажиете тип оплаты")
-                radio_cash_group.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
+                binding.radioCashGroup.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
             } else if (documentsIsChecked == null && typeClient == "Юр. лицо"){
                 showSnack("Укажиете подписаны ли документы")
-                cb_doc_no.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
-                cb_doc_yes.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
+                binding.cbDocNo.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
+                binding.cbDocYes.setBackgroundColor(resources.getColor(R.color.shipmentBackground))
             } else {
                 val timeComplete = Calendar.getInstance().timeInMillis/1000
 //                Timber.d("this my coordinate $myCoordinates !!!!!!!!".toUpperCase())
@@ -147,18 +134,28 @@ class ShipmentsFragment: BaseFragment() {
                     id,
                     typeCash,
                     cash,
-                    et_tank_to_back.text.toString().toInt(),
+                    binding.etTankToBack.text.toString().toInt(),
                     timeComplete,
-                    et_note_order_ship.text.toString(),
+                    binding.etNoteOrderShip.text.toString(),
                     myCoordinates,
                 )
             }
         }
 
-        btn_no_ship_order.setOnClickListener {
+        binding.btnNoShipOrder.setOnClickListener {
             MainActivity.start(this.context)
         }
 
+        return binding.root
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (!checkPermissions()) {
+            requestPermissions()
+        } else {
+            getLastLocation()
+        }
     }
 
     override fun onResume() {
@@ -168,49 +165,49 @@ class ShipmentsFragment: BaseFragment() {
     }
 
 
-    private fun observeVM() {
+    private fun observeVM(binding: ShipmentOrderFragmentBinding) {
         viewModel.order.observe(viewLifecycleOwner, { order ->
             viewModel.getTypeClient(order.id)
-            "№${order.id}, ${order.time}".also { tv_ship_num_date_order.text = it }
-            tv_ship_address_order.text = order.address
-            "Цена заказа: ${order.cash}".also { tv_ship_price.text = it }
+            "№${order.id}, ${order.time}".also { binding.tvShipNumDateOrder.text = it }
+            binding.tvShipAddressOrder.text = order.address
+            "Цена заказа: ${order.cash}".also { binding.tvShipPrice.text = it }
             cash = order.cash.toFloat()
         })
         viewModel.typeClient.observe(viewLifecycleOwner, {
-            methodsOfCash(it.type)
+            methodsOfCash(it.type, binding)
         })
     }
 
     /**
      * в зависимости от типа клиента показываются методы оплаты
      **/
-    private fun methodsOfCash(typeClient: Int?) {
+    private fun methodsOfCash(typeClient: Int?, binding: ShipmentOrderFragmentBinding) {
         Timber.d("$typeClient!!!!!!!!!!!")
         Timber.d("${Calendar.getInstance().timeInMillis/1000}")
         when (typeClient) {
             0 -> {
-                ic_check_doc.visibility = View.GONE
-                tv_check_doc.visibility = View.GONE
-                cb_doc_no.visibility = View.GONE
-                cb_doc_yes.visibility = View.GONE
-                radio_cash_group.visibility = View.VISIBLE
+                binding.icCheckDoc.visibility = View.GONE
+                binding.tvCheckDoc.visibility = View.GONE
+                binding.cbDocNo.visibility = View.GONE
+                binding.cbDocYes.visibility = View.GONE
+                binding.radioCashGroup.visibility = View.VISIBLE
 //                this.typeClient = "0"
             }
             1 -> {
-                ic_check_doc.visibility = View.VISIBLE
-                tv_check_doc.visibility = View.VISIBLE
-                cb_doc_no.visibility = View.VISIBLE
-                cb_doc_yes.visibility = View.VISIBLE
-                radio_cash_group.visibility = View.GONE
+                binding.icCheckDoc.visibility = View.VISIBLE
+                binding.tvCheckDoc.visibility = View.VISIBLE
+                binding.cbDocNo.visibility = View.VISIBLE
+                binding.cbDocYes.visibility = View.VISIBLE
+                binding.radioCashGroup.visibility = View.GONE
 //                this.typeClient = "1"
                 typeCash = "Без наличные"
             }
             else -> {
-                ic_check_doc.visibility = View.GONE
-                tv_check_doc.visibility = View.GONE
-                cb_doc_no.visibility = View.GONE
-                cb_doc_yes.visibility = View.GONE
-                radio_cash_group.visibility = View.GONE
+                binding.icCheckDoc.visibility = View.GONE
+                binding.tvCheckDoc.visibility = View.GONE
+                binding.cbDocNo.visibility = View.GONE
+                binding.cbDocYes.visibility = View.GONE
+                binding.radioCashGroup.visibility = View.GONE
                 Toast.makeText(
                     this.context,
                     "Ошибка, возможно проблеиы с интернетом",
@@ -243,15 +240,16 @@ class ShipmentsFragment: BaseFragment() {
         }
     }
 
+    @SuppressLint("UseRequireInsteadOfGet")
     private fun requestPermissions() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!.parent, ACCESS_COARSE_LOCATION)) {
             // Provide an additional rationale to the user. This would happen if the user denied the
             // request previously, but didn't check the "Don't ask again" checkbox.
             Timber.i("Displaying permission rationale to provide additional context.")
-            showSnackbar(R.string.permission_rationale, android.R.string.ok, View.OnClickListener {
+            showSnackBar(R.string.permission_rationale, android.R.string.ok) {
                 // Request permission
                 startLocationPermissionRequest()
-            })
+            }
 
         } else {
             // Request permission. It's possible this can be auto answered if device policy
@@ -264,30 +262,30 @@ class ShipmentsFragment: BaseFragment() {
     /**
      * для юр лиц устанавливается были подписаны документы или нет
      **/
-    private fun initDocuments() {
-        cb_doc_yes.setOnClickListener {
-            if (cb_doc_yes.isChecked) {
-                cb_doc_no.isChecked = false
-                et_note_order_ship.text.clear()
-                cb_doc_no.setBackgroundColor(resources.getColor(R.color.transperent))
-                cb_doc_yes.setBackgroundColor(resources.getColor(R.color.transperent))
-                et_note_order_ship.text.insert(0, "Документы подписаны, ")
+    private fun initDocuments(binding: ShipmentOrderFragmentBinding) {
+        binding.cbDocYes.setOnClickListener {
+            if (binding.cbDocYes.isChecked) {
+                binding.cbDocNo.isChecked = false
+                binding.etNoteOrderShip.text.clear()
+                binding.cbDocNo.setBackgroundColor(resources.getColor(R.color.transperent))
+                binding.cbDocYes.setBackgroundColor(resources.getColor(R.color.transperent))
+                binding.etNoteOrderShip.text.insert(0, "Документы подписаны, ")
                 documentsIsChecked = true
             } else {
-                et_note_order_ship.text.clear()
+                binding.etNoteOrderShip.text.clear()
                 documentsIsChecked = null;
             }
         }
-        cb_doc_no.setOnClickListener {
-            if (cb_doc_no.isChecked) {
-                cb_doc_yes.isChecked = false
-                et_note_order_ship.text.clear()
-                cb_doc_no.setBackgroundColor(resources.getColor(R.color.transperent))
-                cb_doc_yes.setBackgroundColor(resources.getColor(R.color.transperent))
-                et_note_order_ship.text.insert(0, "Документы не подписаны, ")
+        binding.cbDocNo.setOnClickListener {
+            if (binding.cbDocNo.isChecked) {
+                binding.cbDocYes.isChecked = false
+                binding.etNoteOrderShip.text.clear()
+                binding.cbDocNo.setBackgroundColor(resources.getColor(R.color.transperent))
+                binding.cbDocYes.setBackgroundColor(resources.getColor(R.color.transperent))
+                binding.etNoteOrderShip.text.insert(0, "Документы не подписаны, ")
                 documentsIsChecked = false
             } else {
-                et_note_order_ship.text.clear()
+                binding.etNoteOrderShip.text.clear()
                 documentsIsChecked = null;
             }
         }
@@ -297,18 +295,19 @@ class ShipmentsFragment: BaseFragment() {
         Toast.makeText(this.context, value, Toast.LENGTH_LONG).show()
     }
 
-    private fun showSnackbar(
+    @SuppressLint("UseRequireInsteadOfGet")
+    private fun showSnackBar(
         snackStrId: Int,
         actionStrId: Int = 0,
         listener: View.OnClickListener? = null
     ) {
-        val snackbar = Snackbar.make(
-            this.context!!, this.view?.findViewById(android.R.id.content)!!, getString(snackStrId),
+        val snackBar = Snackbar.make(
+            this.context!!, view!!.findViewById(android.R.id.content), getString(snackStrId),
             LENGTH_INDEFINITE)
         if (actionStrId != 0 && listener != null) {
-            snackbar.setAction(getString(actionStrId), listener)
+            snackBar.setAction(getString(actionStrId), listener)
         }
-        snackbar.show()
+        snackBar.show()
     }
 
     private fun showSnack(message: String) {

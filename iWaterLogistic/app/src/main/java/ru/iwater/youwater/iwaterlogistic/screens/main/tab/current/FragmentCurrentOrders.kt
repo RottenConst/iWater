@@ -5,21 +5,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_orders_list.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
+import ru.iwater.youwater.iwaterlogistic.databinding.FragmentOrdersListBinding
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
-//import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
 import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
-import timber.log.Timber
 import javax.inject.Inject
 
 class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -30,6 +28,8 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
     private val adapter = ListOrdersAdapter()
     private val screenComponent = App().buildScreenComponent()
 
+    private lateinit var binding: FragmentOrdersListBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         screenComponent.inject(this)
@@ -39,44 +39,41 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return layoutInflater.inflate(R.layout.fragment_orders_list, container, false)
-    }
+    ): View {
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_orders_list, container, false)
+        binding.refreshContainer.setOnRefreshListener(this)
+        initRecyclerView(binding)
+        observeVW(binding)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        refresh_container.setOnRefreshListener(this)
-        initRecyclerView()
-        observeVW()
-
-        btn_general_map.setOnClickListener {
+        binding.btnGeneralMap.setOnClickListener {
             val intent = Intent(this.context, MapsActivity::class.java)
             startActivity(intent)
         }
+        return binding.root
     }
 
     override fun onRefresh() {
         viewModel.getLoadCurrent()
-        refresh_container.isRefreshing = false
+        binding.refreshContainer.isRefreshing = true
     }
 
-    private fun observeVW() {
+    private fun observeVW(binding: FragmentOrdersListBinding) {
         viewModel.getLoadCurrent()
         viewModel.listOrder.observe(viewLifecycleOwner, {
             if (it.isNullOrEmpty()) {
-                tv_not_current_orders.visibility = View.VISIBLE
-                list_current_order.visibility = View.GONE
+                binding.tvNotCurrentOrders.visibility = View.VISIBLE
+                binding.listCurrentOrder.visibility = View.GONE
             } else {
                 addCurrentOrders(it)
-                tv_not_current_orders.visibility = View.GONE
-                list_current_order.visibility = View.VISIBLE
+                binding.tvNotCurrentOrders.visibility = View.GONE
+                binding.listCurrentOrder.visibility = View.VISIBLE
             }
         })
     }
 
-    private fun initRecyclerView() {
-        list_current_order.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
+    private fun initRecyclerView(binding: FragmentOrdersListBinding) {
+        binding.listCurrentOrder.adapter = adapter
         adapter.notifyDataSetChanged()
-        list_current_order.adapter = adapter
         adapter.onOrderClick = {
             viewModel.getAboutOrder(context, it.id)
         }

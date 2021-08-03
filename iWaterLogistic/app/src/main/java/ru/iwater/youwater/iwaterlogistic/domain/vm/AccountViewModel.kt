@@ -1,5 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.domain.vm
 
+import android.annotation.SuppressLint
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -21,6 +22,7 @@ class AccountViewModel @Inject constructor(
     val messageLD: LiveData<String>
         get() = mMessageLD
 
+    @SuppressLint("SimpleDateFormat")
     fun authDriver(login: String, company: String, password: String) {
         viewModelScope.launch {
             val calendar = Calendar.getInstance()

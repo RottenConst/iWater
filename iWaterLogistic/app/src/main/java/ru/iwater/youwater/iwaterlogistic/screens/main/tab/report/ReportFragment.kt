@@ -7,13 +7,14 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.fragment_report_day.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
+import ru.iwater.youwater.iwaterlogistic.databinding.FragmentReportDayBinding
 import ru.iwater.youwater.iwaterlogistic.domain.Expenses
 import ru.iwater.youwater.iwaterlogistic.domain.vm.ReportViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ExpensesAdapter
@@ -38,26 +39,26 @@ class ReportFragment: BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_report_day, container, false)
-    }
+    ): View {
+        val binding = DataBindingUtil.inflate<FragmentReportDayBinding>(inflater, R.layout.fragment_report_day, container, false)
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         val arg = arguments
         val date = arg?.getString("date")
-        "Отчет за $date".also { tv_report_title.text = it }
-        initRV()
+        "Отчет за $date".also { binding.tvReportTitle.text = it }
+
+        binding.rvExpenses.adapter = adapter
+        adapter.notifyDataSetChanged()
+
         if (date == UtilsMethods.getTodayDateString()) {
-            observeReport()
-            observeTodayExpenses()
+            observeReport(binding)
+            observeTodayExpenses(binding)
         } else {
-            btn_set_cost.visibility = View.GONE
-            date?.let { observeReportDate(it) }
-            date?.let { observeExpenses(it) }
+            binding.btnSetCost.visibility = View.GONE
+            date?.let { observeReportDate(it, binding) }
+            date?.let { observeExpenses(it, binding) }
         }
 
-        btn_set_cost.setOnClickListener {
+        binding.btnSetCost.setOnClickListener {
             val layoutInflater = LayoutInflater.from(context)
             val viewDialog = layoutInflater.inflate(R.layout.layout_custom_alert_dialog, null)
             val dialogBuilder = context?.let { it1 -> AlertDialog.Builder(it1) }
@@ -89,8 +90,8 @@ class ReportFragment: BaseFragment() {
                                 etParametr.text.toString().toFloat()
                             )
                             UtilsMethods.showToast(this.context, etNameParametr.text.toString())
-                            observeTodayExpenses()
-                            observeReport()
+                            observeTodayExpenses(binding)
+                            observeReport(binding)
                         }
                     }
                 }
@@ -101,68 +102,63 @@ class ReportFragment: BaseFragment() {
             alertDialog?.show()
         }
 
+        return binding.root
     }
 
-    private fun observeReport() {
+    private fun observeReport(binding: FragmentReportDayBinding) {
         viewModel.initThisReport()
         viewModel.reportDay.observe(viewLifecycleOwner, {
-            tv_num_total_orders.text = "${it.orderComplete}"
-            tv_tank_report.text = "${it.tank}"
-            tv_total_money.text = "${it.totalMoney}руб."
-            tv_cash_num_total.text = "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб."
-            tv_cash_num_on_site.text = "${it.cashOnSite}руб."
-            tv_cash_num_on_terminal.text = "${it.cashOnTerminal}руб."
-            tv_cash_num_money.text = "${it.cashMoney}руб."
-            tv_no_cash_num.text = "${it.noCashMoney}руб."
-            tv_cash_num_on_site.text = "${it.cashOnSite}руб."
-            tv_num_cash_many_report.text = "${it.moneyDelivery}руб."
+            binding.tvNumTotalOrders.text = "${it.orderComplete}"
+            binding.tvTankReport.text = "${it.tank}"
+            "${it.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
+            "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб.".also { binding.tvCashNumTotal.text = it }
+            "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${it.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
+            "${it.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
+            "${it.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
+            "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${it.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
         })
     }
 
-    private fun observeReportDate(date: String) {
+    private fun observeReportDate(date: String, binding: FragmentReportDayBinding) {
         viewModel.initDateReport(date)
         viewModel.reportDay.observe(viewLifecycleOwner, {
-            tv_num_total_orders.text = "${it.orderComplete}"
-            tv_tank_report.text = "${it.tank}"
-            tv_total_money.text = "${it.totalMoney}руб."
-            tv_cash_num_total.text = "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб."
-            tv_cash_num_on_site.text = "${it.cashOnSite}руб."
-            tv_cash_num_on_terminal.text = "${it.cashOnTerminal}руб."
-            tv_cash_num_money.text = "${it.cashMoney}руб."
-            tv_no_cash_num.text = "${it.noCashMoney}руб."
-            tv_cash_num_on_site.text = "${it.cashOnSite}руб."
-            tv_num_cash_many_report.text = "${it.moneyDelivery}руб."
+            binding.tvNumTotalOrders.text = "${it.orderComplete}"
+            binding.tvTankReport.text = "${it.tank}"
+            "${it.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
+            "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб.".also { binding.tvCashNumTotal.text = it }
+            "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${it.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
+            "${it.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
+            "${it.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
+            "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${it.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
         })
     }
 
-    private fun observeTodayExpenses() {
+    private fun observeTodayExpenses(binding: FragmentReportDayBinding) {
         viewModel.getTodayExpenses()
         viewModel.expenses.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
-                tv_expenses_title.text = "Расходы"
+                binding.tvExpensesTitle.text = "Расходы"
                 addExpenses(it)
             } else {
-                tv_expenses_title.text = "Расходов нет"
+                binding.tvExpensesTitle.text = "Расходов нет"
             }
         })
     }
 
-    private fun observeExpenses(date: String) {
+    private fun observeExpenses(date: String, binding: FragmentReportDayBinding) {
         viewModel.getExpenses(date)
         viewModel.expenses.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
-                tv_expenses_title.text = "Расходы"
+                binding.tvExpensesTitle.text = "Расходы"
                 addExpenses(it)
             } else {
-                tv_expenses_title.text = "Расходов нет"
+                binding.tvExpensesTitle.text = "Расходов нет"
             }
         })
-    }
-
-    private fun initRV() {
-        rv_expenses.layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        adapter.notifyDataSetChanged()
-        rv_expenses.adapter = adapter
     }
 
     private fun addExpenses(expenses: List<Expenses>) {

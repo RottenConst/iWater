@@ -7,13 +7,13 @@ import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import kotlinx.android.synthetic.main.activity_start_work.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
+import ru.iwater.youwater.iwaterlogistic.databinding.ActivityStartWorkBinding
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
@@ -24,27 +24,28 @@ import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import javax.inject.Inject
 
-class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
+class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
-    private val viewModel: OrderListViewModel by viewModels {factory}
+    private val viewModel: OrderListViewModel by viewModels { factory }
     private val screenComponent = App().buildScreenComponent()
     lateinit var accountRepository: AccountRepository
 
+    private lateinit var binding: ActivityStartWorkBinding
     private val adapter = ListCurrentOrdersPreview()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_start_work)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_start_work)
         screenComponent.inject(this)
         accountRepository = AccountRepository(screenComponent.accountStorage())
-        srl_refresh_current_orders.setOnRefreshListener(this)
+        binding.srlRefreshCurrentOrders.setOnRefreshListener(this)
         initRecyclerView()
         observeVW()
         viewModel.getLoadCurrent()
 
-        btn_exit_account.setOnClickListener {
+        binding.btnExitAccount.setOnClickListener {
             AlertDialog.Builder(this)
                 .setMessage(R.string.confirmLogout)
                 .setPositiveButton(
@@ -63,33 +64,34 @@ class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
                 }.create().show()
         }
 
-        btn_start_day.setOnClickListener {
+        binding.btnStartDay.setOnClickListener {
             viewModel.openDriverDay(this)
         }
     }
 
     override fun onRefresh() {
         viewModel.getLoadCurrent()
-        srl_refresh_current_orders.isRefreshing = false
+        binding.srlRefreshCurrentOrders.isRefreshing = false
     }
 
     private fun observeVW() {
         viewModel.listOrder.observe(this, {
             if (it.isNullOrEmpty()) {
-                tv_title.text = "Плаеновых заказов пока нет"
-                rv_list_current_preview.visibility = View.GONE
+                binding.tvTitle.text = "Плаеновых заказов пока нет"
+                binding.rvListCurrentPreview.visibility = View.GONE
             } else {
                 addCurrentOrders(it)
-                tv_title.text = "Плановые заказы на ${UtilsMethods.getTodayDateString()}"
-                rv_list_current_preview.visibility = View.VISIBLE
+                "Плановые заказы на ${UtilsMethods.getTodayDateString()}".also {
+                    binding.tvTitle.text = it
+                }
+                binding.rvListCurrentPreview.visibility = View.VISIBLE
             }
         })
     }
 
     private fun initRecyclerView() {
-        rv_list_current_preview.layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
+        binding.rvListCurrentPreview.adapter = adapter
         adapter.notifyDataSetChanged()
-        rv_list_current_preview.adapter = adapter
     }
 
     private fun addCurrentOrders(orders: List<Order>) {
@@ -100,7 +102,11 @@ class StartWorkActivity: BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
 
     companion object {
         fun start(context: Context) {
-            ContextCompat.startActivity(context, Intent(context, StartWorkActivity::class.java), null)
+            ContextCompat.startActivity(
+                context,
+                Intent(context, StartWorkActivity::class.java),
+                null
+            )
         }
     }
 

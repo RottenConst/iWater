@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout
-        android:layout_width="@dimen/menu_item_size"
-        android:layout_height="@dimen/menu_item_size">
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/icon_badge"
-            android:layout_width="@dimen/menu_item_icon_size"
-            android:layout_height="@dimen/menu_item_icon_size"
-            android:layout_centerInParent="true"
-            android:scaleType="fitXY"
-            android:src="@drawable/ic_grey_notification" />
+        <RelativeLayout
+            android:layout_width="@dimen/menu_item_size"
+            android:layout_height="@dimen/menu_item_size">
 
-        <TextView
-            android:id="@+id/counter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@id/icon_badge"
-            android:layout_alignTop="@+id/icon_badge"
-            android:layout_gravity="center"
-            android:layout_marginStart="@dimen/counter_left_margin"
-            android:background="@drawable/counter_background"
-            android:gravity="center"
-            android:paddingLeft="@dimen/counter_text_horizontal_padding"
-            android:paddingRight="@dimen/counter_text_horizontal_padding"
-            android:text="99"
-            android:textAppearance="@style/CounterText" />
-    </RelativeLayout>
+            <ImageView
+                android:id="@+id/icon_badge"
+                android:layout_width="@dimen/menu_item_icon_size"
+                android:layout_height="@dimen/menu_item_icon_size"
+                android:layout_centerInParent="true"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_grey_notification" />
 
-</FrameLayout>
+            <TextView
+                android:id="@+id/counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignStart="@id/icon_badge"
+                android:layout_alignTop="@+id/icon_badge"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/counter_left_margin"
+                android:background="@drawable/counter_background"
+                android:gravity="center"
+                android:paddingLeft="@dimen/counter_text_horizontal_padding"
+                android:paddingRight="@dimen/counter_text_horizontal_padding"
+                android:text="99"
+                android:textAppearance="@style/CounterText" />
+        </RelativeLayout>
+
+    </FrameLayout>
+</layout>

@@ -39,7 +39,7 @@ class App : Application() {
             .build()
     }
 
-    fun createNotificationChanel() {
+    private fun createNotificationChanel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChanel = NotificationChannel(
                 CHANEL_SERVICE_ID,

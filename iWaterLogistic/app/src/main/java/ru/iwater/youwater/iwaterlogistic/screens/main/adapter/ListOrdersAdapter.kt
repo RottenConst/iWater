@@ -3,8 +3,8 @@ package ru.iwater.youwater.iwaterlogistic.screens.main.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.item_current_order.view.*
 import ru.iwater.youwater.iwaterlogistic.R
+import ru.iwater.youwater.iwaterlogistic.databinding.ItemCurrentOrderBinding
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 
@@ -15,42 +15,43 @@ class ListOrdersAdapter(
     lateinit var onOrderClick: ((Order) -> Unit)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListOrderHolder {
-          return ListOrderHolder(LayoutInflater.from(parent.context), parent, R.layout.item_current_order)
+        val inflater = LayoutInflater.from(parent.context)
+        return ListOrderHolder(ItemCurrentOrderBinding.inflate(inflater, parent, false))
     }
 
     override fun onBindViewHolder(holder: ListOrderHolder, position: Int) {
-            holder.bindOrders(orders[position], position)
+            holder.bindOrders(orders[position])
     }
 
     override fun getItemCount(): Int = orders.size
 
-    inner class ListOrderHolder(inflater: LayoutInflater, parent: ViewGroup, resource: Int) :
-        RecyclerView.ViewHolder(inflater.inflate(resource, parent, false)) {
+    inner class ListOrderHolder(val binding: ItemCurrentOrderBinding) :
+        RecyclerView.ViewHolder(binding.root) {
             init {
-                itemView.card_order.setOnClickListener { onOrderClick.invoke(orders[adapterPosition]) }
+                binding.cardOrder.setOnClickListener { onOrderClick.invoke(orders[adapterPosition]) }
             }
 
-        fun bindOrders(order: Order, position: Int) {
-            itemView.num_order.text = order.num.toString()
-            "Заказ: ${order.time},\n${order.address}".also { itemView.order_info.text = it }
+        fun bindOrders(order: Order) {
+            binding.numOrder.text = order.num.toString()
+            "Заказ: ${order.time},\n${order.address}".also { binding.orderInfo.text = it }
             for (product in order.products) {
-                itemView.order_info.append("\n${product.name} - ${product.count}шт.")
+                binding.orderInfo.append("\n${product.name} - ${product.count}шт.")
             }
             val time = order.time.split("-")[1]
             if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) > 7200) {
-                itemView.num_order.setBackgroundResource(R.drawable.circle_green)
+                binding.numOrder.setBackgroundResource(R.drawable.circle_green)
             }
 
             if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) in 3601..7199) {
-                itemView.num_order.setBackgroundResource(R.drawable.circle_yellow)
+                binding.numOrder.setBackgroundResource(R.drawable.circle_yellow)
             }
 
             if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) < 3600) {
-                itemView.num_order.setBackgroundResource(R.drawable.circle_red)
+                binding.numOrder.setBackgroundResource(R.drawable.circle_red)
             }
 
             if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) < 0) {
-                itemView.num_order.setBackgroundResource(R.drawable.circle_grey)
+                binding.numOrder.setBackgroundResource(R.drawable.circle_grey)
             }
         }
 

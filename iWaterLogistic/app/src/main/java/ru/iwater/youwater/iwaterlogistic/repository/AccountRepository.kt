@@ -19,7 +19,7 @@ class AccountRepository @Inject constructor(
     private val accountStorage: StorageStateAccount
 ) {
 
-    val service: ApiRequest = RetrofitFactory.makeRetrofit()
+    private val service: ApiRequest = RetrofitFactory.makeRetrofit()
 
     suspend fun authDriver(company: String, login: String, password: String, notification: String): Pair<String, Account?> {
         var message = ""

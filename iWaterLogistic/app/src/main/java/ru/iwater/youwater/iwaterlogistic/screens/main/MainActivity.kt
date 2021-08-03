@@ -5,17 +5,16 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
+import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.badge_with_counter_icon.*
-import kotlinx.android.synthetic.main.main_container_activity.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
+import ru.iwater.youwater.iwaterlogistic.databinding.MainContainerActivityBinding
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
@@ -36,16 +35,19 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_container_activity)
+        val binding = DataBindingUtil.setContentView<MainContainerActivityBinding>(
+            this,
+            R.layout.main_container_activity
+        )
         accountRepository = AccountRepository(screenComponent.accountStorage())
 
         val service = Intent(this.applicationContext, TimeListenerService::class.java)
         this.startService(service)
         Timber.d("account = ${accountRepository.getAccount().id}")
 
-        bottom_bar_navigation.menu[1].isChecked = true
+        binding.bottomBarNavigation.menu[1].isChecked = true
         loadFragment(FragmentCurrentOrders.newInstance())
-        bottom_bar_navigation.setOnNavigationItemSelectedListener(bottomNavFragment)
+        binding.bottomBarNavigation.setOnNavigationItemSelectedListener(bottomNavFragment)
     }
 
     override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
@@ -59,7 +61,7 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
+        when (item.itemId) {
             R.id.log_out_menu -> {
                 AlertDialog.Builder(this)
                     .setMessage(R.string.confirmLogout)
@@ -82,7 +84,7 @@ class MainActivity : BaseActivity() {
     }
 
     private val bottomNavFragment = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.complete_order -> {
                 loadFragment(FragmentCompleteOrders.newInstance())
                 return@OnNavigationItemSelectedListener true

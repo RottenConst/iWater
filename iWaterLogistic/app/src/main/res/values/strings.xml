@@ -6,6 +6,7 @@
     <string name="enter_text">Войти</string>
     <string name="exit_text">Выход</string>
     <string name="map">Карта</string>
+    <string name="logo">Лого</string>
 
     <string name="completeOrder">Завершенные заказы</string>
     <string name="ProcessedOrders">Обработанные</string>
@@ -18,7 +19,7 @@
     <string name="confirmEndOrder">Пожалуйста выполните все не завершенные заказы прежде чем закончить день или свяжитесь с диспетчером для переноса заказов</string>
 
     <string name="yes">Да</string>
-    <string name="ok">Ok</string>
+    <string name="ok">Ок</string>
     <string name="no">Нет</string>
 
     <string name="cancel">Отмена</string>
@@ -72,7 +73,7 @@
     <string name="cost">123руб</string>
     <string name="expenses">Расходы</string>
     <string name="end_session">Закончить день</string>
-    <string name="start_worc">Начать день</string>
+    <string name="start_work">Начать день</string>
     <string name="current_orders">Заказы</string>
     <string name="cash_many_to_report">Наличных к сдаче</string>
     <string name="reports">Oтчеты</string>
@@ -85,4 +86,5 @@
     <string name="permission_rationale">
         Необходимо разрешение на определение вашего местоположения
     </string>
+    <string name="arrow_description">image_arrow</string>
 </resources>

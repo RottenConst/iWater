@@ -9,11 +9,12 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.startActivity
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.login_activity.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
+import ru.iwater.youwater.iwaterlogistic.databinding.LoginActivityBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.AccountViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.StartWorkActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
@@ -28,12 +29,13 @@ class LoginActivity : BaseActivity() {
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
-    private val viewModel: AccountViewModel by viewModels {factory}
+    private val viewModel: AccountViewModel by viewModels { factory }
     private val screenComponent = App().buildScreenComponent()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.login_activity)
+        val binding =
+            DataBindingUtil.setContentView<LoginActivityBinding>(this, R.layout.login_activity)
         screenComponent.inject(this)
         if (ActivityCompat.checkSelfPermission(
                 this@LoginActivity,
@@ -47,15 +49,11 @@ class LoginActivity : BaseActivity() {
             )
         }
         observeViewModel()
-        authListener()
-    }
-
-    private fun authListener() {
-        btn_enter.setOnClickListener {
+        binding.btnEnter.setOnClickListener {
             viewModel.authDriver(
-                    company = et_company.text.toString(),
-                    login = et_login.text.toString(),
-                    password = et_password.text.toString(),
+                binding.etLogin.text.toString(),
+                binding.etCompany.text.toString(),
+                binding.etPassword.text.toString()
             )
         }
     }
@@ -72,10 +70,6 @@ class LoginActivity : BaseActivity() {
                 startActivity(intent)
             }
         })
-    }
-
-    private fun showToast(value: String) {
-        Toast.makeText(this, value, Toast.LENGTH_LONG).show()
     }
 
     companion object {

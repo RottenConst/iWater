@@ -6,10 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.about_complete_fragment.*
-import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
+import ru.iwater.youwater.iwaterlogistic.databinding.AboutCompleteFragmentBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.CompleteOrdersViewModel
 import javax.inject.Inject
 
@@ -30,32 +29,29 @@ class FragmentCompleteOrderInfo: BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.about_complete_fragment, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+    ): View {
+        val binding = AboutCompleteFragmentBinding.inflate(inflater, container, false)
         val arg = arguments
         val id = arg?.getInt("id")
-        observeVM()
+        observeVM(binding)
         viewModel.getCompleteOrder(id)
+        return binding.root
     }
 
-    private fun observeVM() {
+    private fun observeVM(binding: AboutCompleteFragmentBinding) {
         viewModel.order.observe(viewLifecycleOwner, { order ->
-            "№ ${order.id}, ${order.time}".also { tv_id_and_date.text = it }
-            tv_address.text = order.address
-            tv_name_complete_order.text = ""
+            "№ ${order.id}, ${order.time}".also { binding.tvIdAndDate.text = it }
+            binding.tvAddress.text = order.address
+            binding.tvNameCompleteOrder.text = ""
             for (product in order.products) {
-                tv_name_complete_order.append("${product.name} - ${product.count}шт.\n")
+                binding.tvNameCompleteOrder.append("${product.name} - ${product.count}шт.\n")
             }
-            tv_name_complete_order.append("\nзабрано тары: ${order.tank}шт")
-            "${order.typeOfCash}: ${order.cash}".also { tv_price_complete_order.text = it }
-            "${order.name}; \n${order.address};".also { tv_info_complete_client.text = it }
-            tv_phone_number.text = order.contact
-            tv_comment_operator.text = order.notice
-            tv_comment_driver.text = order.noticeDriver
+            binding.tvNameCompleteOrder.append("\nзабрано тары: ${order.tank}шт")
+            "${order.typeOfCash}: ${order.cash}".also { binding.tvPriceCompleteOrder.text = it }
+            "${order.name}; \n${order.address};".also { binding.tvInfoCompleteClient.text = it }
+            binding.tvPhoneNumber.text = order.contact
+            binding.tvCommentOperator.text = order.notice
+            binding.tvCommentDriver.text = order.noticeDriver
         })
     }
 
