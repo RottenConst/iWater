@@ -35,7 +35,7 @@
     <string name="to_ship_order">Отгрузить заказ</string>
     <string name="see_on_map">Посмотреть на карте</string>
     <string name="call_client">Позвонить</string>
-    <string name="copy_address">Копировать адрес в буфер обмена</string>
+    <string name="copy_address">Копировать адрес</string>
     <string name="name_order">имя товара</string>
     <string name="price_order">цена заказа</string>
     <string name="info_client">информация о клиенте</string>
@@ -69,7 +69,7 @@
     <string name="cash_many">Оплата наличными:</string>
     <string name="no_cash_money">Оплата безналичными</string>
     <string name="complete_orders_total">Всего выполнено заказов</string>
-    <string name="name_expenses">Наименование расхода</string>
+    <string name="name_expenses">Наименование расхода:</string>
     <string name="cost">123руб</string>
     <string name="expenses">Расходы</string>
     <string name="end_session">Закончить день</string>
@@ -87,4 +87,10 @@
         Необходимо разрешение на определение вашего местоположения
     </string>
     <string name="arrow_description">image_arrow</string>
+    <string name="expenses_name_add">Введите имя расхода</string>
+    <string name="one_expenses">РАСХОД</string>
+    <string name="expenses_cost">Введите сумму расхода</string>
+    <string name="expenses_cost_label">Сумма расхоа:</string>
+    <string name="add_photo_check">Прикрепить чек(фото)</string>
+    <string name="send">Отправить</string>
 </resources>

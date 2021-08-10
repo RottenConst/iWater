@@ -1,347 +1,356 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/info_current_report"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_report_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/report"
-            android:textColor="@color/colorPrimaryBlueDark"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/ic_tank_report"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:contentDescription="@string/count_tank_to_back"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_report_title"
-            app:srcCompat="@drawable/ic_tank" />
+            <TextView
+                android:id="@+id/tv_report_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/report"
+                android:textColor="@color/colorPrimaryBlueDark"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_take_away_tank"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/take_away_tank"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/tv_tank_report"
-            app:layout_constraintStart_toEndOf="@+id/ic_tank_report"
-            app:layout_constraintTop_toBottomOf="@+id/tv_report_title" />
+            <ImageView
+                android:id="@+id/ic_tank_report"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:contentDescription="@string/count_tank_to_back"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_report_title"
+                app:srcCompat="@drawable/ic_tank" />
 
-        <TextView
-            android:id="@+id/tv_tank_report"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_report_title" />
+            <TextView
+                android:id="@+id/tv_take_away_tank"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/take_away_tank"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/tv_tank_report"
+                app:layout_constraintStart_toEndOf="@+id/ic_tank_report"
+                app:layout_constraintTop_toBottomOf="@+id/tv_report_title" />
 
-        <ImageView
-            android:id="@+id/ic_money_total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:contentDescription="@string/total_money"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ic_tank_report"
-            app:srcCompat="@drawable/ic_baseline_attach_money_24"
-            tools:srcCompat="@drawable/ic_baseline_attach_money_24" />
+            <TextView
+                android:id="@+id/tv_tank_report"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/string_one"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_report_title" />
 
-        <TextView
-            android:id="@+id/tv_total_money_report"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/total_money"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/tv_total_money"
-            app:layout_constraintStart_toEndOf="@+id/ic_money_total"
-            app:layout_constraintTop_toBottomOf="@+id/tv_take_away_tank" />
+            <ImageView
+                android:id="@+id/ic_money_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:contentDescription="@string/total_money"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ic_tank_report"
+                app:srcCompat="@drawable/ic_baseline_attach_money_24"
+                tools:srcCompat="@drawable/ic_baseline_attach_money_24" />
 
-        <TextView
-            android:id="@+id/tv_total_money"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_tank_report" />
+            <TextView
+                android:id="@+id/tv_total_money_report"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/total_money"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/tv_total_money"
+                app:layout_constraintStart_toEndOf="@+id/ic_money_total"
+                app:layout_constraintTop_toBottomOf="@+id/tv_take_away_tank" />
 
-        <ImageView
-            android:id="@+id/ic_cash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:contentDescription="@string/cash_many"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ic_money_total"
-            app:srcCompat="@drawable/ic_rub_24" />
+            <TextView
+                android:id="@+id/tv_total_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/string_one"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_tank_report" />
 
-        <TextView
-            android:id="@+id/tv_cache_total"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/cash_total"
-            android:textColor="@color/black"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toStartOf="@+id/tv_cash_num_total"
-            app:layout_constraintStart_toEndOf="@+id/ic_cash"
-            app:layout_constraintTop_toBottomOf="@+id/tv_total_money_report" />
+            <ImageView
+                android:id="@+id/ic_cash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:contentDescription="@string/cash_many"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ic_money_total"
+                app:srcCompat="@drawable/ic_rub_24" />
 
-        <TextView
-            android:id="@+id/tv_cash_num_total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_total_money" />
+            <TextView
+                android:id="@+id/tv_cache_total"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/cash_total"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                app:layout_constraintEnd_toStartOf="@+id/tv_cash_num_total"
+                app:layout_constraintStart_toEndOf="@+id/ic_cash"
+                app:layout_constraintTop_toBottomOf="@+id/tv_total_money_report" />
 
-        <TextView
-            android:id="@+id/tv_cash_on_site"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/cash_on_site"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/tv_cash_num_on_site"
-            app:layout_constraintStart_toStartOf="@+id/tv_cache_total"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cache_total" />
+            <TextView
+                android:id="@+id/tv_cash_num_total"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/string_one"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_total_money" />
 
-        <TextView
-            android:id="@+id/tv_cash_num_on_site"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cash_num_total" />
+            <TextView
+                android:id="@+id/tv_cash_on_site"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/cash_on_site"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/tv_cash_num_on_site"
+                app:layout_constraintStart_toStartOf="@+id/tv_cache_total"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cache_total" />
 
-        <TextView
-            android:id="@+id/tv_cash_on_terminal"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/cash_on_terminal"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/tv_cash_num_on_terminal"
-            app:layout_constraintStart_toStartOf="@+id/tv_cash_on_site"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cash_on_site" />
+            <TextView
+                android:id="@+id/tv_cash_num_on_site"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/string_one"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cash_num_total" />
 
-        <TextView
-            android:id="@+id/tv_cash_num_on_terminal"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cash_num_on_site" />
+            <TextView
+                android:id="@+id/tv_cash_on_terminal"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/cash_on_terminal"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/tv_cash_num_on_terminal"
+                app:layout_constraintStart_toStartOf="@+id/tv_cash_on_site"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cash_on_site" />
 
-        <TextView
-            android:id="@+id/tv_cash_many"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/cash_many"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/tv_cash_num_money"
-            app:layout_constraintStart_toStartOf="@+id/tv_cash_on_terminal"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cash_on_terminal" />
+            <TextView
+                android:id="@+id/tv_cash_num_on_terminal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/string_one"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cash_num_on_site" />
 
-        <TextView
-            android:id="@+id/tv_cash_num_money"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cash_num_on_terminal" />
+            <TextView
+                android:id="@+id/tv_cash_many"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/cash_many"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/tv_cash_num_money"
+                app:layout_constraintStart_toStartOf="@+id/tv_cash_on_terminal"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cash_on_terminal" />
 
-        <ImageView
-            android:id="@+id/ic_icon_no_cash"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:contentDescription="@string/no_cash_money"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cash_many"
-            app:srcCompat="@drawable/ic_baseline_attach_money_24" />
+            <TextView
+                android:id="@+id/tv_cash_num_money"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/string_one"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cash_num_on_terminal" />
 
-        <TextView
-            android:id="@+id/textView16"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="8dp"
-            android:text="@string/no_cash_money"
-            android:textColor="@color/black"
-            app:layout_constraintEnd_toStartOf="@+id/tv_no_cash_num"
-            app:layout_constraintStart_toEndOf="@+id/ic_icon_no_cash"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cash_many" />
+            <ImageView
+                android:id="@+id/ic_icon_no_cash"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:contentDescription="@string/no_cash_money"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cash_many"
+                app:srcCompat="@drawable/ic_baseline_attach_money_24" />
 
-        <TextView
-            android:id="@+id/tv_no_cash_num"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_cash_num_money" />
+            <TextView
+                android:id="@+id/textView16"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/no_cash_money"
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/tv_no_cash_num"
+                app:layout_constraintStart_toEndOf="@+id/ic_icon_no_cash"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cash_many" />
 
-        <ImageView
-            android:id="@+id/ic_total_orders_complete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"
-            android:contentDescription="@string/current_order"
-            app:layout_constraintBottom_toTopOf="@+id/btn_set_cost"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rv_expenses"
-            app:srcCompat="@drawable/ic_chek_documents_24" />
+            <TextView
+                android:id="@+id/tv_no_cash_num"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/string_one"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_cash_num_money" />
 
-        <TextView
-            android:id="@+id/tv_total_orders_complete"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="@string/complete_orders_total"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toTopOf="@+id/btn_set_cost"
-            app:layout_constraintEnd_toStartOf="@+id/tv_num_total_orders"
-            app:layout_constraintStart_toEndOf="@+id/ic_total_orders_complete" />
+            <ImageView
+                android:id="@+id/ic_total_orders_complete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="@string/current_order"
+                app:layout_constraintBottom_toTopOf="@+id/btn_set_cost"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rv_expenses"
+                app:srcCompat="@drawable/ic_chek_documents_24" />
 
-        <TextView
-            android:id="@+id/tv_num_total_orders"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="16dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/btn_set_cost"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/tv_total_orders_complete"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/complete_orders_total"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toTopOf="@+id/btn_set_cost"
+                app:layout_constraintEnd_toStartOf="@+id/tv_num_total_orders"
+                app:layout_constraintStart_toEndOf="@+id/ic_total_orders_complete" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_expenses"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_text_cash_many_report"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_expenses_title"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/item_expenses"/>
+            <TextView
+                android:id="@+id/tv_num_total_orders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/string_one"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/btn_set_cost"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_expenses_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/expenses"
-            android:textColor="@color/colorPrimaryBlueDark"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView16" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_expenses"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@+id/tv_text_cash_many_report"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_expenses_title"
+                tools:listitem="@layout/item_expenses" />
 
-        <Button
-            android:id="@+id/btn_set_cost"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
-            android:text="@string/set_cost"
-            app:cornerRadius="16dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            <TextView
+                android:id="@+id/tv_expenses_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/expenses"
+                android:textColor="@color/colorPrimaryBlueDark"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView16" />
 
-        <TextView
-            android:id="@+id/tv_text_cash_many_report"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            android:text="@string/cash_many_to_report"
-            android:textColor="@color/black"
-            app:layout_constraintBottom_toTopOf="@+id/tv_total_orders_complete"
-            app:layout_constraintEnd_toStartOf="@+id/tv_num_cash_many_report"
-            app:layout_constraintStart_toEndOf="@+id/ic_total_orders_complete" />
+            <Button
+                android:id="@+id/btn_set_cost"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/set_cost"
+                app:cornerRadius="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_num_cash_many_report"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="32dp"
-            android:layout_marginBottom="8dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/tv_num_total_orders"
-            app:layout_constraintEnd_toEndOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/tv_text_cash_many_report"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/cash_many_to_report"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toTopOf="@+id/tv_total_orders_complete"
+                app:layout_constraintEnd_toStartOf="@+id/tv_num_cash_many_report"
+                app:layout_constraintStart_toEndOf="@+id/ic_total_orders_complete" />
+
+            <TextView
+                android:id="@+id/tv_num_cash_many_report"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="32dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/string_one"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/tv_num_total_orders"
+                app:layout_constraintEnd_toEndOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <include android:id="@+id/add_expenses_drawer"
+            layout="@layout/item_add_expenses"/>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

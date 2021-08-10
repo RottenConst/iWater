@@ -16,7 +16,7 @@ import timber.log.Timber
 /**
  * Базовый класс приложения.
  **/
-const val CHANEL_SERVICE_ID = "ru.iwater.logistic.service"
+const val CHANNEL_SERVICE_ID = "ru.iwater.logistic.service"
 
 class App : Application() {
 
@@ -42,7 +42,7 @@ class App : Application() {
     private fun createNotificationChanel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChanel = NotificationChannel(
-                CHANEL_SERVICE_ID,
+                CHANNEL_SERVICE_ID,
                 "Service Notification Chanel",
                 NotificationManager.IMPORTANCE_DEFAULT)
             val manager = getSystemService(NotificationManager::class.java)

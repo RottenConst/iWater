@@ -175,9 +175,9 @@ class ReportViewModel @Inject constructor(
     /**
      * добавить расход в бд
      */
-    fun addExpensesInBD(name: String, cost: Float) {
+    fun addExpensesInBD(name: String, cost: Float, fileName: String) {
         uiScope.launch {
-            reportRepository.saveExpenses(Expenses(idDriver,timeComplete, name, cost, company))
+            reportRepository.saveExpenses(Expenses(idDriver,timeComplete, name, cost, fileName, company))
         }
     }
 
@@ -194,9 +194,9 @@ class ReportViewModel @Inject constructor(
     /**
      * отправить расход в в црм
      */
-    fun sendExpenses(name: String, cost: Float) {
+    fun sendExpenses(name: String, cost: Float, fileName: String) {
         uiScope.launch {
-            reportRepository.sendExpenses(Expenses(idDriver, timeComplete, name, cost, company))
+            reportRepository.sendExpenses(Expenses(idDriver, timeComplete, name, cost, fileName, company))
         }
     }
 

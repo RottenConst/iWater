@@ -1,16 +1,27 @@
 package ru.iwater.youwater.iwaterlogistic.screens.main.tab.report
 
+import android.app.Activity.RESULT_OK
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.provider.SyncStateContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.TextView
-import androidx.appcompat.app.AlertDialog
+import android.view.inputmethod.InputMethodManager
+import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
@@ -19,9 +30,18 @@ import ru.iwater.youwater.iwaterlogistic.domain.Expenses
 import ru.iwater.youwater.iwaterlogistic.domain.vm.ReportViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ExpensesAdapter
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
+import timber.log.Timber
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.lang.Exception
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+import kotlin.math.max
 
-class ReportFragment: BaseFragment() {
+private const val REQUEST_IMAGE_CAPTURE = 1
+class ReportFragment : BaseFragment() {
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
@@ -29,6 +49,10 @@ class ReportFragment: BaseFragment() {
     private val adapter = ExpensesAdapter()
 
     private val screenComponent = App().buildScreenComponent()
+    private lateinit var binding: FragmentReportDayBinding
+    private var currentPhotoPath: String = ""
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,11 +64,19 @@ class ReportFragment: BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = DataBindingUtil.inflate<FragmentReportDayBinding>(inflater, R.layout.fragment_report_day, container, false)
-
+        binding = DataBindingUtil.inflate(
+            inflater,
+            R.layout.fragment_report_day,
+            container,
+            false
+        )
         val arg = arguments
         val date = arg?.getString("date")
         "Отчет за $date".also { binding.tvReportTitle.text = it }
+
+        val bottomSheetBehavior = BottomSheetBehavior.from(binding.addExpensesDrawer.addPhoto)
+        bottomSheetBehavior.setPeekHeight(0, true)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         binding.rvExpenses.adapter = adapter
         adapter.notifyDataSetChanged()
@@ -59,50 +91,119 @@ class ReportFragment: BaseFragment() {
         }
 
         binding.btnSetCost.setOnClickListener {
-            val layoutInflater = LayoutInflater.from(context)
-            val viewDialog = layoutInflater.inflate(R.layout.layout_custom_alert_dialog, null)
-            val dialogBuilder = context?.let { it1 -> AlertDialog.Builder(it1) }
-            dialogBuilder?.setView(viewDialog)
-            val etNameParametr = viewDialog.findViewById<EditText>(R.id.et_name_parametr)
-            val etParametr = viewDialog.findViewById<EditText>(R.id.et_parametr)
-            val tvTitle = viewDialog.findViewById<TextView>(R.id.tv_title_dialog)
-            tvTitle.text = "Установить рассход"
-            dialogBuilder
-                ?.setCancelable(false)
-                ?.setPositiveButton("Ok") { _, _ ->
-                    when {
-                        etNameParametr.text.isEmpty() -> {
-                            UtilsMethods.showToast(this.context, "Вы не заполнели расход")
-                        }
-                        etParametr.text.isEmpty() -> {
-                            UtilsMethods.showToast(this.context, "Вы не ввели сумму расхода")
-                        }
-                        etNameParametr.text.isEmpty() && etParametr.text.isEmpty() -> {
-                            UtilsMethods.showToast(this.context, "Заполните расход и сумму расхода")
-                        }
-                        else -> {
-                            viewModel.addExpensesInBD(
-                                etNameParametr.text.toString(),
-                                etParametr.text.toString().toFloat()
-                            )
-                            viewModel.sendExpenses(
-                                etNameParametr.text.toString(),
-                                etParametr.text.toString().toFloat()
-                            )
-                            UtilsMethods.showToast(this.context, etNameParametr.text.toString())
-                            observeTodayExpenses(binding)
-                            observeReport(binding)
-                        }
-                    }
-                }
-                ?.setNegativeButton("Отмена") { dialog, _ ->
-                    dialog.cancel();
-                }
-            val alertDialog = dialogBuilder?.create()
-            alertDialog?.show()
+            if (bottomSheetBehavior.state == BottomSheetBehavior.STATE_COLLAPSED)
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
+        binding.addExpensesDrawer.btnPositive.setOnClickListener {
+            if (chekExpenses(binding)) {
+                viewModel.addExpensesInBD(
+                    binding.addExpensesDrawer.etNameExpenses.text.toString(),
+                    binding.addExpensesDrawer.etSumExpenses.text.toString().toFloat(),
+                    currentPhotoPath
+                )
+                UtilsMethods.showToast(this.context, binding.addExpensesDrawer.etNameExpenses.text.toString())
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                binding.addExpensesDrawer.apply {
+                    viewModel.sendExpenses(
+                        etNameExpenses.text.toString(),
+                        etSumExpenses.text.toString().toFloat(),
+                        currentPhotoPath
+                    )
+                }
+                Timber.i(binding.addExpensesDrawer.ivPhotoChek.context.filesDir.path)
+            } else {
+                UtilsMethods.showToast(context, "Вы не заполнели все поля")
+            }
+        }
+
+        binding.addExpensesDrawer.btnAddPhoto.setOnClickListener {
+            try {
+                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
+            } catch (e: ActivityNotFoundException) {
+                e.printStackTrace()
+            }
+
+
+        }
+
+        binding.addExpensesDrawer.btnNegativ.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+
+        }
+
+        bottomSheetBehavior.addBottomSheetCallback(object :
+            BottomSheetBehavior.BottomSheetCallback() {
+            override fun onStateChanged(bottomSheet: View, newState: Int) {
+                if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
+                    hideKeyboard(bottomSheet)
+                    observeTodayExpenses(binding)
+                    observeReport(binding)
+                    binding.addExpensesDrawer.apply {
+                        etNameExpenses.text.clear()
+                        etSumExpenses.text.clear()
+                        ivPhotoChek.visibility = View.GONE
+                        currentPhotoPath = ""
+                    }
+                    Timber.i("hide")
+                }
+            }
+
+            override fun onSlide(bottomSheet: View, slideOffset: Float) {
+
+            }
+        })
+
         return binding.root
+    }
+
+    private fun chekExpenses(
+        binding: FragmentReportDayBinding,
+    ): Boolean {
+        return binding.addExpensesDrawer.etNameExpenses.text.isNotBlank() && binding.addExpensesDrawer.etSumExpenses.text.isNotBlank() && (currentPhotoPath.isNotBlank())
+    }
+
+    private fun hideKeyboard(view: View) {
+        val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
+            // Фотка сделана, извлекаем миниатюру картинки
+            if (data != null) {
+                if (data.hasExtra("data")) {
+                    val thumbnailBitmap = data.extras?.get("data") as Bitmap
+                    saveImage(thumbnailBitmap)
+                    binding.addExpensesDrawer.apply {
+                        ivPhotoChek.setImageBitmap(thumbnailBitmap)
+                        ivPhotoChek.visibility = View.VISIBLE
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    private fun saveImage(bitmap: Bitmap) {
+        val cw = ContextWrapper(screenComponent.appContext())
+        val directory = cw.getDir("expenses", Context.MODE_APPEND)
+        if (!directory.exists()) {
+            directory.mkdirs()
+        }
+        val myPath = File(directory, "check_${System.currentTimeMillis()}.jpg")
+        try {
+            val fos = FileOutputStream(myPath)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
+            currentPhotoPath = myPath.path
+            Timber.i(myPath.path)
+            fos.close()
+        }catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun observeReport(binding: FragmentReportDayBinding) {
@@ -111,7 +212,9 @@ class ReportFragment: BaseFragment() {
             binding.tvNumTotalOrders.text = "${it.orderComplete}"
             binding.tvTankReport.text = "${it.tank}"
             "${it.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
-            "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб.".also { binding.tvCashNumTotal.text = it }
+            "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб.".also {
+                binding.tvCashNumTotal.text = it
+            }
             "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
             "${it.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
             "${it.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
@@ -127,7 +230,9 @@ class ReportFragment: BaseFragment() {
             binding.tvNumTotalOrders.text = "${it.orderComplete}"
             binding.tvTankReport.text = "${it.tank}"
             "${it.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
-            "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб.".also { binding.tvCashNumTotal.text = it }
+            "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб.".also {
+                binding.tvCashNumTotal.text = it
+            }
             "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
             "${it.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
             "${it.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }

@@ -40,8 +40,8 @@ class InfoOrderViewModel @Inject constructor(
             val orderInfoDetail = orderListRepository.getLoadOrderInfo(id)
 
             orderInfo = orderListRepository.getDBOrderOnId(id)
-            Timber.d("info id = ${orderInfo.cash}")
-            if (orderInfo.cash.isNotEmpty() && orderInfo.cash != null) {
+//            Timber.d("info id = ${orderInfo.cash}")
+            if (orderInfo.cash.isNotEmpty()) {
                 orderInfo.cash = (orderInfoDetail?.cash ?: 0).toString()
             } else {
                 orderInfo.cash_b = (orderInfoDetail?.cash ?: 0).toString()

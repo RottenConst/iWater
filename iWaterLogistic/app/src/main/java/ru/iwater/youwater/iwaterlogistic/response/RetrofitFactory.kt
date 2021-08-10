@@ -7,12 +7,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitFactory {
-//    const val BASE_URL = "http://api.iwatercrm.ru/iwater/" //test
-    const val BASE_URL = "http://app.iwatercrm.ru/iwater/" //prod
+    const val BASE_URL = "http://api.iwatercrm.ru/iwater/" //test
+//    const val BASE_URL = "http://app.iwatercrm.ru/iwater/" //prod
 
     fun makeRetrofit(): ApiRequest {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.NONE
+        httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
 
         val okHttpClient = OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)

@@ -1,15 +1,11 @@
 package ru.iwater.youwater.iwaterlogistic.repository
 
-import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.domain.Account
 import ru.iwater.youwater.iwaterlogistic.iteractor.StorageStateAccount
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 /**
@@ -21,10 +17,21 @@ class AccountRepository @Inject constructor(
 
     private val service: ApiRequest = RetrofitFactory.makeRetrofit()
 
-    suspend fun authDriver(company: String, login: String, password: String, notification: String): Pair<String, Account?> {
+    suspend fun authDriver(
+        company: String,
+        login: String,
+        password: String,
+        notification: String
+    ): Pair<String, Account?> {
         var message = ""
         var account: Account? = Account("", 0, company)
-        val response = service.authDriver("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", login, company, password, notification)
+        val response = service.authDriver(
+            "3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX",
+            login,
+            company,
+            password,
+            notification
+        )
         try {
             if (response.isSuccessful) {
                 if (response.body()?.session != null) {

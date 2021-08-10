@@ -1,10 +1,12 @@
 package ru.iwater.youwater.iwaterlogistic.screens.main.adapter
 
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import ru.iwater.youwater.iwaterlogistic.databinding.ItemExpensesBinding
 import ru.iwater.youwater.iwaterlogistic.domain.Expenses
+import java.io.File
 
 class ExpensesAdapter(
     val expensesList: MutableList<Expenses> = mutableListOf()
@@ -24,8 +26,10 @@ class ExpensesAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bindExpenses(expenses: Expenses) {
+            val file = BitmapFactory.decodeFile(expenses.fileName)
             binding.tvNameExpenses.text = expenses.expens
             binding.tvExpensesCost.text = "${expenses.money}"
+            binding.ivCheckPhoto.setImageBitmap(file)
         }
 
         companion object {
