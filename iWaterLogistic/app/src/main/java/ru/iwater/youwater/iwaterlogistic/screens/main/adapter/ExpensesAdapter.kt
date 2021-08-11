@@ -3,33 +3,32 @@ package ru.iwater.youwater.iwaterlogistic.screens.main.adapter
 import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.databinding.BindingAdapter
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.iwater.youwater.iwaterlogistic.databinding.ItemExpensesBinding
 import ru.iwater.youwater.iwaterlogistic.domain.Expenses
-import java.io.File
 
-class ExpensesAdapter(
-    val expensesList: MutableList<Expenses> = mutableListOf()
-) : RecyclerView.Adapter<ExpensesAdapter.ExpensesHolder>() {
+class ExpensesAdapter : ListAdapter<Expenses, ExpensesAdapter.ExpensesHolder>(ExpensesDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ExpensesHolder {
         return ExpensesHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: ExpensesHolder, position: Int) {
-        holder.bindExpenses(expensesList[position])
+        val item = getItem(position)
+        holder.bindExpenses(item)
     }
-
-    override fun getItemCount(): Int = expensesList.size
 
     class ExpensesHolder(val binding: ItemExpensesBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bindExpenses(expenses: Expenses) {
-            val file = BitmapFactory.decodeFile(expenses.fileName)
-            binding.tvNameExpenses.text = expenses.expens
-            binding.tvExpensesCost.text = "${expenses.money}"
-            binding.ivCheckPhoto.setImageBitmap(file)
+            binding.expenses = expenses
+            binding.executePendingBindings()
         }
 
         companion object {
@@ -42,6 +41,30 @@ class ExpensesAdapter(
         }
 
     }
+}
 
+class ExpensesDiffCallback : DiffUtil.ItemCallback<Expenses>() {
+    override fun areItemsTheSame(oldItem: Expenses, newItem: Expenses): Boolean {
+        return oldItem.date_created == newItem.date_created
+    }
 
+    override fun areContentsTheSame(oldItem: Expenses, newItem: Expenses): Boolean {
+        return oldItem == newItem
+    }
+}
+
+@BindingAdapter("expensesImage")
+fun ImageView.setExpensesImage(item: Expenses) {
+    val file = BitmapFactory.decodeFile(item.fileName)
+    setImageBitmap(file)
+}
+
+@BindingAdapter("nameText")
+fun TextView.setNameText(item: Expenses) {
+    text = item.expens
+}
+
+@BindingAdapter("costText")
+fun TextView.setCostText(item: Expenses) {
+    text = "${item.money}"
 }

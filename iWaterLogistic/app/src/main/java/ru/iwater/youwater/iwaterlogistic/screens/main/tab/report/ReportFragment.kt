@@ -6,18 +6,12 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
-import android.provider.SyncStateContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
-import androidx.core.content.FileProvider
-import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -26,21 +20,16 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.FragmentReportDayBinding
-import ru.iwater.youwater.iwaterlogistic.domain.Expenses
 import ru.iwater.youwater.iwaterlogistic.domain.vm.ReportViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ExpensesAdapter
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.lang.Exception
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
-import kotlin.math.max
 
 private const val REQUEST_IMAGE_CAPTURE = 1
+
 class ReportFragment : BaseFragment() {
 
     @Inject
@@ -51,7 +40,6 @@ class ReportFragment : BaseFragment() {
     private val screenComponent = App().buildScreenComponent()
     private lateinit var binding: FragmentReportDayBinding
     private var currentPhotoPath: String = ""
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,7 +67,6 @@ class ReportFragment : BaseFragment() {
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
 
         binding.rvExpenses.adapter = adapter
-        adapter.notifyDataSetChanged()
 
         if (date == UtilsMethods.getTodayDateString()) {
             observeReport(binding)
@@ -102,7 +89,10 @@ class ReportFragment : BaseFragment() {
                     binding.addExpensesDrawer.etSumExpenses.text.toString().toFloat(),
                     currentPhotoPath
                 )
-                UtilsMethods.showToast(this.context, binding.addExpensesDrawer.etNameExpenses.text.toString())
+                UtilsMethods.showToast(
+                    this.context,
+                    binding.addExpensesDrawer.etNameExpenses.text.toString()
+                )
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 binding.addExpensesDrawer.apply {
                     viewModel.sendExpenses(
@@ -201,44 +191,44 @@ class ReportFragment : BaseFragment() {
             currentPhotoPath = myPath.path
             Timber.i(myPath.path)
             fos.close()
-        }catch (e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
     private fun observeReport(binding: FragmentReportDayBinding) {
         viewModel.initThisReport()
-        viewModel.reportDay.observe(viewLifecycleOwner, {
-            binding.tvNumTotalOrders.text = "${it.orderComplete}"
-            binding.tvTankReport.text = "${it.tank}"
-            "${it.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
-            "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб.".also {
+        viewModel.reportDay.observe(viewLifecycleOwner, { reportDay ->
+            binding.tvNumTotalOrders.text = "${reportDay.orderComplete}"
+            binding.tvTankReport.text = "${reportDay.tank}"
+            "${reportDay.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
+            "${reportDay.cashOnSite + reportDay.cashOnTerminal + reportDay.cashMoney}руб.".also {
                 binding.tvCashNumTotal.text = it
             }
-            "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-            "${it.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
-            "${it.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
-            "${it.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
-            "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-            "${it.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
+            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${reportDay.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
+            "${reportDay.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
+            "${reportDay.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
+            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${reportDay.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
         })
     }
 
     private fun observeReportDate(date: String, binding: FragmentReportDayBinding) {
         viewModel.initDateReport(date)
-        viewModel.reportDay.observe(viewLifecycleOwner, {
-            binding.tvNumTotalOrders.text = "${it.orderComplete}"
-            binding.tvTankReport.text = "${it.tank}"
-            "${it.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
-            "${it.cashOnSite + it.cashOnTerminal + it.cashMoney}руб.".also {
+        viewModel.reportDay.observe(viewLifecycleOwner, { reportDay ->
+            binding.tvNumTotalOrders.text = "${reportDay.orderComplete}"
+            binding.tvTankReport.text = "${reportDay.tank}"
+            "${reportDay.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
+            "${reportDay.cashOnSite + reportDay.cashOnTerminal + reportDay.cashMoney}руб.".also {
                 binding.tvCashNumTotal.text = it
             }
-            "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-            "${it.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
-            "${it.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
-            "${it.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
-            "${it.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-            "${it.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
+            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${reportDay.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
+            "${reportDay.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
+            "${reportDay.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
+            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${reportDay.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
         })
     }
 
@@ -247,7 +237,7 @@ class ReportFragment : BaseFragment() {
         viewModel.expenses.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
                 binding.tvExpensesTitle.text = "Расходы"
-                addExpenses(it)
+                adapter.submitList(it)
             } else {
                 binding.tvExpensesTitle.text = "Расходов нет"
             }
@@ -259,17 +249,11 @@ class ReportFragment : BaseFragment() {
         viewModel.expenses.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
                 binding.tvExpensesTitle.text = "Расходы"
-                addExpenses(it)
+                adapter.submitList(it)
             } else {
                 binding.tvExpensesTitle.text = "Расходов нет"
             }
         })
-    }
-
-    private fun addExpenses(expenses: List<Expenses>) {
-        adapter.expensesList.clear()
-        adapter.expensesList.addAll(expenses)
-        adapter.notifyDataSetChanged()
     }
 
     companion object {
