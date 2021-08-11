@@ -8,7 +8,10 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Account
 import ru.iwater.youwater.iwaterlogistic.domain.Order
@@ -21,9 +24,11 @@ import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import timber.log.Timber
 import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+
+
+enum class OrderLoadStatus { LOADING, DONE, ERROR }
 
 /**
  * viewModel класс для действий с заказами
@@ -34,7 +39,7 @@ class OrderListViewModel @Inject constructor(
     accountRepository: AccountRepository
 ) : ViewModel() {
 
-//    val openDriverMonitor = MonitorDriverOpening()
+    //    val openDriverMonitor = MonitorDriverOpening()
     private var account: Account = accountRepository.getAccount()
 
     /**
@@ -53,16 +58,20 @@ class OrderListViewModel @Inject constructor(
 
     private lateinit var orderFromDb: List<Order>
 
+    private val _status: MutableLiveData<OrderLoadStatus> = MutableLiveData()
+    val status: LiveData<OrderLoadStatus>
+        get() = _status
+
     private val mCoordinate: MutableLiveData<String> = MutableLiveData()
 
-    private val mListOrder: MutableLiveData<List<Order>> = MutableLiveData()
-    private val mDbListOrder: MutableLiveData<List<Order>> = MutableLiveData()
-
+    private val _listOrder: MutableLiveData<List<Order>> = MutableLiveData()
     val listOrder: LiveData<List<Order>>
-        get() = mListOrder
+        get() = _listOrder
 
+    private val _dbListOrder: MutableLiveData<List<Order>> = MutableLiveData()
     val dbListOrder: LiveData<List<Order>>
-        get() = mDbListOrder
+        get() = _dbListOrder
+
 
     val coordinate: LiveData<String>
         get() = mCoordinate
@@ -85,10 +94,58 @@ class OrderListViewModel @Inject constructor(
         uiScope.launch {
 //           val answer = openDriverMonitor.driverOpeningDay()
 //           Timber.d(answer)
-           val intent = Intent(context, MainActivity::class.java)
-           HelpLoadingProgress.setLoginProgress(context, HelpState.IS_WORK_START, false)
-           intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-           startActivity(context, intent, null)
+            val intent = Intent(context, MainActivity::class.java)
+            HelpLoadingProgress.setLoginProgress(context, HelpState.IS_WORK_START, false)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(context, intent, null)
+        }
+    }
+
+    fun getLoadCurrent2() {
+        uiScope.launch {
+            _status.value = OrderLoadStatus.LOADING
+            val listOrderNet = orderListRepository.getLoadCurrentOrder2(account.session)
+            if (listOrderNet.isNullOrEmpty()) {
+                _status.value = OrderLoadStatus.ERROR
+            } else {
+                saveOrder(listOrderNet)
+                _listOrder.value = listOrderNet
+                _status.value = OrderLoadStatus.DONE
+            }
+        }
+    }
+
+    private suspend fun saveOrder(ordersNET: List<Order>) {
+        val ordersDb = orderListRepository.getDBOrders()
+        if (ordersDb.isNullOrEmpty()) {
+            orderListRepository.saveOrders(ordersNET)
+        } else {
+            updateOrder(ordersNET, ordersDb)
+        }
+    }
+
+    private suspend fun updateOrder(ordersNET: List<Order>, ordersDB: List<Order>) {
+        if (ordersDB.size < ordersNET.size) {
+            val iterator = ordersNET.iterator()
+            while (iterator.hasNext()) {
+                val order = iterator.next()
+                var count = 0
+                for (orderSaved in ordersDB) {
+                    if (order.id == orderSaved.id) {
+                        count += 1
+                        Timber.d("1test!!!!! $count ${order.products.size} ${orderSaved.products.size}")
+                        if (order.products.size != orderSaved.products.size) {
+                            orderListRepository.updateOrder(order)
+                        }
+                    }
+                    if (count == 0) {
+                        orderListRepository.saveOrder(order)
+                    }
+                }
+            }
+        }
+        for (order in ordersNET) {
+            orderListRepository.getUpdateDBNum(order)
         }
     }
 
@@ -104,7 +161,7 @@ class OrderListViewModel @Inject constructor(
             if (dbOrder.isNullOrEmpty()) {
                 Timber.d("test2!!!!")
                 orderListRepository.saveOrders(orders)
-                mListOrder.value = orders
+                _listOrder.value = orders
             } else {
                 Timber.d("test!!!!!")
                 if (dbOrder.size < orders.size) {
@@ -129,13 +186,13 @@ class OrderListViewModel @Inject constructor(
                 for (order in orders) {
                     orderListRepository.getUpdateDBNum(order)
                 }
-                mListOrder.value = orders
+                _listOrder.value = orders
             }
         }
     }
 
     suspend fun updateOrder(order: Order) {
-            orderListRepository.updateOrder(order)
+        orderListRepository.updateOrder(order)
     }
 
     private suspend fun getCoordinate(address: String): Location {
@@ -159,7 +216,7 @@ class OrderListViewModel @Inject constructor(
 
     fun getLoadOrderFromDB() {
         uiScope.launch {
-            mDbListOrder.value = orderListRepository.getDBOrders()
+            _dbListOrder.value = orderListRepository.getDBOrders()
         }
     }
 

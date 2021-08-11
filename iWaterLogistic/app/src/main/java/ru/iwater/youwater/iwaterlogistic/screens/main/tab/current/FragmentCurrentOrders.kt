@@ -5,17 +5,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.snackbar.Snackbar
-import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.FragmentOrdersListBinding
-import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
+import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderLoadStatus
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
 import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import javax.inject.Inject
@@ -24,8 +21,7 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
-    private val viewModel: OrderListViewModel by viewModels {factory}
-    private val adapter = ListOrdersAdapter()
+    private val viewModel: OrderListViewModel by viewModels { factory }
     private val screenComponent = App().buildScreenComponent()
 
     private lateinit var binding: FragmentOrdersListBinding
@@ -40,11 +36,14 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_orders_list, container, false)
+        binding = FragmentOrdersListBinding.inflate(inflater)
         binding.refreshContainer.setOnRefreshListener(this)
-        initRecyclerView(binding)
-        observeVW(binding)
-
+        binding.lifecycleOwner = this
+        binding.viewModelCurrentOrder = viewModel
+        binding.listCurrentOrder.adapter = ListOrdersAdapter(ListOrdersAdapter.OnClickListener {
+            viewModel.getAboutOrder(context, it.id)
+        })
+        viewModel.getLoadCurrent2()
         binding.btnGeneralMap.setOnClickListener {
             val intent = Intent(this.context, MapsActivity::class.java)
             startActivity(intent)
@@ -53,40 +52,13 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
     }
 
     override fun onRefresh() {
-        viewModel.getLoadCurrent()
-        binding.refreshContainer.isRefreshing = true
-    }
-
-    private fun observeVW(binding: FragmentOrdersListBinding) {
-        viewModel.getLoadCurrent()
-        viewModel.listOrder.observe(viewLifecycleOwner, {
-            if (it.isNullOrEmpty()) {
-                binding.tvNotCurrentOrders.visibility = View.VISIBLE
-                binding.listCurrentOrder.visibility = View.GONE
-            } else {
-                addCurrentOrders(it)
-                binding.tvNotCurrentOrders.visibility = View.GONE
-                binding.listCurrentOrder.visibility = View.VISIBLE
-            }
-        })
-    }
-
-    private fun initRecyclerView(binding: FragmentOrdersListBinding) {
-        binding.listCurrentOrder.adapter = adapter
-        adapter.notifyDataSetChanged()
-        adapter.onOrderClick = {
-            viewModel.getAboutOrder(context, it.id)
+        viewModel.getLoadCurrent2()
+        if (viewModel.status.value == OrderLoadStatus.LOADING) {
+            binding.refreshContainer.isRefreshing = true
+        } else if (viewModel.status.value == OrderLoadStatus.DONE || viewModel.status.value == OrderLoadStatus.ERROR) {
+            binding.refreshContainer.isRefreshing = false
         }
-    }
 
-    private fun addCurrentOrders(orders: List<Order>) {
-        adapter.orders.clear()
-        adapter.orders.addAll(orders)
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun showSnack( message: String) {
-        this.view?.let { Snackbar.make(it, message, Snackbar.LENGTH_LONG) }
     }
 
     companion object {

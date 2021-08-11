@@ -31,6 +31,12 @@ interface ApiRequest {
         @Path("session") session: String
     ): Response<List<Order>>
 
+    @GET("getDriverList/{session}/")
+    suspend fun getDriverOrders2(
+        @Header("X-Authorization") key: String,
+        @Path("session") session: String
+    ): List<Order>
+
     /**
      * получить подробную информацию о заказе по его id
      */

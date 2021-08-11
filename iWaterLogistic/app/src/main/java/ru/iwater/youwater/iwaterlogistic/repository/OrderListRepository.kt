@@ -14,6 +14,7 @@ import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.Exception
 
 @OnScreen
 class  OrderListRepository @Inject constructor(
@@ -120,8 +121,26 @@ class  OrderListRepository @Inject constructor(
         } catch (e: HttpException) {
             Timber.d(e.message())
         }
-
     }
+
+    suspend fun getLoadCurrentOrder2(session: String): List<Order> {
+        var currentOrders: List<Order> = emptyList()
+        try {
+            currentOrders = service.getDriverOrders2("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
+            if (!currentOrders.isNullOrEmpty()) {
+                currentOrders.sortedBy { order -> order.time }
+                currentOrders.forEach {
+                    it.num += 1
+                }
+                return currentOrders
+            }
+        }catch (e: Exception) {
+            Timber.e(e)
+            return currentOrders
+        }
+        return currentOrders
+    }
+
 
     suspend fun getLoadOrderInfo(orderId: Int?): OrderInfo? {
        val answer = service.getOrderInfo("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
