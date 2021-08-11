@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -17,10 +18,9 @@ class AccountViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
 ) : ViewModel() {
 
-    private val mMessageLD: MutableLiveData<String> = MutableLiveData()
-
+    private val _messageLD: MutableLiveData<String> = MutableLiveData()
     val messageLD: LiveData<String>
-        get() = mMessageLD
+        get() = _messageLD
 
     @SuppressLint("SimpleDateFormat")
     fun authDriver(login: String, company: String, password: String) {
@@ -30,16 +30,13 @@ class AccountViewModel @Inject constructor(
             calendar.add(Calendar.DAY_OF_YEAR, 0)
             val sdf = SimpleDateFormat("yyyy-MM-dd")
             val notification = sdf.format(calendar.time)
-            val answer = accountRepository.authDriver(company, login, password, notification)
-            val account = answer.second
-            if (account?.session.isNullOrEmpty()) {
-                mMessageLD.value = answer.first
-            } else {
-                mMessageLD.value = answer.first
+            val account = accountRepository.authDriver(company, login, password, notification)
+            if (account.status == "ok") {
+                _messageLD.value = ""
                 accountRepository.setAccount(account)
+            } else {
+                _messageLD.value = account.status
             }
         }
-
-
     }
 }

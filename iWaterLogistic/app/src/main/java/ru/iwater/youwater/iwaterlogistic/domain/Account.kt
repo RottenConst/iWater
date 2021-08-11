@@ -10,5 +10,6 @@ import com.google.gson.annotations.SerializedName
 data class Account(
     var session: String,
     var id: Int,
-    var company: String
+    var company: String,
+    var status: String
 )

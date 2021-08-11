@@ -15,6 +15,7 @@ class AccountStorage(context: Context) : StorageStateAccount {
         editor.putString(STATE_ACCOUNT + "session", data.session)
         editor.putInt(STATE_ACCOUNT, data.id)
         editor.putString(STATE_ACCOUNT + "company", data.company)
+        editor.putString(STATE_ACCOUNT + "status", data.status)
 //        editor.putString(STATE_ACCOUNT + "login", data.login)
 
         editor.apply()
@@ -24,9 +25,10 @@ class AccountStorage(context: Context) : StorageStateAccount {
         val session = preferencesStateAccount.getString(STATE_ACCOUNT + "session", "").toString()
         val id = preferencesStateAccount.getInt(STATE_ACCOUNT, 0)
         val company = preferencesStateAccount.getString(STATE_ACCOUNT + "company", "").toString()
+        val status = preferencesStateAccount.getString(STATE_ACCOUNT + "status", "").toString()
 //        val login = preferencesStateAccount.getString(STATE_ACCOUNT + "login", "").toString()
 
-        return Account(session, id, company)
+        return Account(session, id, company, status)
     }
 
     override fun remove() {

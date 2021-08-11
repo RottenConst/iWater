@@ -7,6 +7,7 @@ import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.math.acos
 
 /**
  * Класс для авторизации, получения сведений аккаунта водителя
@@ -22,32 +23,20 @@ class AccountRepository @Inject constructor(
         login: String,
         password: String,
         notification: String
-    ): Pair<String, Account?> {
-        var message = ""
-        var account: Account? = Account("", 0, company)
-        val response = service.authDriver(
-            "3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX",
-            login,
-            company,
-            password,
-            notification
-        )
+    ): Account {
+        var account = Account("", 0, "", "")
         try {
-            if (response.isSuccessful) {
-                if (response.body()?.session != null) {
-                    val idDriver = response.body()?.id
-                    val session = response.body()?.session
-                    account = Account(session!!, idDriver!!, company)
-                } else {
-                    message = "Неверный логин или пароль"
-                }
-            } else {
-                message = response.message()
+            account = service.authDriver2("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", login, company, password, notification)!!
+            if (account.session.isNotBlank()) {
+                account.company = company
+                account.status = "ok"
+                return account
             }
-        } catch (e: HttpException) {
-            Timber.e(e.message())
+        } catch (e: Exception) {
+            Timber.e(e)
         }
-        return Pair(message, account)
+        account.status = "Неверный логин или пароль, возможны проблемы с интернетом"
+        return account
     }
 
     fun setAccount(account: Account?) {

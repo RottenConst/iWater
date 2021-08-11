@@ -20,7 +20,7 @@ interface ApiRequest {
         @Path("company") company: String,
         @Path("password") password: String,
         @Path("notification") notification: String
-    ): Response<Account>
+    ): Account?
 
     /**
      * получить список заказов водителя по его сессии
