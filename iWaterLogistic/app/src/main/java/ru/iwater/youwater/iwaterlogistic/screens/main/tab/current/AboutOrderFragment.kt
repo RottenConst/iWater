@@ -49,12 +49,13 @@ class AboutOrderFragment : BaseFragment() {
             container,
             false
         )
+        binding.lifecycleOwner = this
+        binding.viewModelDetail = viewModel
+
         //достаём id заказа
         val arg = arguments
         val id = arg?.getInt("id")
-        if (id != null) viewModel.getOrderInfo(id)
-
-        observeVM(binding)
+        if (id != null) viewModel.getOrderInfo2(context, id)
 
         //кнопка "позвонить клиенту"
         binding.btnCallClient.setOnClickListener {
@@ -104,32 +105,6 @@ class AboutOrderFragment : BaseFragment() {
         }
 
         return binding.root
-    }
-
-    private fun observeVM(binding: AboutOrderFragmentBinding) {
-        viewModel.order.observe(viewLifecycleOwner, { order ->
-            "№ ${order.id}, ${order.time}".also { binding.tvNameDateOrder.text = it }
-            binding.tvAddressOrder.text = order.address
-            if (order.products.size > 1) {
-                binding.tvNameOrder.text = ""
-                for (product in order.products) {
-                    binding.tvNameOrder.append("${product.name} - ${product.count}шт.\n")
-                }
-            } else {
-                "${order.products[0].name} - ${order.products[0].count}шт.".also {
-                    binding.tvNameOrder.text = it
-                }
-            }
-            if (order.cash.isNotBlank()) {
-                "Наличные: ${order.cash}".also { binding.tvPriceOrder.text = it }
-            } else {
-                "Безналичные: ${order.cash_b}".also { binding.tvPriceOrder.text = it }
-            }
-            "Точка #${order.num}".also { binding.tvNumberPoint.text = it }
-            "${order.name}; \n${order.address};".also { binding.tvAboutClient.text = it }
-            binding.tvPhoneNumberClient.text = order.contact
-            binding.tvNoteOrder.text = order.notice
-        })
     }
 
     /**

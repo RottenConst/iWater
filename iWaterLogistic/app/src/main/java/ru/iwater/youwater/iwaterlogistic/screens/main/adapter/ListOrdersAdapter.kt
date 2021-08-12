@@ -3,18 +3,13 @@ package ru.iwater.youwater.iwaterlogistic.screens.main.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.databinding.ItemCurrentOrderBinding
 import ru.iwater.youwater.iwaterlogistic.domain.Order
-import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderLoadStatus
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
-import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 
 class ListOrdersAdapter(private val onClickListener: OnClickListener) :
     ListAdapter<Order, ListOrdersAdapter.ListOrderHolder>(OrderDiffCallback) {
@@ -38,7 +33,11 @@ class ListOrdersAdapter(private val onClickListener: OnClickListener) :
         fun bindOrders(order: Order) {
             binding.order = order
             binding.executePendingBindings()
-            if (HelpLoadingProgress.getStartDayShow(binding.root.context, HelpState.IS_WORK_START)) {
+            if (HelpLoadingProgress.getStartDayShow(
+                    binding.root.context,
+                    HelpState.IS_WORK_START
+                )
+            ) {
                 binding.arrow.visibility = View.GONE
             }
         }
@@ -65,40 +64,5 @@ class ListOrdersAdapter(private val onClickListener: OnClickListener) :
 
     class OnClickListener(val clickListener: (order: Order) -> Unit) {
         fun onClick(order: Order) = clickListener(order)
-    }
-}
-
-@BindingAdapter("listOrder")
-fun bindRecycleView(recyclerView: RecyclerView, data: List<Order>?) {
-    val adapter = recyclerView.adapter as ListOrdersAdapter
-    adapter.submitList(data)
-}
-
-@BindingAdapter("descriptionOrder")
-fun TextView.setDescriptionOrder(item: Order) {
-    "Заказ ${item.time},\n${item.address}".also { text = it }
-    for (product in item.products) {
-        append("\n${product.name} - ${product.count}шт.")
-    }
-}
-
-@BindingAdapter("numOrder")
-fun TextView.setNumOrder(item: Order) {
-    text = "${item.num}"
-    val time = item.time.split("-")[1]
-    if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) > 7200) {
-        setBackgroundResource(R.drawable.circle_green)
-    }
-
-    if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) in 3601..7199) {
-        setBackgroundResource(R.drawable.circle_yellow)
-    }
-
-    if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) < 3600) {
-        setBackgroundResource(R.drawable.circle_red)
-    }
-
-    if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) < 0) {
-        setBackgroundResource(R.drawable.circle_grey)
     }
 }

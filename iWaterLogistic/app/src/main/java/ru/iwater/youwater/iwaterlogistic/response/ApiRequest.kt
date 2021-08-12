@@ -44,7 +44,7 @@ interface ApiRequest {
     suspend fun getOrderInfo(
         @Header("X-Authorization") key: String,
         @Path("id") idOrder: Int?
-    ): Response<OrderInfo>
+    ): OrderInfo
 
     /*
         получить тип клиента по id заказа

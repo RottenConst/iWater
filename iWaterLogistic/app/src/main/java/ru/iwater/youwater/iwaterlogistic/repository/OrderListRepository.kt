@@ -154,15 +154,11 @@ class  OrderListRepository @Inject constructor(
         return currentOrders
     }
 
-
     suspend fun getLoadOrderInfo(orderId: Int?): OrderInfo? {
-       val answer = service.getOrderInfo("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
         try {
-            if (answer.isSuccessful) {
-                return answer.body()
-            }
-        }catch (e: HttpException) {
-            Timber.e(e.message())
+            return service.getOrderInfo("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
+        }catch (e: Exception) {
+            Timber.e(e)
         }
         return null
     }
