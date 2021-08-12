@@ -10,9 +10,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.databinding.ItemCurrentOrderBinding
-import ru.iwater.youwater.iwaterlogistic.databinding.ItemCurrentOrderPrevBinding
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderLoadStatus
+import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
+import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 
 class ListOrdersAdapter(private val onClickListener: OnClickListener) :
@@ -37,6 +38,9 @@ class ListOrdersAdapter(private val onClickListener: OnClickListener) :
         fun bindOrders(order: Order) {
             binding.order = order
             binding.executePendingBindings()
+            if (HelpLoadingProgress.getStartDayShow(binding.root.context, HelpState.IS_WORK_START)) {
+                binding.arrow.visibility = View.GONE
+            }
         }
 
         companion object {
@@ -49,7 +53,7 @@ class ListOrdersAdapter(private val onClickListener: OnClickListener) :
 
     }
 
-    companion object OrderDiffCallback: DiffUtil.ItemCallback<Order>() {
+    companion object OrderDiffCallback : DiffUtil.ItemCallback<Order>() {
         override fun areItemsTheSame(oldItem: Order, newItem: Order): Boolean {
             return oldItem.id == newItem.id
         }
@@ -69,19 +73,6 @@ fun bindRecycleView(recyclerView: RecyclerView, data: List<Order>?) {
     val adapter = recyclerView.adapter as ListOrdersAdapter
     adapter.submitList(data)
 }
-
-@BindingAdapter("orderStatus")
-fun bindStatus(statusTextView: TextView, status: OrderLoadStatus?) {
-    when (status) {
-        OrderLoadStatus.DONE -> {
-            statusTextView.visibility = View.GONE
-        }
-        OrderLoadStatus.ERROR -> {
-            statusTextView.visibility = View.VISIBLE
-        }
-    }
-}
-
 
 @BindingAdapter("descriptionOrder")
 fun TextView.setDescriptionOrder(item: Order) {

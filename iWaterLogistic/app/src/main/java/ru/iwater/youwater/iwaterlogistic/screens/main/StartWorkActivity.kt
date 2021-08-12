@@ -14,10 +14,10 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.databinding.ActivityStartWorkBinding
-import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
+import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderLoadStatus
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
-import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListCurrentOrdersPreview
+import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
@@ -33,7 +33,6 @@ class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
     lateinit var accountRepository: AccountRepository
 
     private lateinit var binding: ActivityStartWorkBinding
-    private val adapter = ListCurrentOrdersPreview()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +40,13 @@ class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
         screenComponent.inject(this)
         accountRepository = AccountRepository(screenComponent.accountStorage())
         binding.srlRefreshCurrentOrders.setOnRefreshListener(this)
-        initRecyclerView()
+        binding.lifecycleOwner = this
+        binding.viewModel = viewModel
+        binding.rvListCurrentPreview.adapter = ListOrdersAdapter(ListOrdersAdapter.OnClickListener {
+            UtilsMethods.showToast(this, it.time)
+        })
+        viewModel.getLoadCurrent2()
         observeVW()
-        viewModel.getLoadCurrent()
-
         binding.btnExitAccount.setOnClickListener {
             AlertDialog.Builder(this)
                 .setMessage(R.string.confirmLogout)
@@ -70,34 +72,31 @@ class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
-        viewModel.getLoadCurrent()
+        viewModel.getLoadCurrent2()
         binding.srlRefreshCurrentOrders.isRefreshing = false
     }
 
     private fun observeVW() {
-        viewModel.listOrder.observe(this, {
-            if (it.isNullOrEmpty()) {
-                binding.tvTitle.text = "Плаеновых заказов пока нет"
-                binding.rvListCurrentPreview.visibility = View.GONE
-            } else {
-                addCurrentOrders(it)
-                "Плановые заказы на ${UtilsMethods.getTodayDateString()}".also {
-                    binding.tvTitle.text = it
+        viewModel.status.observe(this, { status: OrderLoadStatus ->
+            when (status) {
+                OrderLoadStatus.DONE -> {
+                    binding.apply {
+                        "Плановые заказы на ${UtilsMethods.getTodayDateString()}".also {
+                            tvTitle.text = it
+                        }
+                        rvListCurrentPreview.visibility = View.VISIBLE
+                    }
                 }
-                binding.rvListCurrentPreview.visibility = View.VISIBLE
+                OrderLoadStatus.ERROR -> {
+                    binding.apply {
+                        tvTitle.text = "Плаеновых заказов пока нет"
+                        rvListCurrentPreview.visibility = View.GONE
+                    }
+                }
+                OrderLoadStatus.LOADING -> {
+                }
             }
         })
-    }
-
-    private fun initRecyclerView() {
-        binding.rvListCurrentPreview.adapter = adapter
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun addCurrentOrders(orders: List<Order>) {
-        adapter.orders.clear()
-        adapter.orders.addAll(orders)
-        adapter.notifyDataSetChanged()
     }
 
     companion object {

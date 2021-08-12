@@ -26,7 +26,7 @@ class AccountRepository @Inject constructor(
     ): Account {
         var account = Account("", 0, "", "")
         try {
-            account = service.authDriver2("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", login, company, password, notification)!!
+            account = service.authDriver("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", login, company, password, notification)!!
             if (account.session.isNotBlank()) {
                 account.company = company
                 account.status = "ok"

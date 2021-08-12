@@ -3,7 +3,6 @@ package ru.iwater.youwater.iwaterlogistic.repository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
@@ -129,10 +128,24 @@ class  OrderListRepository @Inject constructor(
             currentOrders = service.getDriverOrders2("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {
                 currentOrders.sortedBy { order -> order.time }
-                currentOrders.forEach {
+                return currentOrders.filter { it.status != 2 }.map {
                     it.num += 1
+                    Order(
+                        address = it.address,
+                        cash = it.cash,
+                        cash_b = it.cash_b,
+                        contact = it.contact,
+                        name = it.name,
+                        notice = it.notice,
+                        products = it.products,
+                        id = it.id,
+                        period = it.period,
+                        status = it.status,
+                        time = it.time,
+                        location = it.location,
+                        num = it.num
+                    )
                 }
-                return currentOrders
             }
         }catch (e: Exception) {
             Timber.e(e)

@@ -15,6 +15,7 @@ import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderLoadStatus
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
 import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
+import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import javax.inject.Inject
 
 class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -43,6 +44,7 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
         binding.listCurrentOrder.adapter = ListOrdersAdapter(ListOrdersAdapter.OnClickListener {
             viewModel.getAboutOrder(context, it.id)
         })
+        observeStatus()
         viewModel.getLoadCurrent2()
         binding.btnGeneralMap.setOnClickListener {
             val intent = Intent(this.context, MapsActivity::class.java)
@@ -53,12 +55,50 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
 
     override fun onRefresh() {
         viewModel.getLoadCurrent2()
-        if (viewModel.status.value == OrderLoadStatus.LOADING) {
-            binding.refreshContainer.isRefreshing = true
-        } else if (viewModel.status.value == OrderLoadStatus.DONE || viewModel.status.value == OrderLoadStatus.ERROR) {
-            binding.refreshContainer.isRefreshing = false
-        }
+//        when (viewModel.status.value) {
+//            OrderLoadStatus.LOADING -> {
+//                binding.refreshContainer.isRefreshing = true
+//            }
+//            OrderLoadStatus.DONE -> {
+//                binding.apply {
+//                    tvNotCurrentOrders.visibility = View.GONE
+//                    listCurrentOrder.visibility = View.VISIBLE
+//                    refreshContainer.isRefreshing = false
+//                }
+//            }
+//            OrderLoadStatus.ERROR -> {
+//                binding.apply {
+//                    tvNotCurrentOrders.visibility = View.VISIBLE
+//                    listCurrentOrder.visibility = View.GONE
+//                    refreshContainer.isRefreshing = false
+//                }
+//
+//            }
+//        }
+    }
 
+    private fun observeStatus() {
+        viewModel.status.observe(this, { status ->
+            when(status) {
+                OrderLoadStatus.LOADING -> {
+                    binding.refreshContainer.isRefreshing = true
+                }
+                OrderLoadStatus.DONE -> {
+                    binding.apply {
+                        tvNotCurrentOrders.visibility = View.GONE
+                        listCurrentOrder.visibility = View.VISIBLE
+                        refreshContainer.isRefreshing = false
+                    }
+                }
+                OrderLoadStatus.ERROR -> {
+                    binding.apply {
+                        tvNotCurrentOrders.visibility = View.VISIBLE
+                        listCurrentOrder.visibility = View.GONE
+                        refreshContainer.isRefreshing = false
+                    }
+                }
+            }
+        })
     }
 
     companion object {

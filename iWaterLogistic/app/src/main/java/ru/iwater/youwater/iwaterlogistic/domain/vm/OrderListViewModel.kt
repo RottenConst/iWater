@@ -1,9 +1,7 @@
 package ru.iwater.youwater.iwaterlogistic.domain.vm
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.location.Geocoder
 import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -23,8 +21,6 @@ import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CardOrderActiv
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import timber.log.Timber
-import java.io.IOException
-import java.util.*
 import javax.inject.Inject
 
 
@@ -39,7 +35,6 @@ class OrderListViewModel @Inject constructor(
     accountRepository: AccountRepository
 ) : ViewModel() {
 
-    //    val openDriverMonitor = MonitorDriverOpening()
     private var account: Account = accountRepository.getAccount()
 
     /**
@@ -47,7 +42,6 @@ class OrderListViewModel @Inject constructor(
      */
     init {
         account = accountRepository.getAccount()
-//        openDriverMonitor.setMonitorDriverOpening(accountRepository.getAccount().id)
     }
 
     /**
@@ -56,13 +50,9 @@ class OrderListViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private lateinit var orderFromDb: List<Order>
-
     private val _status: MutableLiveData<OrderLoadStatus> = MutableLiveData()
     val status: LiveData<OrderLoadStatus>
         get() = _status
-
-    private val mCoordinate: MutableLiveData<String> = MutableLiveData()
 
     private val _listOrder: MutableLiveData<List<Order>> = MutableLiveData()
     val listOrder: LiveData<List<Order>>
@@ -73,27 +63,8 @@ class OrderListViewModel @Inject constructor(
         get() = _dbListOrder
 
 
-    val coordinate: LiveData<String>
-        get() = mCoordinate
-
-    /**
-     * загружаем инфу о заказах
-     * и обновляем liveData
-     */
-//    fun getLoadOrder() {
-//        uiScope.launch {
-//            orderListRepository.getLoadOrderList()
-//            orderListRepository.checkDbOrder()
-//            val orders = orderListRepository.getOrders()
-//            orderListRepository.saveOrders(orders)
-//            mListOrder.value = orderListRepository.getDBOrders()
-//        }
-//    }
-
     fun openDriverDay(context: Context) {
         uiScope.launch {
-//           val answer = openDriverMonitor.driverOpeningDay()
-//           Timber.d(answer)
             val intent = Intent(context, MainActivity::class.java)
             HelpLoadingProgress.setLoginProgress(context, HelpState.IS_WORK_START, false)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -149,49 +120,7 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun getLoadCurrent() {
-        Timber.d(account.session)
-        uiScope.launch {
-            Timber.d("${account.id}, weqweqweqweqeqweqweqwe")
-            orderListRepository.getLoadCurrentOrders(account.session)
-            val orders = orderListRepository.ordersList
-            getLoadOrderCurrentOrderFromBd()
-            val dbOrder = orderFromDb
-            Timber.d("orders ${orderFromDb.size}")
-            if (dbOrder.isNullOrEmpty()) {
-                Timber.d("test2!!!!")
-                orderListRepository.saveOrders(orders)
-                _listOrder.value = orders
-            } else {
-                Timber.d("test!!!!!")
-                if (dbOrder.size < orders.size) {
-                    val iterator = orders.iterator()
-                    while (iterator.hasNext()) {
-                        val order = iterator.next()
-                        var count = 0
-                        for (orderSaved in dbOrder) {
-                            if (order.id == orderSaved.id) {
-                                count += 1
-                                Timber.d("1test!!!!! $count ${order.products.size} ${orderSaved.products.size}")
-                                if (order.products.size != orderSaved.products.size) {
-                                    orderListRepository.updateOrder(order)
-                                }
-                            }
-                            if (count == 0) {
-                                orderListRepository.saveOrder(order)
-                            }
-                        }
-                    }
-                }
-                for (order in orders) {
-                    orderListRepository.getUpdateDBNum(order)
-                }
-                _listOrder.value = orders
-            }
-        }
-    }
-
-    suspend fun updateOrder(order: Order) {
+    private suspend fun updateOrder(order: Order) {
         orderListRepository.updateOrder(order)
     }
 
@@ -229,36 +158,6 @@ class OrderListViewModel @Inject constructor(
         if (context != null) {
             CardOrderActivity.start(context, intent)
         }
-    }
-
-    /**
-     * Получить координаты для заказа
-     */
-    @SuppressLint("TimberArgCount")
-    fun getCoordinatesOnAddressOrder(order: Order, context: Context) {
-        val locationAddress = order.address
-        uiScope.launch {
-            val geoCoder = Geocoder(context, Locale.getDefault())
-            try {
-                val addressList = geoCoder.getFromLocationName(locationAddress, 1)
-                if (addressList != null && addressList.size > 0) {
-                    val address = addressList[0]
-                    val coordinate = "${address.latitude}-${address.longitude}"
-//                    order.coordinates = coordinate.split("-")
-//                    orderListRepository.saveOrder(order)
-                    Timber.d("coordinate = $")
-                }
-            } catch (e: IOException) {
-                Timber.e(e, "Unable to connect to Geocoder")
-            }
-        }
-    }
-
-    /**
-     * Получить заказы за выбранную дату из бд
-     */
-    private suspend fun getLoadOrderCurrentOrderFromBd() {
-        orderFromDb = orderListRepository.getDBOrders()
     }
 
     /**
