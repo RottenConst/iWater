@@ -180,16 +180,13 @@ class  OrderListRepository @Inject constructor(
         return null
     }
 
-    suspend fun getTypeClient(orderId: Int?): String? {
-        val answer = service.getTypeClient("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
+    suspend fun getTypeClient(orderId: Int?): Int? {
         try {
-            if (answer.isSuccessful) {
-                Timber.d("${answer.body()?.length}")
-                return answer.body()?.get(7).toString()
-            }
-        }catch (e: HttpException) {
-            Timber.e(e.message())
+            val answer = service.getTypeClient2("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
+            return answer.first().type
+        }catch (e: Exception) {
+            Timber.e(e)
         }
-        return "500"
+        return 500
     }
 }

@@ -86,19 +86,16 @@ class CompleteOrdersRepository @Inject constructor(
             if (answer.isSuccessful) {
                 Timber.d("${answer.code()}")
             }
-        }catch (e: HttpException) {
-            Timber.e(e.message())
+        }catch (e: Exception) {
+            Timber.e(e)
         }
     }
 
-    suspend fun updateStatusOrder(idOrder: Int?): AnswerUpdateStatus? {
-        val answer = service.updateStatus("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", idOrder)
+    suspend fun updateStatusOrder(idOrder: Int?): AnswerUpdateStatus {
         try {
-            if (answer.isSuccessful) {
-                return answer.body()
-            }
-        } catch (e: HttpException) {
-            Timber.e(e.message())
+            return service.updateStatus("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", idOrder)
+        } catch (e: Exception) {
+            Timber.e(e)
         }
         return AnswerUpdateStatus(0, 1, "не удалось обновить заказ")
     }

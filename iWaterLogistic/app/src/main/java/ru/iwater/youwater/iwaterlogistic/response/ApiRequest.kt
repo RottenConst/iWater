@@ -50,10 +50,10 @@ interface ApiRequest {
         получить тип клиента по id заказа
      */
     @GET("/iwater/getTypeClient/{id}/")
-    suspend fun getTypeClient(
+    suspend fun getTypeClient2(
         @Header("X-Authorization") key: String,
         @Path("id") idClient: Int?
-    ): Response<String>
+    ): List<ClientType>
 
     /*
         отправить отчет по конкретному заказу
@@ -67,13 +67,13 @@ interface ApiRequest {
 
     /*
         обновить статус заказа
-     */
+    */
     @Headers( "Content-Type: application/json" )
     @POST("update-status/{id}/")
     suspend fun updateStatus(
         @Header("X-Authorization") key: String,
         @Path("id") id: Int?,
-    ): Response<AnswerUpdateStatus>
+    ): AnswerUpdateStatus
 
     @Headers( "Content-Type: application/json" )
     @POST("iwaterExpenses_list/")

@@ -1,12 +1,17 @@
 package ru.iwater.youwater.iwaterlogistic.screens.main
 
 import android.view.View
+import android.widget.CheckBox
+import android.widget.ImageView
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
 import ru.iwater.youwater.iwaterlogistic.domain.Product
+import ru.iwater.youwater.iwaterlogistic.domain.vm.TypeClient
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 
@@ -39,7 +44,7 @@ fun TextView.bindProductThis(products: List<Product>?) {
                 for (product in products) {
                     append("${product.name} - ${product.count}шт.\n")
                 }
-            }else {
+            } else {
                 "${products[0].name} - ${products[0].count}шт.".also {
                     text = it
                 }
@@ -53,9 +58,9 @@ fun TextView.bindProductThis(products: List<Product>?) {
 fun TextView.bindCashOrder(order: Order?) {
     if (order != null) {
         if (order.cash.isNotBlank()) {
-            "Наличные: ${order?.cash}".also { text = it }
+            "Наличные: ${order.cash}".also { text = it }
         } else {
-            "Безналичные: ${order?.cash_b}".also { text = it }
+            "Безналичные: ${order.cash_b}".also { text = it }
         }
     } else text = ""
 }
@@ -123,5 +128,64 @@ fun TextView.setNumOrder(item: Order) {
 
     if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) < 0) {
         setBackgroundResource(R.drawable.circle_grey)
+    }
+}
+
+/**
+ * LisOrderAdapter binding
+ **/
+
+@BindingAdapter("titleOrderInfo")
+fun TextView.bindDateTitleInfo(order: OrderInfo?) {
+    if (order != null) {
+        "№ ${order.id}, ${order.time}".also { text = it }
+    }
+}
+
+@BindingAdapter("addressOrderInfo")
+fun TextView.bindAddressOrderInfo(address: String?) {
+    text = address
+}
+
+@BindingAdapter("cashOrderInfo")
+fun TextView.bindCashOrderInfo(cash: String?) {
+    "Цена заказа: $cash".also { text = it }
+}
+
+@BindingAdapter("IvVisOfType")
+fun ImageView.bindTypeClient(typeClient: TypeClient?) {
+    visibility = when (typeClient) {
+        TypeClient.JURISTIC -> View.VISIBLE
+        TypeClient.PHYSICS -> View.GONE
+        TypeClient.ERROR -> View.GONE
+        else -> View.GONE
+    }
+}
+@BindingAdapter("tvVisOfType")
+fun TextView.bindTypeClient(typeClient: TypeClient?) {
+    visibility = when (typeClient) {
+        TypeClient.JURISTIC -> View.VISIBLE
+        TypeClient.PHYSICS -> View.GONE
+        TypeClient.ERROR -> View.GONE
+        else -> View.GONE
+    }
+}
+@BindingAdapter("isCheckDocument")
+fun bindCheckBox(documents: CheckBox, typeClient: TypeClient?) {
+    documents.visibility = when (typeClient) {
+        TypeClient.JURISTIC -> View.VISIBLE
+        TypeClient.PHYSICS -> View.GONE
+        TypeClient.ERROR -> View.GONE
+        else -> View.GONE
+    }
+}
+
+@BindingAdapter("isCheckRadio")
+fun bindRadioGroup(typeCash: RadioGroup, typeClient: TypeClient?) {
+    typeCash.visibility = when (typeClient) {
+        TypeClient.JURISTIC -> View.GONE
+        TypeClient.PHYSICS -> View.VISIBLE
+        TypeClient.ERROR -> View.GONE
+        else -> View.GONE
     }
 }

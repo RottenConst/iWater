@@ -13,18 +13,21 @@ import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
 import ru.iwater.youwater.iwaterlogistic.domain.DecontrolReport
 import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
-import ru.iwater.youwater.iwaterlogistic.domain.TypeClient
-import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
+import ru.iwater.youwater.iwaterlogistic.domain.vm.TypeClient.*
 import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CompleteShipActivity
+import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
+import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
+
+enum class TypeClient { PHYSICS, JURISTIC, ERROR }
 
 @OnScreen
 class ShipmentsViewModel @Inject constructor(
     private val orderListRepository: OrderListRepository,
-    private val completeOrdersRepository: CompleteOrdersRepository,
-    accountRepository: AccountRepository
+    private val completeOrdersRepository: CompleteOrdersRepository
 ) : ViewModel() {
 
     /**
@@ -33,74 +36,109 @@ class ShipmentsViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val mOrder: MutableLiveData<OrderInfo> = MutableLiveData()
-    private val mTypeClient: MutableLiveData<TypeClient> = MutableLiveData()
-
-    val typeClient: LiveData<TypeClient>
-        get() = mTypeClient
-
+    private val _order: MutableLiveData<OrderInfo> = MutableLiveData()
     val order: LiveData<OrderInfo>
-        get() = mOrder
+        get() = _order
+
+    private val _typeClient: MutableLiveData<TypeClient> = MutableLiveData()
+    val typeClient: LiveData<TypeClient>
+        get() = _typeClient
+
+    private val _typeCash: MutableLiveData<String> = MutableLiveData()
+    val typeCash: LiveData<String>
+        get() = _typeCash
+
+    private var myCoordinate = ""
 
     /**
      * возвращает заказ по id
      **/
-    fun getOrderInfo(id: Int?) {
+    fun getOrderInfo(context: Context?, id: Int?) {
         uiScope.launch {
-            mOrder.value = orderListRepository.getLoadOrderInfo(id)
+            try {
+                _order.value = orderListRepository.getLoadOrderInfo(id)
+            }catch (e: Exception) {
+                Timber.e(e)
+                UtilsMethods.showToast(context, "Проблемы с интернетом")
+            }
         }
     }
 
-    fun setCompleteOrder(context: Context?, id: Int, typeCash: String, cash: Float, tank: Int, timeComplete: Long, noticeDriver: String, shipCoord: String) {
+    fun setCompleteOrder(context: Context?, id: Int, tank: Int, noticeDriver: String) {
         uiScope.launch {
 
             val answer = completeOrdersRepository.updateStatusOrder(id)
-
-            if (answer?.error == 0 && answer.oper == "Запись изменена") {
-                val order = orderListRepository.getDBOrderOnId(id)
-                val reportOrder = DecontrolReport(id, timeComplete, shipCoord, tank, noticeDriver)
-                val completeOrder = CompleteOrder(
-                    order.id,
-                    order.name,
-                    order.products,
-                    cash,
-                    typeCash,
-                    tank,
-                    order.time,
-                    timeComplete,
-                    order.contact,
-                    order.notice,
-                    noticeDriver,
-                    order.period,
-                    order.address,
-                    2,
-                )
-                order.status = 2
-                completeOrdersRepository.saveCompleteOrder(completeOrder)
-                orderListRepository.updateOrder(order)
-                orderListRepository.deleteOrder(order)
-                completeOrdersRepository.addReport(
-                    reportOrder
-                )
+            val cash = _order.value?.cash?.toFloat()
+            val typeCash = _typeCash.value
+            val timeComplete = Calendar.getInstance().timeInMillis/1000
+            if (answer.error == 0 && answer.oper == "Запись изменена") {
+                if (cash != null && typeCash != null) {
+                    val order = orderListRepository.getDBOrderOnId(id)
+                    val reportOrder =
+                        DecontrolReport(id, timeComplete, myCoordinate, tank, noticeDriver)
+                    val completeOrder = CompleteOrder(
+                        order.id,
+                        order.name,
+                        order.products,
+                        cash,
+                        typeCash,
+                        tank,
+                        order.time,
+                        timeComplete,
+                        order.contact,
+                        order.notice,
+                        noticeDriver,
+                        order.period,
+                        order.address,
+                        2,
+                    )
+                    completeOrdersRepository.saveCompleteOrder(completeOrder)
+                    orderListRepository.deleteOrder(order)
+                    completeOrdersRepository.addReport(
+                        reportOrder
+                    )
+                }
             }
 
             val intent = Intent(context, CompleteShipActivity::class.java)
             intent.putExtra("id", id)
-            intent.putExtra("typeCash", typeCash)
-            intent.putExtra("timeCompete", timeComplete)
-            intent.putExtra("address", mOrder.value?.address)
-            intent.putExtra("error", answer?.error)
+            intent.putExtra("typeCash", _typeCash.value)
+            intent.putExtra("timeComplete", timeComplete)
+            intent.putExtra("address", _order.value?.address)
+            intent.putExtra("error", answer.error)
             CompleteShipActivity.start(context, intent)
 
         }
     }
 
+    fun setTypeOfCash(string: String) {
+        _typeCash.value = string
+        Timber.i(typeCash.value)
+    }
+
+    fun setMyCoordinate(string: String) {
+        myCoordinate = string
+    }
+
     /**
      * запрашивает и устанавливает тип клиента
      **/
-    fun getTypeClient(id: Int?) {
+    fun getTypeClient(context: Context?, id: Int?) {
         uiScope.launch {
-            mTypeClient.value = TypeClient(orderListRepository.getTypeClient(id)?.toInt())
+            try {
+                when (orderListRepository.getTypeClient(id)) {
+                    0 -> _typeClient.value = PHYSICS
+                    1 -> {
+                        _typeClient.value = JURISTIC
+                        _typeCash.value = "Без наличные"
+                    }
+                    else -> _typeClient.value = ERROR
+                }
+            } catch (e: Exception) {
+                Timber.e(e)
+                UtilsMethods.showToast(context, "Error!")
+            }
+
         }
     }
 
