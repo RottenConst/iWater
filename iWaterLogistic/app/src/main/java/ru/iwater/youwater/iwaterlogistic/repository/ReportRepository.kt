@@ -11,7 +11,9 @@ import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
+import java.lang.Exception
 import javax.inject.Inject
+import kotlin.coroutines.suspendCoroutine
 
 class ReportRepository @Inject constructor(
     iWaterDB: IWaterDB
@@ -100,36 +102,46 @@ class ReportRepository @Inject constructor(
         return size <= 0
     }
 
-    suspend fun sendExpenses(expenses: Expenses) {
-        val answer = service.addExpenses("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", expenses)
+    suspend fun sendExpenses(expenses: Expenses): Boolean {
         try {
-            if (answer.isSuccessful) {
+            val answer = service.addExpenses("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", expenses)
+            return if (answer.isSuccessful) {
                 Timber.d("OK! + ${answer.body()?.date_created}")
+                true
+            } else {
+                false
             }
-        }catch (e: HttpException) {
-            Timber.e(e.message())
+        }catch (e: Exception) {
+            Timber.e(e)
         }
+        return false
     }
 
-    suspend fun addReport(reportDay: ReportDay) {
-        val answer = service.addReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", reportDay)
-        try {
-            if (answer.isSuccessful) {
-                Timber.d("OK! + ${answer.body()?.totalMoney}")
-            }
-        }catch (e: HttpException) {
-            Timber.d(e.message())
-        }
-    }
+//    suspend fun addReport(reportDay: ReportDay): Boolean {
+//        try {
+//            val answer = service.addReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", reportDay)
+//            return if (answer.isSuccessful) {
+//                Timber.d("OK! + ${answer.body()?.totalMoney}")
+//                true
+//            } else {
+//                false
+//            }
+//        }catch (e: Exception) {
+//            Timber.d(e)
+//        }
+//        return false
+//    }
 
-    suspend fun sendDayReport(dayReport: DayReport) {
-        val answer = service.sendTotalReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", dayReport)
+    suspend fun sendDayReport(dayReport: DayReport): Boolean {
         try {
-            if (answer.isSuccessful) {
+            val answer = service.sendTotalReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", dayReport)
+            return if (answer.isSuccessful) {
                 Timber.d("${answer.body()?.date}")
-            }
-        }catch (e: HttpException) {
-            Timber.e(e.message())
+                true
+            } else false
+        }catch (e: Exception) {
+            Timber.e(e)
         }
+        return false
     }
 }

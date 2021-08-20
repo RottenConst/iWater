@@ -2,6 +2,12 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <variable
+            name="reportDay"
+            type="ru.iwater.youwater.iwaterlogistic.domain.ReportDay" />
+    </data>
+
     <androidx.cardview.widget.CardView
         android:id="@+id/cv_report_card"
         android:layout_width="match_parent"

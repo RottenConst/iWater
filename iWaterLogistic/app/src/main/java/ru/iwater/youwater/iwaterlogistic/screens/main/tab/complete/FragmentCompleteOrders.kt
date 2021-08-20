@@ -24,7 +24,6 @@ class FragmentCompleteOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListe
     lateinit var factory: ViewModelProvider.Factory
     private val viewModel: CompleteOrdersViewModel by viewModels { factory }
     private val screenComponent = App().buildScreenComponent()
-    private val adapter = CompleteListOrdersAdapter()
 
     lateinit var binding: FragmentCompleteOrderBinding
 
@@ -40,9 +39,13 @@ class FragmentCompleteOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListe
     ): View {
         binding =
             DataBindingUtil.inflate(inflater, R.layout.fragment_complete_order, container, false)
-        binding.refreshContainerComplete.setOnRefreshListener(this)
-        initRecyclerView()
         observeVW(binding)
+        binding.lifecycleOwner = this
+        binding.completeViewModel = viewModel
+        binding.rvCompleteOrders.adapter = CompleteListOrdersAdapter(CompleteListOrdersAdapter.OnClickListener {
+            viewModel.getAboutOrder(this.context, it)
+        })
+        binding.refreshContainerComplete.setOnRefreshListener(this)
         return binding.root
     }
 
@@ -58,27 +61,10 @@ class FragmentCompleteOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListe
                 binding.tvNoComplete.visibility = View.VISIBLE
                 binding.rvCompleteOrders.visibility = View.GONE
             } else {
-                addCompleteOrders(it)
                 binding.tvNoComplete.visibility = View.GONE
                 binding.rvCompleteOrders.visibility = View.VISIBLE
             }
         })
-    }
-
-    private fun initRecyclerView() {
-        binding.rvCompleteOrders.layoutManager =
-            LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, false)
-        adapter.notifyDataSetChanged()
-        binding.rvCompleteOrders.adapter = adapter
-        adapter.onOrderClick = {
-            viewModel.getAboutOrder(this.context, it)
-        }
-    }
-
-    private fun addCompleteOrders(completeOrders: List<CompleteOrder>) {
-        adapter.completeOrders.clear()
-        adapter.completeOrders.addAll(completeOrders)
-        adapter.notifyDataSetChanged()
     }
 
     companion object {

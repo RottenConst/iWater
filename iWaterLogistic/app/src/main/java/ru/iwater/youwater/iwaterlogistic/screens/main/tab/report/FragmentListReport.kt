@@ -29,11 +29,8 @@ class FragmentListReport : BaseFragment() {
     @Inject
     lateinit var factory: ViewModelProvider.Factory
     private val viewModel: ReportViewModel by viewModels { factory }
-    private val adapter = ReportListAdapter()
-    lateinit var reportDay: ReportDay
 
     private val screenComponent = App().buildScreenComponent()
-    private var isComplete: Boolean = false
     private lateinit var binding: FragmentListReportBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,20 +44,17 @@ class FragmentListReport : BaseFragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_list_report, container, false)
-
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initRv()
-        observeVM()
-
         viewModel.getReports()
+        binding.viewModelReports = viewModel
+        binding.lifecycleOwner = this
+        binding.rvListReportDay.adapter = ReportListAdapter(ReportListAdapter.OnClickListener {
+            viewModel.getReportActivity(this.requireContext(), it.date)
+        })
         binding.todayReport.constraint.setBackgroundColor(resources.getColor(R.color.green_day))
         "Текущий отчет за ${UtilsMethods.getTodayDateString()}".also {
             binding.todayReport.tvNameReport.text = it
         }
+
         binding.todayReport.cvReportCard.setOnClickListener {
             this.context?.let { it1 ->
                 viewModel.getReportActivity(
@@ -69,87 +63,7 @@ class FragmentListReport : BaseFragment() {
                 )
             }
         }
-
-        binding.btnEndThisDay.setOnClickListener {
-            if (isComplete) {
-                AlertDialog.Builder(it.context)
-                    .setMessage(R.string.confirmEndDay)
-                    .setPositiveButton(
-                        R.string.yes
-                    ) { _, _ ->
-                        val intent = Intent(this.context, SplashActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                        HelpLoadingProgress.setLoginProgress(
-                            it.context,
-                            HelpState.IS_WORK_START,
-                            true
-                        )
-                        viewModel.saveTodayReport()
-                        viewModel.sendGeneralReport(reportDay)
-                        val report = viewModel.getDriverCloseMonitor()
-                        viewModel.driverCloseDay(report)
-                        AlertDialog.Builder(it.context)
-                            .setMessage("Не забудте сделать сверку итогов в терминале")
-                            .setPositiveButton("Ок") { _, _ ->
-                                viewModel.clearOldCompleteOrder()
-                                val service = Intent(
-                                    activity?.applicationContext,
-                                    TimeListenerService::class.java
-                                )
-                                activity?.stopService(service)
-                                activity?.finish()
-                                startActivity(intent)
-                            }.create().show()
-                    }
-                    .setNegativeButton(R.string.no) { dialog, _ ->
-                        dialog.cancel()
-                    }.create().show()
-
-            } else {
-                this.context?.let { it1 ->
-                    AlertDialog.Builder(it1)
-                        .setMessage(R.string.confirmEndOrder)
-                        .setPositiveButton(
-                            R.string.ok
-                        ) { dialog, _ ->
-                            dialog.cancel()
-                        }.create().show()
-                }
-            }
-        }
-    }
-
-    private fun observeVM() {
-        viewModel.reportsDay.observe(viewLifecycleOwner, {
-            Timber.d("${it.size}")
-            if (!it.isNullOrEmpty()) {
-                addReports(it)
-            }
-        })
-        viewModel.isSendReportDay()
-        viewModel.isCompleteOrder.observe(viewLifecycleOwner, {
-            isComplete = it
-        })
-        viewModel.getTodayExpenses()
-        viewModel.initThisReport()
-        viewModel.reportDay.observe(viewLifecycleOwner, {
-            reportDay = it
-        })
-    }
-
-    private fun initRv() {
-        binding.rvListReportDay.adapter = adapter
-        adapter.notifyDataSetChanged()
-        adapter.onReportClick = {
-            this.context?.let { it1 -> viewModel.getReportActivity(it1, it.date) }
-        }
-    }
-
-    private fun addReports(reports: List<ReportDay>) {
-        adapter.reportDayList.clear()
-        adapter.reportDayList.addAll(reports)
-        adapter.notifyDataSetChanged()
+        return binding.root
     }
 
     companion object {

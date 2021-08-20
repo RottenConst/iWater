@@ -1,5 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.screens.main
 
+import android.annotation.SuppressLint
 import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
@@ -8,12 +9,14 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.iwater.youwater.iwaterlogistic.R
-import ru.iwater.youwater.iwaterlogistic.domain.Order
-import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
-import ru.iwater.youwater.iwaterlogistic.domain.Product
+import ru.iwater.youwater.iwaterlogistic.domain.*
 import ru.iwater.youwater.iwaterlogistic.domain.vm.TypeClient
+import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.CompleteListOrdersAdapter
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
+import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ReportListAdapter
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
  * Detail order binding
@@ -132,7 +135,7 @@ fun TextView.setNumOrder(item: Order) {
 }
 
 /**
- * LisOrderAdapter binding
+ * About and Shipments screen binding
  **/
 
 @BindingAdapter("titleOrderInfo")
@@ -187,5 +190,62 @@ fun bindRadioGroup(typeCash: RadioGroup, typeClient: TypeClient?) {
         TypeClient.PHYSICS -> View.VISIBLE
         TypeClient.ERROR -> View.GONE
         else -> View.GONE
+    }
+}
+
+/**
+ * Reports screen binding
+ **/
+
+@BindingAdapter("totalMoney")
+fun TextView.bindTotalMoney(totalMoney: Float) {
+    text = "$totalMoney"
+}
+
+@BindingAdapter("cashMoney")
+fun TextView.bindCashMoney(reportDay: ReportDay?) {
+    if (reportDay != null) {
+        val cash = reportDay.run {
+            cashMoney + cashOnTerminal + cashOnSite
+        }
+        text = "$cash"
+    }
+}
+
+@BindingAdapter("noCashMoney")
+fun TextView.bindNoCashMoney(noCashMoney: Float) {
+    text = "$noCashMoney"
+}
+
+@BindingAdapter("moneyDelivery")
+fun TextView.bindMoneyDelivery(moneyDelivery: Float){
+    text = "$moneyDelivery"
+}
+
+@BindingAdapter("listReport")
+fun bindRecycleReport(recyclerView: RecyclerView, data: List<ReportDay>?) {
+    val adapter = recyclerView.adapter as ReportListAdapter
+    adapter.submitList(data)
+}
+
+/**
+ * CompleteOrders screen binding
+ **/
+@BindingAdapter("listComplete")
+fun bindRecycleCompleteOrder(recyclerView: RecyclerView, data: List<CompleteOrder>?) {
+    val adapter = recyclerView.adapter as CompleteListOrdersAdapter
+    adapter.submitList(data)
+}
+
+@SuppressLint("SimpleDateFormat")
+@BindingAdapter("completeDescription")
+fun TextView.bindCompleteOrderInfo(completeOrder: CompleteOrder?) {
+    if (completeOrder != null) {
+        val sdf = SimpleDateFormat("HH:mm:ss")
+        val time = Date(completeOrder.timeComplete * 1000)
+        val date = sdf.format(time)
+        "№${completeOrder.id} ${completeOrder.time} Завершен в ${date}, ${completeOrder.address}".also {
+            text = it
+        }
     }
 }

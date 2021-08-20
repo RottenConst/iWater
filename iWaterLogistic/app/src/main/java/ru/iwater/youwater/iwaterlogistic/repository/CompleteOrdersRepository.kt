@@ -7,10 +7,8 @@ import org.json.JSONObject
 import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.bd.CompleteOrderDao
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
-import ru.iwater.youwater.iwaterlogistic.domain.AnswerUpdateStatus
+import ru.iwater.youwater.iwaterlogistic.domain.*
 
-import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
-import ru.iwater.youwater.iwaterlogistic.domain.DecontrolReport
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
@@ -80,15 +78,34 @@ class CompleteOrdersRepository @Inject constructor(
         return@withContext completeOrderDao.getTankOfOrders()
     }
 
-    suspend fun addReport(reportOrder: DecontrolReport) {
-        val answer = service.reportOrderInsert("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", reportOrder)
+    suspend fun addDecontrol(decontrolReport: DecontrolReport) : Boolean {
         try {
-            if (answer.isSuccessful) {
-                Timber.d("${answer.code()}")
+            val answer = service.reportOrderInsert("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", decontrolReport)
+            return if (answer.isSuccessful) {
+                Timber.d("${answer.body()}")
+                true
+            } else {
+                false
             }
         }catch (e: Exception) {
             Timber.e(e)
         }
+        return false
+    }
+
+    suspend fun addReport(reportOrder: ReportOrder): Boolean {
+        try {
+            val answer = service.addReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", reportOrder)
+            return if (answer.isSuccessful) {
+                Timber.d("OK! + ${answer.body()?.totalMoney}")
+                true
+            } else {
+                false
+            }
+        }catch (e: java.lang.Exception) {
+            Timber.d(e)
+        }
+        return false
     }
 
     suspend fun updateStatusOrder(idOrder: Int?): AnswerUpdateStatus {

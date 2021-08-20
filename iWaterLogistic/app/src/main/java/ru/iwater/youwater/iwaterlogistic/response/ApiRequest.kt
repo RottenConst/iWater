@@ -75,6 +75,9 @@ interface ApiRequest {
         @Path("id") id: Int?,
     ): AnswerUpdateStatus
 
+    /**
+     * Отправить расход
+     */
     @Headers( "Content-Type: application/json" )
     @POST("iwaterExpenses_list/")
     suspend fun addExpenses(
@@ -86,7 +89,7 @@ interface ApiRequest {
     @POST("iwaterReportApp_list/")
     suspend fun addReport(
         @Header("X-Authorization") key: String,
-        @Body request: ReportDay
+        @Body request: ReportOrder
     ) : Response<ReportDay>
 
     @Headers( "Content-Type: application/json" )

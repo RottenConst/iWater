@@ -93,4 +93,7 @@
     <string name="expenses_cost_label">Сумма расхоа:</string>
     <string name="add_photo_check">Прикрепить чек(фото)</string>
     <string name="send">Отправить</string>
+    <string name="check_report">Сверка отчета</string>
+    <string name="send_report">Отправить отчет</string>
+    <string name="add_photo_report">Прикрепить фото Z отчета</string>
 </resources>

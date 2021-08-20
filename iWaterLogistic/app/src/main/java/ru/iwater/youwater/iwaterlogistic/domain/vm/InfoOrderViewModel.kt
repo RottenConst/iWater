@@ -46,7 +46,7 @@ class InfoOrderViewModel @Inject constructor(
                     } else {
                         orderDetail.cash_b = orderInfoDetail.cash
                     }
-//                    orderDetail.location = getCoordinate(orderDetail.address)
+                    orderDetail.location = getCoordinate(orderDetail.address)
                     if (orderDetail.contact.isNotBlank()) {
                         orderDetail.address = "${orderInfoDetail.address} ${
                             orderInfoDetail.contact.split(",").get(0)

@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AlertDialog
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +22,7 @@ import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.FragmentReportDayBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.ReportViewModel
+import ru.iwater.youwater.iwaterlogistic.domain.vm.Status
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ExpensesAdapter
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
@@ -68,13 +70,13 @@ class ReportFragment : BaseFragment() {
 
         binding.rvExpenses.adapter = adapter
 
-        if (date == UtilsMethods.getTodayDateString()) {
-            observeReport(binding)
-            observeTodayExpenses(binding)
-        } else {
-            binding.btnSetCost.visibility = View.GONE
-            date?.let { observeReportDate(it, binding) }
-            date?.let { observeExpenses(it, binding) }
+        date?.let {
+            observeReportDate(it, binding)
+            observeExpenses(it, binding)
+            if (date != UtilsMethods.getTodayDateString()) {
+                binding.btnEndSession.visibility = View.GONE
+                binding.btnSetCost.visibility = View.GONE
+            }
         }
 
         binding.btnSetCost.setOnClickListener {
@@ -82,18 +84,62 @@ class ReportFragment : BaseFragment() {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
+        binding.btnEndSession.setOnClickListener {
+            viewModel.isCompleteOrder.observe(this.viewLifecycleOwner, {
+                val context = this.context
+                if (context != null)
+                    if (it) {
+                        AlertDialog.Builder(context)
+                            .setMessage(R.string.confirmEndDay)
+                            .setPositiveButton(
+                                R.string.yes
+                            ) { _, _ ->
+                                val fragment = ReportCheckFragment.newInstance()
+                                this.activity?.supportFragmentManager?.beginTransaction()
+                                    ?.replace(R.id.fl_card_order_container, fragment)
+                                    ?.commit()
+                            }
+                            .setNegativeButton(R.string.no) { dialog, _ ->
+                                dialog.cancel()
+                            }.create().show()
+
+                    } else {
+                        AlertDialog.Builder(context)
+                            .setMessage(R.string.confirmEndOrder)
+                            .setPositiveButton(
+                                R.string.ok
+                            ) { dialog, _ ->
+                                dialog.cancel()
+                            }.create().show()
+                    }
+            })
+        }
+
+        viewModel.status.observe(this.viewLifecycleOwner, { status ->
+            when (status) {
+                Status.DONE -> {
+                    viewModel.addExpensesInBD(
+                        binding.addExpensesDrawer.etNameExpenses.text.toString(),
+                        binding.addExpensesDrawer.etSumExpenses.text.toString().toFloat(),
+                        currentPhotoPath
+                    )
+                    UtilsMethods.showToast(
+                        this.context,
+                        binding.addExpensesDrawer.etNameExpenses.text.toString()
+                    )
+                }
+                Status.ERROR -> {
+                    UtilsMethods.showToast(
+                        this.context,
+                        "Ошибка отправки"
+                    )
+                }
+                else -> {}
+            }
+        })
+
         binding.addExpensesDrawer.btnPositive.setOnClickListener {
             if (chekExpenses(binding)) {
-                viewModel.addExpensesInBD(
-                    binding.addExpensesDrawer.etNameExpenses.text.toString(),
-                    binding.addExpensesDrawer.etSumExpenses.text.toString().toFloat(),
-                    currentPhotoPath
-                )
-                UtilsMethods.showToast(
-                    this.context,
-                    binding.addExpensesDrawer.etNameExpenses.text.toString()
-                )
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 binding.addExpensesDrawer.apply {
                     viewModel.sendExpenses(
                         etNameExpenses.text.toString(),
@@ -101,6 +147,8 @@ class ReportFragment : BaseFragment() {
                         currentPhotoPath
                     )
                 }
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                viewModel.setStatusExpenses(Status.NONE)
                 Timber.i(binding.addExpensesDrawer.ivPhotoChek.context.filesDir.path)
             } else {
                 UtilsMethods.showToast(context, "Вы не заполнели все поля")
@@ -128,8 +176,10 @@ class ReportFragment : BaseFragment() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     hideKeyboard(bottomSheet)
-                    observeTodayExpenses(binding)
-                    observeReport(binding)
+                    if (date != null) {
+                        observeExpenses(date, binding)
+                        observeReportDate(date, binding)
+                    }
                     binding.addExpensesDrawer.apply {
                         etNameExpenses.text.clear()
                         etSumExpenses.text.clear()
@@ -196,64 +246,34 @@ class ReportFragment : BaseFragment() {
         }
     }
 
-    private fun observeReport(binding: FragmentReportDayBinding) {
-        viewModel.initThisReport()
-        viewModel.reportDay.observe(viewLifecycleOwner, { reportDay ->
-            binding.tvNumTotalOrders.text = "${reportDay.orderComplete}"
-            binding.tvTankReport.text = "${reportDay.tank}"
-            "${reportDay.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
-            "${reportDay.cashOnSite + reportDay.cashOnTerminal + reportDay.cashMoney}руб.".also {
-                binding.tvCashNumTotal.text = it
-            }
-            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-            "${reportDay.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
-            "${reportDay.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
-            "${reportDay.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
-            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-            "${reportDay.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
-        })
-    }
-
     private fun observeReportDate(date: String, binding: FragmentReportDayBinding) {
-        viewModel.initDateReport(date)
-        viewModel.reportDay.observe(viewLifecycleOwner, { reportDay ->
-            binding.tvNumTotalOrders.text = "${reportDay.orderComplete}"
-            binding.tvTankReport.text = "${reportDay.tank}"
-            "${reportDay.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
-            "${reportDay.cashOnSite + reportDay.cashOnTerminal + reportDay.cashMoney}руб.".also {
-                binding.tvCashNumTotal.text = it
-            }
-            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-            "${reportDay.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
-            "${reportDay.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
-            "${reportDay.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
-            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-            "${reportDay.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
-        })
-    }
-
-    private fun observeTodayExpenses(binding: FragmentReportDayBinding) {
-        viewModel.getTodayExpenses()
-        viewModel.expenses.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) {
-                binding.tvExpensesTitle.text = "Расходы"
-                adapter.submitList(it)
-            } else {
-                binding.tvExpensesTitle.text = "Расходов нет"
-            }
-        })
+            viewModel.initDateReport(date)
+            viewModel.reportDay.observe(viewLifecycleOwner, { reportDay ->
+                binding.tvNumTotalOrders.text = "${reportDay.orderComplete}"
+                binding.tvTankReport.text = "${reportDay.tank}"
+                "${reportDay.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
+                "${reportDay.cashOnSite + reportDay.cashOnTerminal + reportDay.cashMoney}руб.".also {
+                    binding.tvCashNumTotal.text = it
+                }
+                "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+                "${reportDay.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
+                "${reportDay.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
+                "${reportDay.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
+                "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+                "${reportDay.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
+            })
     }
 
     private fun observeExpenses(date: String, binding: FragmentReportDayBinding) {
-        viewModel.getExpenses(date)
-        viewModel.expenses.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) {
-                binding.tvExpensesTitle.text = "Расходы"
-                adapter.submitList(it)
-            } else {
-                binding.tvExpensesTitle.text = "Расходов нет"
-            }
-        })
+            viewModel.getExpenses(date)
+            viewModel.expenses.observe(viewLifecycleOwner, {
+                if (it.isNotEmpty()) {
+                    binding.tvExpensesTitle.text = "Расходы"
+                    adapter.submitList(it)
+                } else {
+                    binding.tvExpensesTitle.text = "Расходов нет"
+                }
+            })
     }
 
     companion object {

@@ -131,7 +131,7 @@ class ShipmentsFragment: BaseFragment() {
                 binding.cbDocNo.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
                 binding.cbDocYes.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
             } else {
-                if (id != null) viewModel.setCompleteOrder(
+                if (id != null) viewModel.setCompleteOrder2(
                     this.context,
                     id,
                     binding.etTankToBack.text.toString().toInt(),

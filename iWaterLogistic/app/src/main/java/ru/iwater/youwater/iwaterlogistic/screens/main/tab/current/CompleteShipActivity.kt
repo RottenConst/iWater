@@ -38,7 +38,7 @@ class CompleteShipActivity : BaseActivity() {
             "Заказ № $id".also { binding.tvCompleteOrder.text = it }
             binding.tvTimeComplete.text = "Отгузить не удалось"
             binding.tvAddressOrder.text =
-                "Что-то пошло не так, попробуйте перезапустить приложение и отрузить еще раз"
+                "Что-то пошло не так, попробуйте отрузить еще раз"
         }
         binding.btnComplete.setOnClickListener {
             MainActivity.start(this)
