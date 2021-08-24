@@ -45,7 +45,7 @@ class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
         binding.rvListCurrentPreview.adapter = ListOrdersAdapter(ListOrdersAdapter.OnClickListener {
             UtilsMethods.showToast(this, it.time)
         })
-        viewModel.getLoadCurrent2()
+        viewModel.getLoadCurrent()
         observeVW()
         binding.btnExitAccount.setOnClickListener {
             AlertDialog.Builder(this)
@@ -72,7 +72,7 @@ class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     override fun onRefresh() {
-        viewModel.getLoadCurrent2()
+        viewModel.getLoadCurrent()
         binding.srlRefreshCurrentOrders.isRefreshing = false
     }
 

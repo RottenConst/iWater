@@ -14,9 +14,7 @@ import ru.iwater.youwater.iwaterlogistic.databinding.FragmentOrdersListBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderLoadStatus
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
-import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import ru.iwater.youwater.iwaterlogistic.screens.splash.LoadMapActivity
-import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import javax.inject.Inject
 
 class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -56,30 +54,10 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
 
     override fun onRefresh() {
         viewModel.getLoadCurrent()
-//        when (viewModel.status.value) {
-//            OrderLoadStatus.LOADING -> {
-//                binding.refreshContainer.isRefreshing = true
-//            }
-//            OrderLoadStatus.DONE -> {
-//                binding.apply {
-//                    tvNotCurrentOrders.visibility = View.GONE
-//                    listCurrentOrder.visibility = View.VISIBLE
-//                    refreshContainer.isRefreshing = false
-//                }
-//            }
-//            OrderLoadStatus.ERROR -> {
-//                binding.apply {
-//                    tvNotCurrentOrders.visibility = View.VISIBLE
-//                    listCurrentOrder.visibility = View.GONE
-//                    refreshContainer.isRefreshing = false
-//                }
-//
-//            }
-//        }
     }
 
     private fun observeStatus() {
-        viewModel.status.observe(this, { status ->
+        viewModel.status.observe(this.viewLifecycleOwner, { status ->
             when(status) {
                 OrderLoadStatus.LOADING -> {
                     binding.refreshContainer.isRefreshing = true

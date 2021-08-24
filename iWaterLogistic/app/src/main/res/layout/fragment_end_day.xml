@@ -13,29 +13,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/ic_total_report_money"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="22dp"
-            android:contentDescription="@string/total_money"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title_check_report"
-            app:srcCompat="@drawable/ic_baseline_attach_money_24"
-            tools:srcCompat="@drawable/ic_baseline_attach_money_24" />
-
-        <TextView
-            android:id="@+id/tv_total_cash_title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="24dp"
-            android:text="@string/total_money"
-            android:textColor="@color/black"
-            app:layout_constraintStart_toEndOf="@+id/ic_total_report_money"
-            app:layout_constraintTop_toBottomOf="@+id/tv_title_check_report" />
-
         <TextView
             android:id="@+id/tv_title_check_report"
             android:layout_width="wrap_content"
@@ -51,29 +28,14 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/tv_num_total"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/string_one"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:totalMoney="@{viewModelReport.reportDay.totalMoney}"
-            app:layout_constraintBaseline_toBaselineOf="@+id/tv_total_cash_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/tv_total_cash_title" />
-
         <ImageView
             android:id="@+id/ic_cash_money"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/ic_total_report_money"
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_check_report"
             app:srcCompat="@drawable/ic_rub_24" />
 
         <TextView
@@ -81,11 +43,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="18dp"
             android:text="@string/cash_many"
             android:textColor="@color/black"
             app:layout_constraintStart_toEndOf="@+id/ic_cash_money"
-            app:layout_constraintTop_toBottomOf="@+id/tv_total_cash_title" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_title_check_report" />
 
         <TextView
             android:id="@+id/tv_num_cash_total"
@@ -118,7 +80,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="12dp"
-            android:text="@string/no_cash_money"
+            android:text="@string/cash_on_terminal"
             android:textColor="@color/black"
             app:layout_constraintStart_toEndOf="@+id/ic_no_cash_money"
             app:layout_constraintTop_toBottomOf="@+id/tv_title_cash_money" />
@@ -132,7 +94,7 @@
             android:text="@string/string_one"
             android:textColor="@color/black"
             android:textStyle="bold"
-            app:noCashMoney="@{viewModelReport.reportDay.noCashMoney}"
+            app:cashOnTerminal="@{viewModelReport.reportDay.cashOnTerminal}"
             app:layout_constraintBaseline_toBaselineOf="@+id/tv_no_cash_total"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"

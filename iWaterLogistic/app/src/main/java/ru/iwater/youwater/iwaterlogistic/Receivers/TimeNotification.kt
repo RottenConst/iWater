@@ -11,7 +11,6 @@ import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
-import ru.iwater.youwater.iwaterlogistic.util.HelpNotification
 import ru.iwater.youwater.iwaterlogistic.util.NotificationSender
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
@@ -22,11 +21,11 @@ class TimeNotification : BroadcastReceiver() {
     private lateinit var accountRepository: AccountRepository
     private val iWaterDB = App.appComponent.dataBase()
 
-    object notifycationOrders {
+    object NotificationOrders {
         val notifyOrders = mutableListOf<NotifyOrder>()
         val isNotify = mutableListOf<Int>()
         val failList = mutableListOf<Int>()
-        var coutNotifycation = 0
+        var countNotification = 0
     }
 
 
@@ -41,12 +40,11 @@ class TimeNotification : BroadcastReceiver() {
         notificationSender = NotificationSender(context)
 
         CoroutineScope(Dispatchers.Main).launch {
-            orderListRepository.getLoadCurrentOrders(accountRepository.getAccount().session)
             dbOrders = orderListRepository.getDBOrders()
-            ordersNet = orderListRepository.ordersList
-            notifycationOrders.notifyOrders.clear()
+            ordersNet = orderListRepository.getLoadCurrentOrder(accountRepository.getAccount().session)
+            NotificationOrders.notifyOrders.clear()
             for (order in ordersNet) {
-                notifycationOrders.notifyOrders.add(
+                NotificationOrders.notifyOrders.add(
                     NotifyOrder(
                         order.id, order.time.split("-")[1], order.address,
                         notification = false,
@@ -72,27 +70,27 @@ class TimeNotification : BroadcastReceiver() {
             }
         }
 
-//        if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0 && notifycationOrders.coutNotifycation != 3) {
-//            notificationSender.sendNotification("По завершению всех заказов не забудьте закончить день и отправить отчет" , ordersNet.size + 200, false)
-//            notifycationOrders.coutNotifycation++
-//        }
+        if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0 && NotificationOrders.countNotification != 3) {
+            notificationSender.sendNotification("По завершению всех заказов не забудьте закончить день и отправить отчет" , ordersNet.size + 200, false)
+            NotificationOrders.countNotification++
+        }
 
-        Timber.d(" OrderDB ${notifycationOrders.notifyOrders.size}")
-        for (dbOrder in notifycationOrders.notifyOrders) {
-            for (notify in notifycationOrders.isNotify) {
+//        Timber.d(" OrderDB ${NotificationOrders.notifyOrders.size}")
+        for (dbOrder in NotificationOrders.notifyOrders) {
+            for (notify in NotificationOrders.isNotify) {
                 if (notify == dbOrder.id) dbOrder.notification = true
             }
-            for (fail in notifycationOrders.failList) {
+            for (fail in NotificationOrders.failList) {
                 if (fail == dbOrder.id) dbOrder.fail = true
             }
             if (dbOrder.timeEnd.isNotEmpty()) {
                 Timber.d("${dbOrder.id} ${dbOrder.fail}")
                 if (UtilsMethods.timeDifference(dbOrder.timeEnd, UtilsMethods.getFormatedDate()) in 1..3600 && !dbOrder.notification) {
                     notificationSender.sendNotification("Через 1 час истекает заказ ${dbOrder.address}" , dbOrder.id, false)
-                    notifycationOrders.isNotify.add(dbOrder.id)
+                    NotificationOrders.isNotify.add(dbOrder.id)
                 } else if (UtilsMethods.timeDifference(dbOrder.timeEnd, UtilsMethods.getFormatedDate()) < 0 && !dbOrder.fail) {
                     notificationSender.sendNotification("Время истекло. Адрес:  ${dbOrder.address}" , dbOrder.id, false)
-                    notifycationOrders.failList.add(dbOrder.id)
+                    NotificationOrders.failList.add(dbOrder.id)
                 }
             }
         }

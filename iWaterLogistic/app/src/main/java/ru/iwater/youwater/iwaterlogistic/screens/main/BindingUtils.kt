@@ -197,11 +197,6 @@ fun bindRadioGroup(typeCash: RadioGroup, typeClient: TypeClient?) {
  * Reports screen binding
  **/
 
-@BindingAdapter("totalMoney")
-fun TextView.bindTotalMoney(totalMoney: Float) {
-    text = "$totalMoney"
-}
-
 @BindingAdapter("cashMoney")
 fun TextView.bindCashMoney(reportDay: ReportDay?) {
     if (reportDay != null) {
@@ -212,9 +207,9 @@ fun TextView.bindCashMoney(reportDay: ReportDay?) {
     }
 }
 
-@BindingAdapter("noCashMoney")
-fun TextView.bindNoCashMoney(noCashMoney: Float) {
-    text = "$noCashMoney"
+@BindingAdapter("cashOnTerminal")
+fun TextView.cashOnTerminal(cashOnTerminal: Float) {
+    text = "$cashOnTerminal"
 }
 
 @BindingAdapter("moneyDelivery")

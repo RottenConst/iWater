@@ -22,7 +22,6 @@ import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.AboutOrderFragmentBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.InfoOrderViewModel
-import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import ru.iwater.youwater.iwaterlogistic.screens.splash.LoadMapActivity
 import javax.inject.Inject
 

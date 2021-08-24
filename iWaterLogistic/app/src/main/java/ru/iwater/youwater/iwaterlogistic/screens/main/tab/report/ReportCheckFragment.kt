@@ -102,7 +102,7 @@ class ReportCheckFragment: BaseFragment() {
             } else {
                 val context = this.context
                 if (context != null) AlertDialog.Builder(context)
-                    .setMessage("Прикрепите фото чека")
+                    .setMessage("Прикрепите фото z-отчета")
                     .setPositiveButton(R.string.yes) {
                         dialog, _ ->
                         dialog.cancel()

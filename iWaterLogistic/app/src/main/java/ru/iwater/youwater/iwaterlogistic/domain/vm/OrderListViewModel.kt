@@ -72,10 +72,10 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun getLoadCurrent2() {
+    fun getLoadCurrent() {
         uiScope.launch {
             _status.value = OrderLoadStatus.LOADING
-            val listOrderNet = orderListRepository.getLoadCurrentOrder2(account.session)
+            val listOrderNet = orderListRepository.getLoadCurrentOrder(account.session)
             if (listOrderNet.isNullOrEmpty()) {
                 _status.value = OrderLoadStatus.ERROR
             } else {
@@ -133,13 +133,15 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun getLocation(order: Order) {
+    fun loadCoordinate(orders: List<Order>) {
         uiScope.launch {
-            val location = getCoordinate(order.address)
-            if (location.lat != 0.0 && location.lng != 0.0) {
-                order.location = location
-                updateOrder(order)
+            orders.forEach { order ->
+                if (order.location?.lat == 0.0 && order.location?.lng == 0.0) {
+                    order.location = getCoordinate(order.address)
+                    updateOrder(order)
+                }
             }
+            _status.value = OrderLoadStatus.DONE
         }
     }
 

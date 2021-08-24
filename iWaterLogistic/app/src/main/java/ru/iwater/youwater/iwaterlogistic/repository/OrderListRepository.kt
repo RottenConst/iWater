@@ -20,11 +20,7 @@ class  OrderListRepository @Inject constructor(
     IWaterDB: IWaterDB
 )
 {
-//    val driverWayBill = DriverWayBill() //api запрос инфо о заказах
-//    val orderCurrent = OrderCurrent()
-
     val service: ApiRequest = RetrofitFactory.makeRetrofit()
-    var ordersList = mutableListOf<Order>() //загруженные заказы
     private val orderDao: OrderDao = IWaterDB.orderDao() //обьект бд
 
 
@@ -42,34 +38,6 @@ class  OrderListRepository @Inject constructor(
         orderDao.save(order)
     }
 
-    /**
-     * возвращает выполненые заказы за сегодня
-     */
-    fun getCompleteOrder(): List<Order> {
-        val orders = ordersList
-        val completeOrder = mutableListOf<Order>()
-        orders.sortBy { order -> order.time }
-        orders.asReversed()
-        for (order in orders) {
-            if (order.status == 2) {
-                completeOrder.add(order)
-            }
-        }
-        return completeOrder
-    }
-
-    private fun checkCompleteOrder() {
-        val iterator = ordersList.iterator()
-        var num = 0
-        while (iterator.hasNext()) {
-            val order = iterator.next()
-            num += 1
-            order.num = num
-            if (order.status == 2) {
-                iterator.remove()
-            }
-        }
-    }
 
     /**
      * обновить заказы в бд
@@ -106,30 +74,16 @@ class  OrderListRepository @Inject constructor(
         return@withContext orderDao.getOrderOnId(id)
     }
 
-    suspend fun getLoadCurrentOrders(session: String) {
-        val answer = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
-        try {
-            if (answer.isSuccessful) {
-                ordersList.clear()
-                ordersList.addAll(answer.body()!!)
-                if (!ordersList.isNullOrEmpty()) {
-                    ordersList.sortBy { order -> order.time }
-                    checkCompleteOrder()
-                }
-            }
-        } catch (e: HttpException) {
-            Timber.d(e.message())
-        }
-    }
-
-    suspend fun getLoadCurrentOrder2(session: String): List<Order> {
+    suspend fun getLoadCurrentOrder(session: String): List<Order> {
         var currentOrders: List<Order> = emptyList()
         try {
             currentOrders = service.getDriverOrders2("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {
+                var num = 0
                 currentOrders.sortedBy { order -> order.time }
                 return currentOrders.filter { it.status != 2 }.map {
-                    it.num += 1
+                    num++
+                    it.num += num
                     Order(
                         address = it.address,
                         cash = it.cash,
