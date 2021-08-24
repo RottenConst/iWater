@@ -56,6 +56,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".screens.splash.LoadMapActivity"
+            android:exported="true"
+            android:theme="@style/Theme.MaterialComponents.Light.NoActionBar">
+        </activity>
         <activity
             android:name=".screens.main.MainActivity"
             android:configChanges="keyboardHidden|orientation|screenSize" />

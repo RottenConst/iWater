@@ -15,6 +15,7 @@ import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderLoadStatus
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
 import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
+import ru.iwater.youwater.iwaterlogistic.screens.splash.LoadMapActivity
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import javax.inject.Inject
 
@@ -45,16 +46,16 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
             viewModel.getAboutOrder(context, it.id)
         })
         observeStatus()
-        viewModel.getLoadCurrent2()
+        viewModel.getLoadCurrent()
         binding.btnGeneralMap.setOnClickListener {
-            val intent = Intent(this.context, MapsActivity::class.java)
+            val intent = Intent(this.context, LoadMapActivity::class.java)
             startActivity(intent)
         }
         return binding.root
     }
 
     override fun onRefresh() {
-        viewModel.getLoadCurrent2()
+        viewModel.getLoadCurrent()
 //        when (viewModel.status.value) {
 //            OrderLoadStatus.LOADING -> {
 //                binding.refreshContainer.isRefreshing = true

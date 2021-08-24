@@ -147,11 +147,6 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
 
     private fun getMarker(orders: List<Order>) {
         for (order in orders) {
-            if (order.location?.lat == 0.0 && order.location?.lng == 0.0) {
-                viewModel.getLocation(order)
-                viewModel.getLoadOrderFromDB()
-                Timber.d("find ${order.location?.lat}, ${order.location?.lng}")
-            }
             val point = LatLng(order.location?.lat!!, order.location?.lng!!)
             val hour = order.time.split("-")[1]
             val color = hour.split(":")[0].toInt()

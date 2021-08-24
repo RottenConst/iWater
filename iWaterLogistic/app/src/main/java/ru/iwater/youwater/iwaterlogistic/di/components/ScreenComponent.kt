@@ -15,6 +15,7 @@ import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListRep
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportCheckFragment
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportFragment
 import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
+import ru.iwater.youwater.iwaterlogistic.screens.splash.LoadMapActivity
 
 
 @OnScreen
@@ -33,4 +34,5 @@ interface ScreenComponent {
         fun inject(reportFragment: ReportFragment)
         fun inject(fragmentListReport: FragmentListReport)
         fun inject(reportCheckFragment: ReportCheckFragment)
+        fun inject(loadMapActivity: LoadMapActivity)
 }
