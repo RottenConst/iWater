@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/colorPrimaryBlue</item>
         <item name="colorPrimaryDark">@color/colorPrimaryBlueDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorError">@color/shipmentBackground</item>
         <!-- Customize your theme here. -->
     </style>
 

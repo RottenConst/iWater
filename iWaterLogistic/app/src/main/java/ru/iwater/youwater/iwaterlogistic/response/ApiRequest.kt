@@ -2,6 +2,7 @@ package ru.iwater.youwater.iwaterlogistic.response
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import okhttp3.MultipartBody
 import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.*
@@ -13,7 +14,7 @@ interface ApiRequest {
     /**
      * авторризация
      */
-    @POST("auth/{login}/{company}/{password}/{notification}/")
+    @POST("iwater/auth/{login}/{company}/{password}/{notification}/")
     suspend fun authDriver(
         @Header("X-Authorization") key: String,
         @Path("login") login: String,
@@ -25,13 +26,13 @@ interface ApiRequest {
     /**
      * получить список заказов водителя по его сессии
      */
-    @GET("getDriverList/{session}/")
+    @GET("iwater/getDriverList/{session}/")
     suspend fun getDriverOrders(
         @Header("X-Authorization") key: String,
         @Path("session") session: String
     ): Response<List<Order>>
 
-    @GET("getDriverList/{session}/")
+    @GET("iwater/getDriverList/{session}/")
     suspend fun getDriverOrders2(
         @Header("X-Authorization") key: String,
         @Path("session") session: String
@@ -40,7 +41,7 @@ interface ApiRequest {
     /**
      * получить подробную информацию о заказе по его id
      */
-    @GET("iwaterOrders_detail/{id}/")
+    @GET("iwater/iwaterOrders_detail/{id}/")
     suspend fun getOrderInfo(
         @Header("X-Authorization") key: String,
         @Path("id") idOrder: Int?
@@ -49,7 +50,7 @@ interface ApiRequest {
     /*
         получить тип клиента по id заказа
      */
-    @GET("/iwater/getTypeClient/{id}/")
+    @GET("iwater/getTypeClient/{id}/")
     suspend fun getTypeClient2(
         @Header("X-Authorization") key: String,
         @Path("id") idClient: Int?
@@ -59,7 +60,7 @@ interface ApiRequest {
         отправить отчет по конкретному заказу
      */
     @Headers( "Content-Type: application/json" )
-    @POST("iwaterDcontrol_list/")
+    @POST("iwater/iwaterDcontrol_list/")
     suspend fun reportOrderInsert(
          @Header("X-Authorization") key: String,
          @Body request: DecontrolReport
@@ -69,7 +70,7 @@ interface ApiRequest {
         обновить статус заказа
     */
     @Headers( "Content-Type: application/json" )
-    @POST("update-status/{id}/")
+    @POST("iwater/update-status/{id}/")
     suspend fun updateStatus(
         @Header("X-Authorization") key: String,
         @Path("id") id: Int?,
@@ -79,21 +80,21 @@ interface ApiRequest {
      * Отправить расход
      */
     @Headers( "Content-Type: application/json" )
-    @POST("iwaterExpenses_list/")
+    @POST("iwater/iwaterExpenses_list/")
     suspend fun addExpenses(
         @Header("X-Authorization") key: String,
         @Body request: Expenses
     ): Response<Expenses>
 
     @Headers( "Content-Type: application/json" )
-    @POST("iwaterReportApp_list/")
+    @POST("iwater/iwaterReportApp_list/")
     suspend fun addReport(
         @Header("X-Authorization") key: String,
         @Body request: ReportOrder
     ) : Response<ReportDay>
 
     @Headers( "Content-Type: application/json" )
-    @POST("iwaterDriverCloseDay_list/")
+    @POST("iwater/iwaterDriverCloseDay_list/")
     suspend fun sendTotalReport(
         @Header("X-Authorization") key: String,
         @Body request: DayReport
@@ -105,4 +106,38 @@ interface ApiRequest {
         @Query("query") address: String,
         @Query("key") key: String
     ): Response<MapData>
+
+    @Multipart
+    @POST("photo/UploadZorder/")
+    suspend fun sendZReport(
+        @Header("X-Authorization") key: String,
+        @Part id: MultipartBody.Part,
+        @Part date: MultipartBody.Part,
+        @Part name: MultipartBody.Part,
+        @Part image: MultipartBody.Part
+    )
+
+    @Multipart
+    @POST("photo/Upload_cheques/")
+    suspend fun sendPhotoExpenses(
+        @Header("X-Authorization") key: String,
+        @Part id: MultipartBody.Part,
+        @Part date: MultipartBody.Part,
+        @Part name: MultipartBody.Part,
+        @Part image: MultipartBody.Part
+    )
+
+    @Headers( "Content-Type: application/json" )
+    @POST("iwater/open_work_shift/")
+    suspend fun openWorkShift(
+        @Header("X-Authorization") key: String,
+        @Body driverShift: OpenDriverShift
+    ): Response<JsonObject>
+
+    @Headers( "Content-Type: application/json" )
+    @POST("iwater/close_work_shift/")
+    suspend fun closeWorkShift(
+        @Header("X-Authorization") key: String,
+        @Body closeDriverShift: CloseDriverShift
+    ): Response<JsonObject>
 }

@@ -120,9 +120,9 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
             val info = marker.title.split(";")
             "#${info[1]}".also { binding.checkOrder.tvNumMarker.text = it }
             "#${info[0]} ${info[2]}".also { binding.checkOrder.tvNameMarker.text = it }
-            binding.checkOrder.tvTimeOrderMarker.text = info[3]
+            "${info[3]} ${info[4]}".also { binding.checkOrder.tvTimeOrderMarker.text = it }
             binding.checkOrder.tvProductNameOrder.text = ""
-            val productAll = info[4].split("+")
+            val productAll = info.last().split("+")
             for (product in productAll) {
                 binding.checkOrder.tvProductNameOrder.append("$product \n")
             }
@@ -148,7 +148,8 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     private fun getMarker(orders: List<Order>) {
         for (order in orders) {
             val point = LatLng(order.location?.lat!!, order.location?.lng!!)
-            val hour = order.time.split("-")[1]
+            val hour = order.time.split("-").last()
+            Timber.i("Time - $hour")
             val color = hour.split(":")[0].toInt()
             val orderProduct: String by lazy {
                 UtilsMethods.productToStringMap(order.products)

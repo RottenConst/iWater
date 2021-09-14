@@ -6,13 +6,17 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +25,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.FragmentReportDayBinding
+import ru.iwater.youwater.iwaterlogistic.domain.vm.LoadPhoto
 import ru.iwater.youwater.iwaterlogistic.domain.vm.ReportViewModel
 import ru.iwater.youwater.iwaterlogistic.domain.vm.Status
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ExpensesAdapter
@@ -28,6 +33,7 @@ import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
 import javax.inject.Inject
 
 private const val REQUEST_IMAGE_CAPTURE = 1
@@ -41,7 +47,7 @@ class ReportFragment : BaseFragment() {
 
     private val screenComponent = App().buildScreenComponent()
     private lateinit var binding: FragmentReportDayBinding
-    private var currentPhotoPath: String = ""
+    private var outputUri: Uri?  = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -115,20 +121,26 @@ class ReportFragment : BaseFragment() {
             })
         }
 
-        viewModel.status.observe(this.viewLifecycleOwner, { status ->
+        viewModel.statusLoad.observe(this.viewLifecycleOwner, { status ->
             when (status) {
-                Status.DONE -> {
-                    viewModel.addExpensesInBD(
-                        binding.addExpensesDrawer.etNameExpenses.text.toString(),
-                        binding.addExpensesDrawer.etSumExpenses.text.toString().toFloat(),
-                        currentPhotoPath
-                    )
+                LoadPhoto.LOADING -> {
+                    binding.addExpensesDrawer.apply {
+                        viewModel.sendExpenses(
+                            etNameExpenses.text.toString(),
+                            etSumExpenses.text.toString().toFloat(),
+                            viewModel.currentPhotoPath
+                        )
+                    }
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                }
+
+                LoadPhoto.DONE -> {
                     UtilsMethods.showToast(
                         this.context,
-                        binding.addExpensesDrawer.etNameExpenses.text.toString()
+                        "Расход отправлен"
                     )
                 }
-                Status.ERROR -> {
+                LoadPhoto.ERROR -> {
                     UtilsMethods.showToast(
                         this.context,
                         "Ошибка отправки"
@@ -140,15 +152,10 @@ class ReportFragment : BaseFragment() {
 
         binding.addExpensesDrawer.btnPositive.setOnClickListener {
             if (chekExpenses(binding)) {
-                binding.addExpensesDrawer.apply {
-                    viewModel.sendExpenses(
-                        etNameExpenses.text.toString(),
-                        etSumExpenses.text.toString().toFloat(),
-                        currentPhotoPath
-                    )
-                }
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                viewModel.setStatusExpenses(Status.NONE)
+                viewModel.sendPhotoExpenses(
+                    viewModel.currentPhotoPath
+                )
+//                viewModel.setStatusExpenses(Status.NONE)
                 Timber.i(binding.addExpensesDrawer.ivPhotoChek.context.filesDir.path)
             } else {
                 UtilsMethods.showToast(context, "Вы не заполнели все поля")
@@ -157,8 +164,8 @@ class ReportFragment : BaseFragment() {
 
         binding.addExpensesDrawer.btnAddPhoto.setOnClickListener {
             try {
-                val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
+                dispatchTakePictureIntent(context)
+//                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
             } catch (e: ActivityNotFoundException) {
                 e.printStackTrace()
             }
@@ -184,7 +191,7 @@ class ReportFragment : BaseFragment() {
                         etNameExpenses.text.clear()
                         etSumExpenses.text.clear()
                         ivPhotoChek.visibility = View.GONE
-                        currentPhotoPath = ""
+                        viewModel.currentPhotoPath = ""
                     }
                     Timber.i("hide")
                 }
@@ -201,7 +208,7 @@ class ReportFragment : BaseFragment() {
     private fun chekExpenses(
         binding: FragmentReportDayBinding,
     ): Boolean {
-        return binding.addExpensesDrawer.etNameExpenses.text.isNotBlank() && binding.addExpensesDrawer.etSumExpenses.text.isNotBlank() && (currentPhotoPath.isNotBlank())
+        return binding.addExpensesDrawer.etNameExpenses.text.isNotBlank() && binding.addExpensesDrawer.etSumExpenses.text.isNotBlank() && (binding.addExpensesDrawer.ivPhotoChek.isVisible)
     }
 
     private fun hideKeyboard(view: View) {
@@ -213,37 +220,12 @@ class ReportFragment : BaseFragment() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             // Фотка сделана, извлекаем миниатюру картинки
-            if (data != null) {
-                if (data.hasExtra("data")) {
-                    val thumbnailBitmap = data.extras?.get("data") as Bitmap
-                    saveImage(thumbnailBitmap)
-                    binding.addExpensesDrawer.apply {
-                        ivPhotoChek.setImageBitmap(thumbnailBitmap)
-                        ivPhotoChek.visibility = View.VISIBLE
-                    }
-
-                }
+            binding.addExpensesDrawer.apply {
+                ivPhotoChek.setImageURI(outputUri)
+                ivPhotoChek.visibility = View.VISIBLE
             }
         }
 
-    }
-
-    private fun saveImage(bitmap: Bitmap) {
-        val cw = ContextWrapper(screenComponent.appContext())
-        val directory = cw.getDir("expenses", Context.MODE_APPEND)
-        if (!directory.exists()) {
-            directory.mkdirs()
-        }
-        val myPath = File(directory, "check_${System.currentTimeMillis()}.jpg")
-        try {
-            val fos = FileOutputStream(myPath)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
-            currentPhotoPath = myPath.path
-            Timber.i(myPath.path)
-            fos.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
     }
 
     private fun observeReportDate(date: String, binding: FragmentReportDayBinding) {
@@ -274,6 +256,34 @@ class ReportFragment : BaseFragment() {
                     binding.tvExpensesTitle.text = "Расходов нет"
                 }
             })
+    }
+
+    /**
+     * сохранить изображение в созданный ранее файл
+     **/
+    private fun dispatchTakePictureIntent(context: Context?): Intent {
+        return Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            // Ensure that there's a camera activity to handle the intent
+            takePictureIntent.resolveActivity(context?.packageManager!!)?.also {
+                // Create the File where the photo should go
+                val photoFile: File? = try {
+                    viewModel.createImageFile(context)
+                } catch (ex: IOException) {
+                    // Error occurred while creating the File
+                    null
+                }
+                // Continue only if the File was successfully created
+                photoFile?.also {
+                    outputUri = FileProvider.getUriForFile(
+                        context,
+                        "ru.iwater.yourwater.iwaterlogistic.provider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                }
+            }
+        }
     }
 
     companion object {

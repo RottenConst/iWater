@@ -25,7 +25,6 @@ class TimeNotification : BroadcastReceiver() {
         val notifyOrders = mutableListOf<NotifyOrder>()
         val isNotify = mutableListOf<Int>()
         val failList = mutableListOf<Int>()
-        var countNotification = 0
     }
 
 
@@ -46,7 +45,7 @@ class TimeNotification : BroadcastReceiver() {
             for (order in ordersNet) {
                 NotificationOrders.notifyOrders.add(
                     NotifyOrder(
-                        order.id, order.time.split("-")[1], order.address,
+                        order.id, order.time.split("-").last(), order.address,
                         notification = false,
                         fail = false
                     )
@@ -70,10 +69,10 @@ class TimeNotification : BroadcastReceiver() {
             }
         }
 
-        if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0 && NotificationOrders.countNotification != 3) {
-            notificationSender.sendNotification("По завершению всех заказов не забудьте закончить день и отправить отчет" , ordersNet.size + 200, false)
-            NotificationOrders.countNotification++
-        }
+//        if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0 && NotificationOrders.countNotification != 3) {
+//            notificationSender.sendNotification("По завершению всех заказов не забудьте закончить день и отправить отчет" , ordersNet.size + 200, false)
+//            NotificationOrders.countNotification++
+//        }
 
 //        Timber.d(" OrderDB ${NotificationOrders.notifyOrders.size}")
         for (dbOrder in NotificationOrders.notifyOrders) {

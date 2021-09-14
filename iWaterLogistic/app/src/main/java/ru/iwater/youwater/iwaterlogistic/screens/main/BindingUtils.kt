@@ -116,7 +116,7 @@ fun TextView.setDescriptionOrder(item: Order) {
 @BindingAdapter("numOrder")
 fun TextView.setNumOrder(item: Order) {
     text = "${item.num}"
-    val time = item.time.split("-")[1]
+    val time = item.time.split("-").last()
     if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) > 7200) {
         setBackgroundResource(R.drawable.circle_green)
     }
@@ -188,7 +188,7 @@ fun bindRadioGroup(typeCash: RadioGroup, typeClient: TypeClient?) {
     typeCash.visibility = when (typeClient) {
         TypeClient.JURISTIC -> View.GONE
         TypeClient.PHYSICS -> View.VISIBLE
-        TypeClient.ERROR -> View.GONE
+        TypeClient.ERROR -> View.VISIBLE
         else -> View.GONE
     }
 }

@@ -12,6 +12,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Account
+import ru.iwater.youwater.iwaterlogistic.domain.OpenDriverShift
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
@@ -20,7 +21,9 @@ import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CardOrderActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
+import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 
@@ -63,12 +66,31 @@ class OrderListViewModel @Inject constructor(
         get() = _dbListOrder
 
 
-    fun openDriverDay(context: Context) {
+    private fun openDriverDay(context: Context) {
+        val intent = Intent(context, MainActivity::class.java)
+        HelpLoadingProgress.setLoginProgress(context, HelpState.IS_WORK_START, false)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(context, intent, null)
+    }
+
+    fun openDriverShift(context: Context) {
         uiScope.launch {
-            val intent = Intent(context, MainActivity::class.java)
-            HelpLoadingProgress.setLoginProgress(context, HelpState.IS_WORK_START, false)
-            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-            startActivity(context, intent, null)
+            val driverShift = OpenDriverShift(
+                account.id,
+                account.login,
+                account.company,
+                Calendar.getInstance().timeInMillis.toString(),
+                UtilsMethods.getTodayDateString(),
+                account.session
+            )
+            val message = orderListRepository.openDriverShift(driverShift)
+            Timber.i("dasdadsasdadsadsadasda $message")
+            if (message == "Status open shift sent" || message?.isEmpty() == true) {
+                openDriverDay(context)
+            }
+            else {
+                UtilsMethods.showToast(context, "Возможны проблемы с интернетом, проверте соединение и повторите попытку")
+            }
         }
     }
 

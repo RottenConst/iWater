@@ -1,7 +1,15 @@
 package ru.iwater.youwater.iwaterlogistic.domain.vm
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +17,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.CloseDriverShift
 import ru.iwater.youwater.iwaterlogistic.domain.DayReport
 import ru.iwater.youwater.iwaterlogistic.domain.Expenses
 import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
@@ -19,11 +31,23 @@ import ru.iwater.youwater.iwaterlogistic.repository.ReportRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportActivity
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.lang.Exception
+import java.net.URI
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
 enum class Status {
     NONE,
+    DONE,
+    ERROR
+}
+
+enum class LoadPhoto {
+    LOADING,
     DONE,
     ERROR
 }
@@ -40,11 +64,18 @@ class ReportViewModel @Inject constructor(
     private var timeComplete = UtilsMethods.getTodayDateString()
 
     private val idDriver = accountRepository.getAccount().id
+    private val driverName = accountRepository.getAccount().login
     private val company = accountRepository.getAccount().company
+
+    var currentPhotoPath: String = ""
 
     private val _status: MutableLiveData<Status> = MutableLiveData()
     val status: LiveData<Status>
         get() = _status
+
+    private val _statusLoad: MutableLiveData<LoadPhoto> = MutableLiveData()
+    val statusLoad: LiveData<LoadPhoto>
+        get() = _statusLoad
 
     //отчеты
     private val _reportsDay: MutableLiveData<List<ReportDay>> = MutableLiveData()
@@ -99,19 +130,6 @@ class ReportViewModel @Inject constructor(
     }
 
     /**
-     * установить передаваемые данные в црм для отчета
-     */
-//    fun sendGeneralReport(reportDay: ReportDay) {
-//        uiScope.launch {
-//            if (reportRepository.addReport(reportDay)) {
-//                _status.value = Status.DONE
-//            } else {
-//                _status.value = Status.ERROR
-//            }
-//        }
-//    }
-
-    /**
      * сохранить отчет за день
      */
     fun saveTodayReport() {
@@ -156,6 +174,47 @@ class ReportViewModel @Inject constructor(
     fun driverCloseDay(dayReport: DayReport) {
         uiScope.launch {
             if (reportRepository.sendDayReport(dayReport)) {
+                closeShift()
+            } else {
+                _status.value = Status.ERROR
+            }
+        }
+    }
+
+    fun sendPhotoZReport(photos: List<String>) {
+        _statusLoad.value = LoadPhoto.LOADING
+        for (photo in photos) {
+            val image = BitmapFactory.decodeFile(photo)
+            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+            val stream = ByteArrayOutputStream()
+            image.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+            val byteArray = stream.toByteArray()
+            val body = MultipartBody.Part.createFormData(
+                "image", "JPEG${timeStamp}.jpg",
+                byteArray.toRequestBody("multipart/form-data".toMediaTypeOrNull(),  0, byteArray.size)
+            )
+            val id = MultipartBody.Part.createFormData("driver_id", idDriver.toString())
+            val date = MultipartBody.Part.createFormData("date", timeComplete.replace("/", "-"))
+            val driverName = MultipartBody.Part.createFormData("driver_name", driverName)
+            uiScope.launch {
+                try {
+                    reportRepository.sendPhoto( id , date , driverName, body)
+                }catch (e: Exception) {
+                    _statusLoad.value = LoadPhoto.ERROR
+                }
+            }
+        }
+        _statusLoad.value = LoadPhoto.DONE
+    }
+
+    private fun closeShift() {
+        uiScope.launch {
+            val closeDriverShift = CloseDriverShift (
+                idDriver,
+                Calendar.getInstance().timeInMillis.toString(),
+                timeComplete
+                    )
+            if (reportRepository.closeDriverShift(closeDriverShift)) {
                 _status.value = Status.DONE
             } else {
                 _status.value = Status.ERROR
@@ -173,7 +232,16 @@ class ReportViewModel @Inject constructor(
             if (reports.size > 1) {
                 val dateReport = reports[0].date
                 val expenses = reportRepository.loadExpenses(dateReport)
-                expenses.forEach { reportRepository.deleteExpenses(it) }
+                expenses.forEach {
+                    val filePath = it.fileName
+                    if (!filePath.isNullOrBlank()) {
+                        val file = File(filePath)
+                        if (file.exists()) {
+                            file.delete()
+                        }
+                    }
+                    reportRepository.deleteExpenses(it)
+                }
                 reportRepository.deleteReport(reports[0])
             }
             _reportsDay.value = reports
@@ -223,22 +291,36 @@ class ReportViewModel @Inject constructor(
      */
     fun sendExpenses(name: String, cost: Float, fileName: String) {
         uiScope.launch {
-            if (reportRepository.sendExpenses(
-                    Expenses(
-                        idDriver,
-                        timeComplete,
-                        name,
-                        cost,
-                        fileName,
-                        company
-                    )
-                )
-            ) {
-                _status.value = Status.DONE
+            if (reportRepository.sendExpenses(Expenses(idDriver, timeComplete, name, cost, fileName, company))) {
+                reportRepository.saveExpenses(Expenses(idDriver, timeComplete, name, cost, fileName, company))
+                _statusLoad.value = LoadPhoto.DONE
             } else {
-                _status.value = Status.ERROR
+                _statusLoad.value = LoadPhoto.ERROR
             }
         }
+    }
+
+    fun sendPhotoExpenses(photo: String) {
+        val image = BitmapFactory.decodeFile(photo)
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val stream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+        val byteArray = stream.toByteArray()
+        val body = MultipartBody.Part.createFormData(
+            "image", "CHECK${timeStamp}.jpg",
+            byteArray.toRequestBody("multipart/form-data".toMediaTypeOrNull(),  0, byteArray.size)
+        )
+        val id = MultipartBody.Part.createFormData("driver_id", idDriver.toString())
+        val date = MultipartBody.Part.createFormData("date", timeComplete.replace("/", "-"))
+        val driverName = MultipartBody.Part.createFormData("driver_name", driverName)
+        uiScope.launch {
+            if (reportRepository.sendExpensesPhoto(id, date, driverName, body)) {
+                _statusLoad.value = LoadPhoto.LOADING
+            } else {
+                _statusLoad.value = LoadPhoto.ERROR
+            }
+        }
+
     }
 
     fun setStatusExpenses(status: Status) {
@@ -260,6 +342,26 @@ class ReportViewModel @Inject constructor(
         intent.putExtra("dateReport", date)
         ReportActivity.start(context, intent)
     }
+
+    /**
+     * создать файл
+     **/
+    @SuppressLint("SimpleDateFormat")
+    @Throws(IOException::class)
+    fun createImageFile(context: Context): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply { // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+
 
     /**
      * закрываем и отменяем корутины

@@ -67,7 +67,7 @@ class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
         }
 
         binding.btnStartDay.setOnClickListener {
-            viewModel.openDriverDay(this)
+            viewModel.openDriverShift(this)
         }
     }
 

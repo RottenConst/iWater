@@ -100,7 +100,7 @@
 
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="ru.iwater.yourwater.iwaterlogistic.fileprovider"
+            android:authorities="ru.iwater.yourwater.iwaterlogistic.provider"
             android:grantUriPermissions="true"
             android:exported="false">
             <meta-data

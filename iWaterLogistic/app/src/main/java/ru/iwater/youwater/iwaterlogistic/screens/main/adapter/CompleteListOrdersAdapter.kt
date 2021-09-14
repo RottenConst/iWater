@@ -11,7 +11,7 @@ import ru.iwater.youwater.iwaterlogistic.domain.Order
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CompleteListOrdersAdapter(val onClickListener: OnClickListener) :
+class CompleteListOrdersAdapter(private val onClickListener: OnClickListener) :
     ListAdapter<CompleteOrder, CompleteListOrdersAdapter.CompleteListOrdersHolder>(CompleteOrderDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CompleteListOrdersHolder {
@@ -20,6 +20,9 @@ class CompleteListOrdersAdapter(val onClickListener: OnClickListener) :
 
     override fun onBindViewHolder(holder: CompleteListOrdersHolder, position: Int) {
         val item = getItem(position)
+        holder.itemView.setOnClickListener {
+            onClickListener.onClick(item)
+        }
         holder.bindCompleteOrders(item, position)
     }
 

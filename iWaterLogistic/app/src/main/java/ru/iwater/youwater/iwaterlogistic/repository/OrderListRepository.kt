@@ -6,6 +6,7 @@ import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.OpenDriverShift
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.MapData
@@ -72,6 +73,22 @@ class  OrderListRepository @Inject constructor(
      */
     suspend fun getDBOrderOnId(id: Int): Order = withContext(Dispatchers.Default) {
         return@withContext orderDao.getOrderOnId(id)
+    }
+
+    suspend fun openDriverShift(driverShift: OpenDriverShift): String? {
+        var message: String? = ""
+        try {
+            val answer = service.openWorkShift("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", driverShift)
+            Timber.i(answer.body()?.get("message").toString())
+            if (answer.isSuccessful) {
+                message = answer.body()?.get("message")?.asString
+                return message
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
+            return "Error"
+        }
+        return message
     }
 
     suspend fun getLoadCurrentOrder(session: String): List<Order> {

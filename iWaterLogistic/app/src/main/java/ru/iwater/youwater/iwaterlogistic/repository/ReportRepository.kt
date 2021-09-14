@@ -2,12 +2,12 @@ package ru.iwater.youwater.iwaterlogistic.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.bd.*
-import ru.iwater.youwater.iwaterlogistic.domain.DayReport
-import ru.iwater.youwater.iwaterlogistic.domain.Expenses
-import ru.iwater.youwater.iwaterlogistic.domain.Order
-import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
+import ru.iwater.youwater.iwaterlogistic.domain.*
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
@@ -69,7 +69,7 @@ class ReportRepository @Inject constructor(
         expensesDao.save(expenses)
     }
 
-    suspend fun deleteExpenses(expenses: Expenses) {
+    fun deleteExpenses(expenses: Expenses) {
         expensesDao.delete(expenses)
     }
 
@@ -117,20 +117,23 @@ class ReportRepository @Inject constructor(
         return false
     }
 
-//    suspend fun addReport(reportDay: ReportDay): Boolean {
-//        try {
-//            val answer = service.addReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", reportDay)
-//            return if (answer.isSuccessful) {
-//                Timber.d("OK! + ${answer.body()?.totalMoney}")
-//                true
-//            } else {
-//                false
-//            }
-//        }catch (e: Exception) {
-//            Timber.d(e)
-//        }
-//        return false
-//    }
+    suspend fun sendPhoto(id: MultipartBody.Part, date: MultipartBody.Part, name: MultipartBody.Part, image: MultipartBody.Part) {
+        try {
+            service.sendZReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", id, date, name, image)
+        }catch (e: Exception) {
+            Timber.e(e)
+        }
+    }
+
+    suspend fun sendExpensesPhoto(id: MultipartBody.Part, date: MultipartBody.Part, name: MultipartBody.Part, image: MultipartBody.Part): Boolean {
+        try {
+            service.sendPhotoExpenses("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", id, date, name, image)
+            return true
+        }catch (e: Exception) {
+            Timber.e(e)
+        }
+        return false
+    }
 
     suspend fun sendDayReport(dayReport: DayReport): Boolean {
         try {
@@ -139,6 +142,19 @@ class ReportRepository @Inject constructor(
                 Timber.d("${answer.body()?.date}")
                 true
             } else false
+        }catch (e: Exception) {
+            Timber.e(e)
+        }
+        return false
+    }
+
+    suspend fun closeDriverShift(closeDriverShift: CloseDriverShift): Boolean {
+        try {
+            val answer = service.closeWorkShift("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", closeDriverShift)
+            if (answer.isSuccessful) {
+                if ("The shift is already close or shift not find" == answer.body()?.get("message")?.asString || "Status close shift sent" == answer.body()?.get("message")?.asString)
+                 return true
+            } else return false
         }catch (e: Exception) {
             Timber.e(e)
         }
