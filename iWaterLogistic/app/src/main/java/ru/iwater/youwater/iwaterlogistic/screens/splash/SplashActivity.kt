@@ -12,7 +12,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.screens.login.LoginActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
-import ru.iwater.youwater.iwaterlogistic.screens.main.StartWorkActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.StartWorkActivity
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.getLoginShow
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.getStartDayShow
 import ru.iwater.youwater.iwaterlogistic.util.HelpState.*

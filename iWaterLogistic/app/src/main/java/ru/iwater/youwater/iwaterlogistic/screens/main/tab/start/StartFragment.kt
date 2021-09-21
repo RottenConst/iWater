@@ -1,19 +1,18 @@
-package ru.iwater.youwater.iwaterlogistic.screens.main
+package ru.iwater.youwater.iwaterlogistic.screens.main.tab.start
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.activity.viewModels
+import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
-import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
-import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
-import ru.iwater.youwater.iwaterlogistic.databinding.ActivityStartWorkBinding
+import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
+import ru.iwater.youwater.iwaterlogistic.databinding.StartWorkFragmentBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderLoadStatus
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
@@ -24,7 +23,7 @@ import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import javax.inject.Inject
 
-class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
+class StartFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
 
     @Inject
     lateinit var factory: ViewModelProvider.Factory
@@ -32,55 +31,65 @@ class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
     private val screenComponent = App().buildScreenComponent()
     lateinit var accountRepository: AccountRepository
 
-    private lateinit var binding: ActivityStartWorkBinding
+    private var binding: StartWorkFragmentBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_start_work)
         screenComponent.inject(this)
         accountRepository = AccountRepository(screenComponent.accountStorage())
-        binding.srlRefreshCurrentOrders.setOnRefreshListener(this)
-        binding.lifecycleOwner = this
-        binding.viewModel = viewModel
-        binding.rvListCurrentPreview.adapter = ListOrdersAdapter(ListOrdersAdapter.OnClickListener {
-            UtilsMethods.showToast(this, it.time)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        binding = StartWorkFragmentBinding.inflate(inflater)
+        binding?.srlRefreshCurrentOrders?.setOnRefreshListener(this)
+        binding?.lifecycleOwner = this
+        binding?.viewModel = viewModel
+        binding?.rvListCurrentPreview?.adapter = ListOrdersAdapter(ListOrdersAdapter.OnClickListener {
+            UtilsMethods.showToast(this.context, it.name)
         })
         viewModel.getLoadCurrent()
         observeVW()
-        binding.btnExitAccount.setOnClickListener {
-            AlertDialog.Builder(this)
+        binding?.btnExitAccount?.setOnClickListener {
+            AlertDialog.Builder(requireContext())
                 .setMessage(R.string.confirmLogout)
                 .setPositiveButton(
                     R.string.yes
                 ) { _, _ ->
-                    val intent = Intent(applicationContext, SplashActivity::class.java)
+                    val intent = Intent(this.context, SplashActivity::class.java)
                     intent.flags =
                         Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    HelpLoadingProgress.setLoginProgress(this, HelpState.ACCOUNT_SAVED, true)
+                    HelpLoadingProgress.setLoginProgress(requireContext(), HelpState.ACCOUNT_SAVED, true)
                     accountRepository.deleteAccount()
                     startActivity(intent)
-                    finish()
                 }
                 .setNegativeButton(R.string.no) { dialog, _ ->
                     dialog.cancel()
                 }.create().show()
         }
-
-        binding.btnStartDay.setOnClickListener {
-            viewModel.openDriverShift(this)
+        binding?.btnStartDay?.setOnClickListener {
+            viewModel.getWorkShift(this.context,activity)
+//            val fragment = LoadDriveFragment.newInstance()
+//            activity?.supportFragmentManager?.beginTransaction()
+//                ?.replace(R.id.container, fragment)
+//                ?.commit()
         }
+        return binding?.root
     }
 
     override fun onRefresh() {
         viewModel.getLoadCurrent()
-        binding.srlRefreshCurrentOrders.isRefreshing = false
+        binding?.srlRefreshCurrentOrders?.isRefreshing = false
     }
 
     private fun observeVW() {
-        viewModel.status.observe(this, { status: OrderLoadStatus ->
+        viewModel.status.observe(this.viewLifecycleOwner, { status: OrderLoadStatus ->
             when (status) {
                 OrderLoadStatus.DONE -> {
-                    binding.apply {
+                    binding?.apply {
                         "Плановые заказы на ${UtilsMethods.getTodayDateString()}".also {
                             tvTitle.text = it
                         }
@@ -88,7 +97,7 @@ class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
                     }
                 }
                 OrderLoadStatus.ERROR -> {
-                    binding.apply {
+                    binding?.apply {
                         tvTitle.text = "Плаеновых заказов пока нет"
                         rvListCurrentPreview.visibility = View.GONE
                     }
@@ -100,14 +109,6 @@ class StartWorkActivity : BaseActivity(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     companion object {
-        fun start(context: Context) {
-            ContextCompat.startActivity(
-                context,
-                Intent(context, StartWorkActivity::class.java),
-                null
-            )
-        }
+        fun newInstance(): StartFragment = StartFragment()
     }
-
-
 }

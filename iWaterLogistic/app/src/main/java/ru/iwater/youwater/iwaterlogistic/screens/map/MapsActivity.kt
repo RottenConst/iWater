@@ -118,9 +118,14 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     fun infoOrderMarker() {
         mMap.setOnMarkerClickListener { marker ->
             val info = marker.title.split(";")
+            Timber.i("INFO SIZE MARKER${info.size} info.size")
             "#${info[1]}".also { binding.checkOrder.tvNumMarker.text = it }
             "#${info[0]} ${info[2]}".also { binding.checkOrder.tvNameMarker.text = it }
-            "${info[3]} ${info[4]}".also { binding.checkOrder.tvTimeOrderMarker.text = it }
+            if (info.size == 5) {
+                info[3].also { binding.checkOrder.tvTimeOrderMarker.text = it }
+            } else {
+                "${info[3]} ${info[4]}".also { binding.checkOrder.tvTimeOrderMarker.text = it }
+            }
             binding.checkOrder.tvProductNameOrder.text = ""
             val productAll = info.last().split("+")
             for (product in productAll) {

@@ -1,13 +1,11 @@
 package ru.iwater.youwater.iwaterlogistic.repository
 
-import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.domain.Account
 import ru.iwater.youwater.iwaterlogistic.iteractor.StorageStateAccount
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
 import javax.inject.Inject
-import kotlin.math.acos
 
 /**
  * Класс для авторизации, получения сведений аккаунта водителя

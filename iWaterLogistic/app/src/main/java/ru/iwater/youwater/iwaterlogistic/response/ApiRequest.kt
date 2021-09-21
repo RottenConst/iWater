@@ -1,9 +1,7 @@
 package ru.iwater.youwater.iwaterlogistic.response
 
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
-import org.json.JSONObject
 import retrofit2.Response
 import retrofit2.http.*
 import ru.iwater.youwater.iwaterlogistic.domain.*
@@ -30,12 +28,6 @@ interface ApiRequest {
     suspend fun getDriverOrders(
         @Header("X-Authorization") key: String,
         @Path("session") session: String
-    ): Response<List<Order>>
-
-    @GET("iwater/getDriverList/{session}/")
-    suspend fun getDriverOrders2(
-        @Header("X-Authorization") key: String,
-        @Path("session") session: String
     ): List<Order>
 
     /**
@@ -51,7 +43,7 @@ interface ApiRequest {
         получить тип клиента по id заказа
      */
     @GET("iwater/getTypeClient/{id}/")
-    suspend fun getTypeClient2(
+    suspend fun getTypeClient(
         @Header("X-Authorization") key: String,
         @Path("id") idClient: Int?
     ): List<ClientType>
@@ -139,5 +131,24 @@ interface ApiRequest {
     suspend fun closeWorkShift(
         @Header("X-Authorization") key: String,
         @Body closeDriverShift: CloseDriverShift
+    ): Response<JsonObject>
+
+    @Headers( "Content-Type: application/json" )
+    @GET("iwater/open_work_shift/")
+    suspend fun getWorkShift(
+        @Header("X-Authorization") key: String,
+    ): List<OpenDriverShift?>
+
+    @Headers( "Content-Type: application/json" )
+    @POST("iwater/spare_item/")
+    suspend fun getAdvancedProduct(
+        @Header("X-Authorization") key: String,
+        @Body id: JsonObject
+    ): Response<AdvancedProduct>
+
+    @PUT("iwater/Get_the_container_dept/")
+    suspend fun getContainerDept(
+        @Header("X-Authorization") key: String,
+        @Body returnTare: JsonObject
     ): Response<JsonObject>
 }

@@ -3,12 +3,9 @@ package ru.iwater.youwater.iwaterlogistic.screens.main.tab.report
 import android.app.Activity.RESULT_OK
 import android.content.ActivityNotFoundException
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
@@ -27,12 +24,10 @@ import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.FragmentReportDayBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.LoadPhoto
 import ru.iwater.youwater.iwaterlogistic.domain.vm.ReportViewModel
-import ru.iwater.youwater.iwaterlogistic.domain.vm.Status
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ExpensesAdapter
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import javax.inject.Inject
 
@@ -183,10 +178,10 @@ class ReportFragment : BaseFragment() {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     hideKeyboard(bottomSheet)
-                    if (date != null) {
-                        observeExpenses(date, binding)
-                        observeReportDate(date, binding)
-                    }
+//                    if (date != null) {
+                        observeExpenses(UtilsMethods.getTodayDateString(), binding)
+                        observeReportDate(UtilsMethods.getTodayDateString(), binding)
+//                    }
                     binding.addExpensesDrawer.apply {
                         etNameExpenses.text.clear()
                         etSumExpenses.text.clear()

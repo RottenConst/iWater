@@ -48,8 +48,9 @@ class InfoOrderViewModel @Inject constructor(
                     }
                     orderDetail.location = getCoordinate(orderDetail.address)
                     if (orderDetail.contact.isNotBlank()) {
+                        val room = orderInfoDetail.contact.split(",").size
                         orderDetail.address = "${orderInfoDetail.address} ${
-                            orderInfoDetail.contact.split(",").get(0)
+                            orderInfoDetail.contact.split(",").get(room - 2)
                         }"
                     } else {
                         orderDetail.contact = orderInfoDetail.contact.split(",").last().toString()

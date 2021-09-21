@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/drawable/login_background.xml" value="0.1962962962962963" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout-v21/main_container_activity.xml" value="0.18697916666666667" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/about_complete_fragment.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/about_order_fragment.xml" value="0.21822916666666667" />
@@ -24,11 +25,15 @@
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/item_current_order.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/item_current_order_prev.xml" value="0.21822916666666667" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/item_expenses.xml" value="0.21822916666666667" />
+        <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/item_product_load.xml" value="0.32472826086956524" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/item_report_day.xml" value="0.18333333333333332" />
+        <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/load_drive_fragment.xml" value="0.22" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/login_activity.xml" value="0.18697916666666667" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/main_container_activity.xml" value="0.2595108695652174" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/shipment_order_fragment.xml" value="0.21693840579710144" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/splash_layout.xml" value="0.2078804347826087" />
+        <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/start_container_activity.xml" value="0.1" />
+        <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/layout/start_work_fragment.xml" value="0.1" />
         <entry key="..\:/Users/Satan/AndroidStudioProjects/iWater/iWaterLogistic/app/src/main/res/xml/filepaths.xml" value="0.24895833333333334" />
       </map>
     </option>

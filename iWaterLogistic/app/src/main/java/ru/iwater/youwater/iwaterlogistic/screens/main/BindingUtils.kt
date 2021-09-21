@@ -244,3 +244,17 @@ fun TextView.bindCompleteOrderInfo(completeOrder: CompleteOrder?) {
         }
     }
 }
+
+/**
+ * Products screen binding
+ **/
+
+@BindingAdapter("setNameProduct")
+fun TextView.bindProductLabel(product: Product) {
+    text = product.name
+}
+
+@BindingAdapter("setCountProduct")
+fun TextView.bindProductCount(product: Product) {
+    text = product.count.toString()
+}

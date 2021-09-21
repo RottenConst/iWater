@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -87,8 +88,16 @@ class ShipmentsViewModel @Inject constructor(
                     if (isSendReportOrder(id, typeCash, cash, tank, timeComplete)) {
                         val answer = completeOrdersRepository.updateStatusOrder(id)
                         if (answer.error == 0 && answer.oper == "Запись изменена") {
-                            saveCompleteOrder(id, cash, typeCash, tank, timeComplete, noticeDriver)
-                            setShipmentOrder(context, id, timeComplete, answer.error)
+                                saveCompleteOrder(
+                                    id,
+                                    cash,
+                                    typeCash,
+                                    tank,
+                                    timeComplete,
+                                    noticeDriver
+                                )
+                                setShipmentOrder(context, id, timeComplete, answer.error)
+
                         } else {
                             setShipmentOrder(context, id, timeComplete, answer.error)
                         }
@@ -100,6 +109,17 @@ class ShipmentsViewModel @Inject constructor(
                 setShipmentOrder(context, id, timeComplete, 1)
             }
         }
+    }
+
+    fun setEmptyBottle(context: Context?, id: Int, clientId: Int, tank: Int, address: String, noticeDriver: String) {
+        uiScope.launch {
+            if (orderListRepository.setEmptyBottle(clientId, tank, id, address)) {
+                setCompleteOrder2(context, id, tank, noticeDriver)
+            } else {
+                UtilsMethods.showToast(context, "Кол-во забранной тары не может превышать кол-во имеющейся у клиента!")
+            }
+        }
+
     }
 
     private fun setShipmentOrder(context: Context?, id: Int, timeComplete: Long, error: Int) {

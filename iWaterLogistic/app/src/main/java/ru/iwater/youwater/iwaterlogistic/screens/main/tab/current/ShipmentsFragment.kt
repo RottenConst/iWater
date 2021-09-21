@@ -131,12 +131,12 @@ class ShipmentsFragment: BaseFragment() {
                 binding.cbDocNo.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
                 binding.cbDocYes.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
             } else {
-                if (id != null) viewModel.setCompleteOrder2(
-                    this.context,
-                    id,
-                    binding.etTankToBack.text.toString().toInt(),
-                    binding.etNoteOrderShip.text.toString(),
-                )
+                if (id != null) viewModel.order.observe(this.viewLifecycleOwner, {
+                    viewModel.setEmptyBottle(this.context, it.id, it.client_id,
+                        binding.etTankToBack.text.toString().toInt(),
+                        it.address,
+                        binding.etNoteOrderShip.text.toString())
+                })
             }
         }
 

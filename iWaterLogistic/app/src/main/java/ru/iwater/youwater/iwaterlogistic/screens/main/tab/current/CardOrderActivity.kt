@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.core.content.ContextCompat
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
-import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.AboutOrderFragment
 import timber.log.Timber
 
 class CardOrderActivity : BaseActivity() {

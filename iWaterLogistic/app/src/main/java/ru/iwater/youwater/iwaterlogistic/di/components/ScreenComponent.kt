@@ -5,7 +5,7 @@ import dagger.Component
 import ru.iwater.youwater.iwaterlogistic.di.viewmodel.ViewModelFactoryModule
 import ru.iwater.youwater.iwaterlogistic.iteractor.StorageStateAccount
 import ru.iwater.youwater.iwaterlogistic.screens.login.LoginActivity
-import ru.iwater.youwater.iwaterlogistic.screens.main.StartWorkActivity
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.StartWorkActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrderInfo
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.AboutOrderFragment
@@ -14,6 +14,8 @@ import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.ShipmentsFragm
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListReport
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportCheckFragment
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportFragment
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.LoadDriveFragment
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.StartFragment
 import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import ru.iwater.youwater.iwaterlogistic.screens.splash.LoadMapActivity
 
@@ -26,6 +28,8 @@ interface ScreenComponent {
         fun inject(loginActivity: LoginActivity)
         fun inject(mapsActivity: MapsActivity)
         fun inject(startWorkActivity: StartWorkActivity)
+        fun inject(startFragment: StartFragment)
+        fun inject(loadDriveFragment: LoadDriveFragment)
         fun inject(fragmentCurrentOrders: FragmentCurrentOrders)
         fun inject(aboutOrderFragment: AboutOrderFragment)
         fun inject(shipmentsFragment: ShipmentsFragment)

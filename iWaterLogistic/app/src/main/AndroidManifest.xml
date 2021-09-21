@@ -69,7 +69,7 @@
             android:name=".screens.login.LoginActivity"
             android:theme="@style/Theme.MaterialComponents.Light.NoActionBar"/>
         <activity
-            android:name=".screens.main.StartWorkActivity"
+            android:name=".screens.main.tab.start.StartWorkActivity"
             android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:configChanges="keyboardHidden|orientation|screenSize"/>
         <activity

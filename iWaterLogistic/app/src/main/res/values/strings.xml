@@ -74,6 +74,7 @@
     <string name="expenses">Расходы</string>
     <string name="end_session">Закончить день</string>
     <string name="start_work">Начать день</string>
+    <string name="move_to_load_drive">Перейти к экрану погрузки</string>
     <string name="current_orders">Заказы</string>
     <string name="cash_many_to_report">Наличных к сдаче</string>
     <string name="reports">Oтчеты</string>
@@ -96,4 +97,7 @@
     <string name="check_report">Сверка отчета</string>
     <string name="send_report">Отправить отчет</string>
     <string name="add_photo_report">Прикрепить фото Z отчета</string>
+    <string name="total_load">Общая загрузка</string>
+    <string name="additional_loading">Дополнительная загрузка</string>
+    <string name="add">Добавить</string>
 </resources>

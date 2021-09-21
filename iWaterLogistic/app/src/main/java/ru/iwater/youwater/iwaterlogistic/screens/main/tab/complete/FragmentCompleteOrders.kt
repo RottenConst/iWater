@@ -7,13 +7,11 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.FragmentCompleteOrderBinding
-import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
 import ru.iwater.youwater.iwaterlogistic.domain.vm.CompleteOrdersViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.CompleteListOrdersAdapter
 import javax.inject.Inject

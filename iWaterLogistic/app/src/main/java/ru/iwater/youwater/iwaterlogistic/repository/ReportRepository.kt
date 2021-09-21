@@ -18,9 +18,6 @@ import kotlin.coroutines.suspendCoroutine
 class ReportRepository @Inject constructor(
     iWaterDB: IWaterDB
 ){
-
-//    val addExpenses = AddExpenses()
-//    val driverCloseDay = DriverCloseDay()
     val service: ApiRequest = RetrofitFactory.makeRetrofit()
 
     private val expensesDao: ExpensesDao = iWaterDB.ExpensesDao()
@@ -83,7 +80,7 @@ class ReportRepository @Inject constructor(
     /**
      * вернуть не завершенные заказы из бд
      */
-    suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
+    private suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
         return@withContext orderDao.load()
     }
 

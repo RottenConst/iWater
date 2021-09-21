@@ -11,7 +11,6 @@ import ru.iwater.youwater.iwaterlogistic.base.CHANNEL_SERVICE_ID
 import timber.log.Timber
 
 class TimeListenerService : Service() {
-    val chanel = "ru.iwater.service"
     private var timeNotification //отслеживание системного времени
             : TimeNotification = TimeNotification()
 

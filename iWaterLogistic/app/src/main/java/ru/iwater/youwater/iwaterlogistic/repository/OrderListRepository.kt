@@ -1,5 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.repository
 
+import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -68,6 +69,34 @@ class  OrderListRepository @Inject constructor(
         orderDao.updateNum(order.num, order.id)
     }
 
+    suspend fun getOpenDriverShift(openDriverShift: OpenDriverShift): Boolean {
+        try {
+            val list = service.getWorkShift("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX")
+            val session = list.filter { it?.driverId == openDriverShift.driverId && it.date == openDriverShift.date }
+            if (session.isNullOrEmpty() || session[0]?.session != null) {
+                return true
+            }
+        }catch (e: Exception) {
+            Timber.e(e)
+        }
+        return false
+    }
+
+    suspend fun setEmptyBottle(clientId: Int, returnTare: Int, orderId_id: Int, address: String): Boolean {
+        val emptyBottle = JsonObject()
+        emptyBottle.addProperty("client_id", clientId)
+        emptyBottle.addProperty("return_tare", returnTare)
+        emptyBottle.addProperty("order_id", orderId_id)
+        emptyBottle.addProperty("address", address)
+        try {
+            val answer = service.getContainerDept("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", emptyBottle)
+            return answer.isSuccessful
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+        return false
+    }
+
     /**
      * вернуть заказы из бд по id
      */
@@ -75,26 +104,10 @@ class  OrderListRepository @Inject constructor(
         return@withContext orderDao.getOrderOnId(id)
     }
 
-    suspend fun openDriverShift(driverShift: OpenDriverShift): String? {
-        var message: String? = ""
-        try {
-            val answer = service.openWorkShift("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", driverShift)
-            Timber.i(answer.body()?.get("message").toString())
-            if (answer.isSuccessful) {
-                message = answer.body()?.get("message")?.asString
-                return message
-            }
-        } catch (e: Exception) {
-            Timber.e(e)
-            return "Error"
-        }
-        return message
-    }
-
     suspend fun getLoadCurrentOrder(session: String): List<Order> {
         var currentOrders: List<Order> = emptyList()
         try {
-            currentOrders = service.getDriverOrders2("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
+            currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {
                 var num = 0
                 currentOrders.sortedBy { order -> order.time }
@@ -153,7 +166,7 @@ class  OrderListRepository @Inject constructor(
 
     suspend fun getTypeClient(orderId: Int?): Int? {
         try {
-            val answer = service.getTypeClient2("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
+            val answer = service.getTypeClient("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
             return answer.first().type
         }catch (e: Exception) {
             Timber.e(e)

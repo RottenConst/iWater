@@ -3,9 +3,7 @@ package ru.iwater.youwater.iwaterlogistic.screens.main.tab.report
 import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -33,11 +31,7 @@ import ru.iwater.youwater.iwaterlogistic.util.HelpState
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
-import java.net.URI
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 private const val REQUEST_IMAGE_CAPTURE = 1
