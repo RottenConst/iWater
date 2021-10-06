@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
+import ru.iwater.youwater.iwaterlogistic.BuildConfig
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
@@ -182,7 +183,7 @@ class  OrderListRepository @Inject constructor(
         val answer = service.getCoordinatesPlace(
             "https://maps.googleapis.com/maps/api/place/textsearch/json",
             address,
-            "AIzaSyCKQJCpz-RzBhS3YFRcKN_qlx8AUuNvVVw"
+            BuildConfig.GOOGLE_MAPS_API_KEY
         )
         try {
             if (answer.isSuccessful) {

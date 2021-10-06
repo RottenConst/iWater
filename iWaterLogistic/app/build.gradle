@@ -23,6 +23,7 @@ android {
         targetSdkVersion 31
         versionCode 44
         versionName "4.2.3"
+        manifestPlaceholders = [ GOOGLE_MAPS_API_KEY:getApiKey()]
 
         multiDexEnabled true
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
@@ -36,6 +37,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             signingConfig signingConfigs.release
         }
+        applicationVariants.all { variant ->
+            variant.buildConfigField "String", "GOOGLE_MAPS_API_KEY", "\""+getApiKey()+"\""
+        }
     }
 
     buildFeatures {
@@ -48,6 +52,12 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+}
+
+static def getApiKey(){
+    Properties props = new Properties()
+    props.load(new FileInputStream(new File('secrets.properties')))
+    return props['GOOGLE_API_KEY']
 }
 
 dependencies {
