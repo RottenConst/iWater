@@ -76,7 +76,7 @@ class OrderListViewModel @Inject constructor(
                 account.session
             )
             if (orderListRepository.getOpenDriverShift(driverShift)) {
-                val fragment = LoadDriveFragment.newInstance()
+                val fragment = LoadDriveFragment.newInstance(true)
                 activity?.supportFragmentManager?.beginTransaction()
                     ?.replace(R.id.container, fragment)
                     ?.commit()
@@ -89,22 +89,30 @@ class OrderListViewModel @Inject constructor(
     fun getLoadCurrent() {
         uiScope.launch {
             _status.value = OrderLoadStatus.LOADING
-            val listOrderNet = orderListRepository.getLoadCurrentOrder(account.session)
+            val listOrderNet = orderListRepository.getLoadOrder(account.session)
+            val notCurrentId = orderListRepository.getLoadNotCurrentOrder(account.session)
             if (listOrderNet.isNullOrEmpty()) {
                 _status.value = OrderLoadStatus.ERROR
             } else {
-                saveOrder(listOrderNet)
+                saveOrder(listOrderNet, notCurrentId)
                 _listOrder.value = listOrderNet
                 _status.value = OrderLoadStatus.DONE
             }
         }
     }
 
-    private suspend fun saveOrder(ordersNET: List<Order>) {
+    private suspend fun saveOrder(ordersNET: List<Order>, notCurrentId: List<Int>) {
         val ordersDb = orderListRepository.getDBOrders()
-        if (ordersDb.isNullOrEmpty()) {
+        if (ordersDb.isNullOrEmpty() && ordersNET.isNotEmpty()) {
             orderListRepository.saveOrders(ordersNET)
         } else {
+            val iterator = ordersDb.iterator()
+            while (iterator.hasNext()) {
+                val order = iterator.next()
+                for (id in notCurrentId) {
+                    if (order.id == id) orderListRepository.deleteOrder(order)
+                }
+            }
             updateOrder(ordersNET, ordersDb)
         }
     }
@@ -119,8 +127,11 @@ class OrderListViewModel @Inject constructor(
                     if (order.id == orderSaved.id) {
                         count += 1
                         Timber.d("1test!!!!! $count ${order.products.size} ${orderSaved.products.size}")
-                        if (order.products.size != orderSaved.products.size) {
+                        if (orderSaved.location?.lat == 0.0) {
                             orderListRepository.updateOrder(order)
+                        } else {
+                            orderListRepository.updateOrder(order)
+                            orderListRepository.updateDBLocation(order, orderSaved.location)
                         }
                     }
                     if (count == 0) {

@@ -1,11 +1,13 @@
 package ru.iwater.youwater.iwaterlogistic.screens.main
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.view.View
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.TextView
+import androidx.cardview.widget.CardView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.iwater.youwater.iwaterlogistic.R
@@ -81,6 +83,13 @@ fun TextView.bindInfoClient(order: Order?) {
     if (order != null) {
         "${order.name}; \n${order.address};".also { text = it }
     } else text = ""
+}
+
+@BindingAdapter("countBottle")
+fun TextView.bindEmptyBottle(clientInfo: ClientInfo?) {
+    if (clientInfo != null) {
+        "Тары у клиента: ${clientInfo.return_tare};".also { text = it }
+    } else text = "0"
 }
 
 @BindingAdapter("phoneClient")
@@ -243,6 +252,11 @@ fun TextView.bindCompleteOrderInfo(completeOrder: CompleteOrder?) {
             text = it
         }
     }
+}
+
+@BindingAdapter("setColorCard")
+fun CardView.bindColor(typeOfCash: String) {
+    if (typeOfCash == "-") setCardBackgroundColor(Color.RED) else setCardBackgroundColor(Color.GRAY)
 }
 
 /**

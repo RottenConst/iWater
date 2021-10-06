@@ -8,6 +8,7 @@ import ru.iwater.youwater.iwaterlogistic.screens.login.LoginActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.StartWorkActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrderInfo
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrders
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.RestoreOrderFragment
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.AboutOrderFragment
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.ShipmentsFragment
@@ -39,4 +40,5 @@ interface ScreenComponent {
         fun inject(fragmentListReport: FragmentListReport)
         fun inject(reportCheckFragment: ReportCheckFragment)
         fun inject(loadMapActivity: LoadMapActivity)
+        fun inject(restoreOrderFragment: RestoreOrderFragment)
 }

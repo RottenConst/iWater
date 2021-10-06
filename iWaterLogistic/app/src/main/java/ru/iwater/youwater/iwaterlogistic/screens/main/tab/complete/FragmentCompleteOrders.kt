@@ -28,6 +28,7 @@ class FragmentCompleteOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         screenComponent.inject(this)
+        viewModel.getLoadLostOrder()
     }
 
     override fun onCreateView(

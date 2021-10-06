@@ -7,9 +7,11 @@ import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.ClientInfo
 import ru.iwater.youwater.iwaterlogistic.domain.OpenDriverShift
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
+import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.MapData
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
@@ -40,18 +42,14 @@ class  OrderListRepository @Inject constructor(
         orderDao.save(order)
     }
 
-
-    /**
-     * обновить заказы в бд
-     */
-//    fun updateOrder() {
-//        for (order in ordersList) {
-//            orderDao.update(order)
-//        }
-//    }
-
     suspend fun updateOrder(order: Order){
         orderDao.update(order)
+    }
+
+    suspend fun updateOrders(orders: List<Order>){
+        orders.forEach {
+            updateOrder(it)
+        }
     }
 
     suspend fun deleteOrder(order: Order) = withContext(Dispatchers.Default) {
@@ -69,6 +67,10 @@ class  OrderListRepository @Inject constructor(
         orderDao.updateNum(order.num, order.id)
     }
 
+    suspend fun updateDBLocation(order: Order, location: Location?) {
+        orderDao.updateLocation(location, order.id)
+    }
+
     suspend fun getOpenDriverShift(openDriverShift: OpenDriverShift): Boolean {
         try {
             val list = service.getWorkShift("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX")
@@ -80,6 +82,20 @@ class  OrderListRepository @Inject constructor(
             Timber.e(e)
         }
         return false
+    }
+
+    suspend fun getAddressBottle(clientId: Int?, address: String): ClientInfo? {
+        val infoClient = JsonObject()
+        infoClient.addProperty("client_id", clientId)
+        infoClient.addProperty("address", address)
+        try {
+            val data = service.getClientInfo("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", infoClient)
+            if (data?.message != "success")
+            return data?.data?.get(0)
+        } catch (e: Exception) {
+            Timber.e(e)
+        }
+        return ClientInfo("", 0)
     }
 
     suspend fun setEmptyBottle(clientId: Int, returnTare: Int, orderId_id: Int, address: String): Boolean {
@@ -104,14 +120,29 @@ class  OrderListRepository @Inject constructor(
         return@withContext orderDao.getOrderOnId(id)
     }
 
-    suspend fun getLoadCurrentOrder(session: String): List<Order> {
+    suspend fun getLoadNotCurrentOrder(session: String): List<Int> {
+        var currentOrders: List<Order> = emptyList()
+        try {
+            currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
+            if (!currentOrders.isNullOrEmpty()) {
+                return currentOrders.filter { it.status == 2 }.map { it.id }
+            }
+        }catch (e: Exception) {
+            Timber.e(e)
+            return emptyList()
+        }
+        return emptyList()
+    }
+
+    suspend fun getLoadOrder(session: String): List<Order> {
         var currentOrders: List<Order> = emptyList()
         try {
             currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {
                 var num = 0
-                currentOrders.sortedBy { order -> order.time }
-                return currentOrders.filter { it.status != 2 }.map {
+                return currentOrders.sortedBy { order ->
+                    order.time.split("-").last()
+                }.filter { it.status != 2}.map {
                     num++
                     it.num += num
                     Order(
@@ -151,7 +182,7 @@ class  OrderListRepository @Inject constructor(
         val answer = service.getCoordinatesPlace(
             "https://maps.googleapis.com/maps/api/place/textsearch/json",
             address,
-            "AIzaSyCOfJNzyHVWg8Ru0naTMQrbP9ECERZokTg"
+            "AIzaSyCKQJCpz-RzBhS3YFRcKN_qlx8AUuNvVVw"
         )
         try {
             if (answer.isSuccessful) {

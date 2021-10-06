@@ -42,7 +42,7 @@ class ReportFragment : BaseFragment() {
 
     private val screenComponent = App().buildScreenComponent()
     private lateinit var binding: FragmentReportDayBinding
-    private var outputUri: Uri?  = null
+    private var outputUri: Uri? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -141,7 +141,8 @@ class ReportFragment : BaseFragment() {
                         "Ошибка отправки"
                     )
                 }
-                else -> {}
+                else -> {
+                }
             }
         })
 
@@ -179,8 +180,8 @@ class ReportFragment : BaseFragment() {
                 if (newState == BottomSheetBehavior.STATE_COLLAPSED) {
                     hideKeyboard(bottomSheet)
 //                    if (date != null) {
-                        observeExpenses(UtilsMethods.getTodayDateString(), binding)
-                        observeReportDate(UtilsMethods.getTodayDateString(), binding)
+                    observeExpenses(UtilsMethods.getTodayDateString(), binding)
+                    observeReportDate(UtilsMethods.getTodayDateString(), binding)
 //                    }
                     binding.addExpensesDrawer.apply {
                         etNameExpenses.text.clear()
@@ -224,33 +225,36 @@ class ReportFragment : BaseFragment() {
     }
 
     private fun observeReportDate(date: String, binding: FragmentReportDayBinding) {
-            viewModel.initDateReport(date)
-            viewModel.reportDay.observe(viewLifecycleOwner, { reportDay ->
-                binding.tvNumTotalOrders.text = "${reportDay.orderComplete}"
-                binding.tvTankReport.text = "${reportDay.tank}"
-                "${reportDay.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
-                "${reportDay.cashOnSite + reportDay.cashOnTerminal + reportDay.cashMoney}руб.".also {
-                    binding.tvCashNumTotal.text = it
-                }
-                "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-                "${reportDay.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
-                "${reportDay.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
-                "${reportDay.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
-                "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
-                "${reportDay.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
-            })
+        viewModel.initDateReport(date)
+        viewModel.reportDay.observe(viewLifecycleOwner, { reportDay ->
+//            binding.tvNumTotalOrders.text = "${reportDay.orderComplete}"
+            binding.tvTankReport.text = "${reportDay.tank}"
+            "${reportDay.totalMoney}руб.".also { binding.tvTotalMoney.text = it }
+            "${reportDay.cashOnSite + reportDay.cashOnTerminal + reportDay.cashMoney}руб.".also {
+                binding.tvCashNumTotal.text = it
+            }
+            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${reportDay.cashOnTerminal}руб.".also { binding.tvCashNumOnTerminal.text = it }
+            "${reportDay.cashMoney}руб.".also { binding.tvCashNumMoney.text = it }
+            "${reportDay.noCashMoney}руб.".also { binding.tvNoCashNum.text = it }
+            "${reportDay.cashOnSite}руб.".also { binding.tvCashNumOnSite.text = it }
+            "${reportDay.moneyDelivery}руб.".also { binding.tvNumCashManyReport.text = it }
+        })
+        viewModel.countOrder.observe(viewLifecycleOwner, {
+            binding.tvNumTotalOrders.text = it
+        })
     }
 
     private fun observeExpenses(date: String, binding: FragmentReportDayBinding) {
-            viewModel.getExpenses(date)
-            viewModel.expenses.observe(viewLifecycleOwner, {
-                if (it.isNotEmpty()) {
-                    binding.tvExpensesTitle.text = "Расходы"
-                    adapter.submitList(it)
-                } else {
-                    binding.tvExpensesTitle.text = "Расходов нет"
-                }
-            })
+        viewModel.getExpenses(date)
+        viewModel.expenses.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                binding.tvExpensesTitle.text = "Расходы"
+                adapter.submitList(it)
+            } else {
+                binding.tvExpensesTitle.text = "Расходов нет"
+            }
+        })
     }
 
     /**

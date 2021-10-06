@@ -3,8 +3,6 @@ package ru.iwater.youwater.iwaterlogistic.repository
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
-import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.bd.CompleteOrderDao
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.domain.*
@@ -78,9 +76,39 @@ class CompleteOrdersRepository @Inject constructor(
         return@withContext completeOrderDao.getTankOfOrders()
     }
 
-    suspend fun addDecontrol(decontrolReport: DecontrolReport) : Boolean {
+    suspend fun getLoadCompleteOrder(session: String): List<Order> {
+        val completeOrders: List<Order>
         try {
-            val answer = service.reportOrderInsert("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", decontrolReport)
+            completeOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
+            if (!completeOrders.isNullOrEmpty()) {
+                return completeOrders.filter { it.status == 2 }
+            }
+        }catch (e: Exception) {
+            Timber.e(e)
+            return emptyList()
+        }
+        return emptyList()
+    }
+
+    suspend fun getReportOrder(idOrder: Int): ReportOrder? {
+        try {
+            val reportOrder = service.getReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", idOrder)
+            if (reportOrder != null) return reportOrder
+        }catch (e: Exception) {
+            Timber.e(e)
+        }
+        return null
+    }
+
+    suspend fun addDecontrol(decontrolReport: DecontrolReport) : Boolean {
+        val report = JsonObject()
+        report.addProperty("order_id", decontrolReport.order_id)
+        report.addProperty("time", decontrolReport.time)
+        report.addProperty("coord", decontrolReport.coord)
+        report.addProperty("tank", decontrolReport.tank)
+        report.addProperty("notice", decontrolReport.notice)
+        try {
+            val answer = service.reportOrderInsert("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", report)
             return if (answer.isSuccessful) {
                 Timber.d("${answer.body()}")
                 true
@@ -96,11 +124,9 @@ class CompleteOrdersRepository @Inject constructor(
     suspend fun addReport(reportOrder: ReportOrder): Boolean {
         try {
             val answer = service.addReport("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", reportOrder)
-            return if (answer.isSuccessful) {
-                Timber.d("OK! + ${answer.body()?.totalMoney}")
-                true
-            } else {
-                false
+            Timber.i("AAAAAAAAAAAAAAANSWER ${answer?.totalMoney}")
+            if (answer != null) {
+                return true
             }
         }catch (e: java.lang.Exception) {
             Timber.d(e)

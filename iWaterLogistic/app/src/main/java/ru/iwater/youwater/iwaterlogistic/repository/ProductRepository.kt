@@ -21,7 +21,8 @@ class ProductRepository @Inject constructor() {
         try {
             val orders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!orders.isNullOrEmpty()) {
-                orders.forEach {
+                val currentProducts = orders.filter { it.status != 2}
+                currentProducts.forEach {
                     products.addAll(it.products)
                 }
                 return products

@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="restoreVM"
+            type="ru.iwater.youwater.iwaterlogistic.domain.vm.RestoreViewModel" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_restore_num_date_order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/test_order_num_date"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimaryBlue"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:titleOrderInfo="@{restoreVM.order}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_restore_address_order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="@string/test_order_address"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimaryBlue"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:addressOrderInfo="@{restoreVM.order.address}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_restore_num_date_order" />
+
+        <TextView
+            android:id="@+id/tv_line_restore"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:background="@color/colorPrimaryBlue"
+            android:text=""
+            android:textColor="@color/colorPrimaryBlue"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_restore_address_order" />
+
+        <ImageView
+            android:id="@+id/ic_tank_restore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:contentDescription="@string/count_tank_to_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_line_restore"
+            app:srcCompat="@drawable/ic_tank" />
+
+        <TextView
+            android:id="@+id/tv_tank_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/count_tank_to_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/ic_tank_restore"
+            app:layout_constraintTop_toBottomOf="@+id/tv_line_restore" />
+
+
+        <ImageView
+            android:id="@+id/ic_price_order_restore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/price_order"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_tank_restore"
+            app:srcCompat="@drawable/ic_price_order_24" />
+
+        <TextView
+            android:id="@+id/tv_restore_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/price_order"
+            app:cashOrderInfo="@{restoreVM.order.cash}"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_price_order_restore"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/ic_price_order_restore" />
+
+        <EditText
+            android:id="@+id/et_tank_restore"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:ems="10"
+            android:inputType="number"
+            android:minHeight="48dp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_restore_price"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_tank_back"
+            app:layout_constraintTop_toBottomOf="@+id/tv_restore_address_order" />
+
+        <ImageView
+            android:id="@+id/ic_note_orders_restore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/notes_order"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_check_doc_restore"
+            app:srcCompat="@drawable/ic_note_ship_24" />
+
+        <EditText
+            android:id="@+id/et_note_order_restore"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/text_area"
+            android:ems="10"
+            android:gravity="start|end"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_note_orders_restore"
+            tools:ignore="LabelFor" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <Button
+            android:id="@+id/btn_no_restore_order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/no_to_ship_order"
+            app:icon="@drawable/ic_order_cancel_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline7"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btn_restore_order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/to_ship_order"
+            app:icon="@drawable/ic_on_ship_order_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline7" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.65" />
+
+        <RadioGroup
+            android:id="@+id/radio_cash_group_restore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            app:isCheckRadio="@{restoreVM.typeClient}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_price_order_restore">
+
+            <RadioButton
+                android:id="@+id/radio_cash_restore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/cash"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/radio_terminal_restore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/terminal"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/radio_on_site_restore"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/on_site"
+                android:textSize="12sp" />
+        </RadioGroup>
+
+        <ImageView
+            android:id="@+id/ic_check_doc_restore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/cash"
+            app:IvVisOfType="@{restoreVM.typeClient}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radio_cash_group_restore"
+            app:srcCompat="@drawable/ic_chek_documents_24" />
+
+        <TextView
+            android:id="@+id/tv_check_doc_restore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/chek_documents"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_check_doc_restore"
+            app:layout_constraintEnd_toStartOf="@+id/guideline7"
+            app:layout_constraintStart_toEndOf="@+id/ic_check_doc_restore"
+            app:layout_constraintTop_toTopOf="@+id/ic_check_doc_restore"
+            app:tvVisOfType="@{restoreVM.typeClient}" />
+
+        <CheckBox
+            android:id="@+id/cb_doc_yes_restore"
+            isCheckDocument="@{restoreVM.typeClient}"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/yes"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_check_doc_restore"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline7"
+            app:layout_constraintTop_toBottomOf="@+id/radio_cash_group_restore" />
+
+        <CheckBox
+            android:id="@+id/cb_doc_no_restore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/no"
+            app:isCheckDocument="@{restoreVM.typeClient}"
+            app:layout_constraintBottom_toBottomOf="@+id/cb_doc_yes_restore"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/cb_doc_yes_restore" />
+
+        <TextView
+            android:id="@+id/tv_comment_restore"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/note_to_order"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/et_note_order_restore"
+            app:layout_constraintEnd_toStartOf="@+id/guideline7"
+            app:layout_constraintStart_toEndOf="@+id/ic_note_orders_restore"
+            app:layout_constraintTop_toTopOf="@+id/ic_note_orders_restore" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

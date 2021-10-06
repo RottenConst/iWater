@@ -80,8 +80,12 @@ class ReportRepository @Inject constructor(
     /**
      * вернуть не завершенные заказы из бд
      */
-    private suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
+    suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
         return@withContext orderDao.load()
+    }
+
+    suspend fun deleteOrder(order: Order) {
+        orderDao.delete(order)
     }
 
     /**
@@ -97,6 +101,35 @@ class ReportRepository @Inject constructor(
         }
         Timber.d("$size!!!!!!!!!!!")
         return size <= 0
+    }
+
+    suspend fun getLoadCurrentOrder(session: String): List<Order> {
+        var currentOrders: List<Order> = emptyList()
+        try {
+            currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
+            if (!currentOrders.isNullOrEmpty()) {
+                var num = 0
+                return currentOrders.filter { it.status != 2 }
+            }
+        }catch (e: Exception) {
+            Timber.e(e)
+            return currentOrders
+        }
+        return currentOrders
+    }
+
+    suspend fun getLoadTotalOrder(session: String): List<Order> {
+        var currentOrders: List<Order> = emptyList()
+        try {
+            currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
+            if (!currentOrders.isNullOrEmpty()) {
+                return currentOrders.filter { it.status == 2 || it.status == 0 }
+            }
+        }catch (e: Exception) {
+            Timber.e(e)
+            return currentOrders
+        }
+        return currentOrders
     }
 
     suspend fun sendExpenses(expenses: Expenses): Boolean {

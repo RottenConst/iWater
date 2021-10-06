@@ -55,7 +55,7 @@ interface ApiRequest {
     @POST("iwater/iwaterDcontrol_list/")
     suspend fun reportOrderInsert(
          @Header("X-Authorization") key: String,
-         @Body request: DecontrolReport
+         @Body request: JsonObject
     ): Response<JsonObject>
 
     /*
@@ -83,7 +83,7 @@ interface ApiRequest {
     suspend fun addReport(
         @Header("X-Authorization") key: String,
         @Body request: ReportOrder
-    ) : Response<ReportDay>
+    ) : ReportDay?
 
     @Headers( "Content-Type: application/json" )
     @POST("iwater/iwaterDriverCloseDay_list/")
@@ -151,4 +151,16 @@ interface ApiRequest {
         @Header("X-Authorization") key: String,
         @Body returnTare: JsonObject
     ): Response<JsonObject>
+
+    @POST("iwater/pick_up_empty_bottles/")
+    suspend fun getClientInfo(
+        @Header("X-Authorization") key: String,
+        @Body returnTare: JsonObject
+    ): Data?
+
+    @GET("iwater/data_report_app/{id}/")
+    suspend fun getReport(
+        @Header("X-Authorization") key: String,
+        @Path("id") idOrder: Int?
+    ): ReportOrder?
 }

@@ -40,7 +40,7 @@ class TimeNotification : BroadcastReceiver() {
 
         CoroutineScope(Dispatchers.Main).launch {
             dbOrders = orderListRepository.getDBOrders()
-            ordersNet = orderListRepository.getLoadCurrentOrder(accountRepository.getAccount().session)
+            ordersNet = orderListRepository.getLoadOrder(accountRepository.getAccount().session)
             NotificationOrders.notifyOrders.clear()
             for (order in ordersNet) {
                 NotificationOrders.notifyOrders.add(

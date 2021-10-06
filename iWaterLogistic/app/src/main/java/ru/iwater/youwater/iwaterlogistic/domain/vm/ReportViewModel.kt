@@ -66,6 +66,7 @@ class ReportViewModel @Inject constructor(
     private val idDriver = accountRepository.getAccount().id
     private val driverName = accountRepository.getAccount().login
     private val company = accountRepository.getAccount().company
+    private val session = accountRepository.getAccount().session
 
     var currentPhotoPath: String = ""
 
@@ -96,6 +97,10 @@ class ReportViewModel @Inject constructor(
     private val _isCompleteOrder: MutableLiveData<Boolean> = MutableLiveData()
     val isCompleteOrder: LiveData<Boolean>
         get() = _isCompleteOrder
+
+    private val _countOrder: MutableLiveData<String> = MutableLiveData()
+    val countOrder: LiveData<String>
+        get() = _countOrder
 
 
     init {
@@ -283,6 +288,12 @@ class ReportViewModel @Inject constructor(
             for (completeOrder in completeOrders) {
                 completeOrdersRepository.deleteCompleteOrder(completeOrder)
             }
+            val orders = reportRepository.getDBOrders()
+            if (!orders.isNullOrEmpty()) {
+                for (order in orders) {
+                    reportRepository.deleteOrder(order)
+                }
+            }
         }
     }
 
@@ -330,7 +341,10 @@ class ReportViewModel @Inject constructor(
     //остались еще не законченые заказы
     private fun isSendReportDay() {
         uiScope.launch {
-            _isCompleteOrder.value = reportRepository.getSumCurrentOrder()
+            val completeOrders = completeOrdersRepository.getAllCompleteOrders()
+            val currentOrders = reportRepository.getLoadTotalOrder(session)
+            _countOrder.value = "${completeOrders.filter { it.typeOfCash != "-" }.size} из ${currentOrders.size}"
+            _isCompleteOrder.value = completeOrders.filter { it.typeOfCash != "-" }.size == currentOrders.size
         }
     }
 

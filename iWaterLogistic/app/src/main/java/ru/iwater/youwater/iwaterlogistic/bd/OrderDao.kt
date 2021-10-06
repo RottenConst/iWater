@@ -3,6 +3,7 @@ package ru.iwater.youwater.iwaterlogistic.bd
 import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 
 @Dao
 interface OrderDao {
@@ -17,6 +18,9 @@ interface OrderDao {
 
     @Query("UPDATE `order` SET num=:num WHERE id = :idOrder")
     suspend fun updateNum(num: Int, idOrder: Int)
+
+    @Query("UPDATE `order` SET location=:location WHERE id = :idOrder")
+    suspend fun updateLocation(location: Location?, idOrder: Int)
 
     @Delete
     fun delete(order: Order)
