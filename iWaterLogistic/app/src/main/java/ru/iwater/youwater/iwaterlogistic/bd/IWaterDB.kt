@@ -1,22 +1,22 @@
 package ru.iwater.youwater.iwaterlogistic.bd
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
-import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
-import ru.iwater.youwater.iwaterlogistic.domain.Expenses
-import ru.iwater.youwater.iwaterlogistic.domain.Order
-import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
-import javax.inject.Inject
+import androidx.room.*
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import ru.iwater.youwater.iwaterlogistic.domain.*
+import ru.iwater.youwater.iwaterlogistic.util.CoordinateConverter
+import ru.iwater.youwater.iwaterlogistic.util.ProductConverter
 
-@Database(entities = [Order::class, CompleteOrder::class, ReportDay::class, Expenses::class], version = 1)
+@Database(version = 2,
+    entities = [Order::class, CompleteOrder::class, ReportDay::class, Expenses::class],)
+@TypeConverters(ProductConverter::class, CoordinateConverter::class)
 abstract class IWaterDB : RoomDatabase() {
     abstract fun orderDao(): OrderDao
     abstract fun completeOrderDao(): CompleteOrderDao
     abstract fun reportDayDao(): ReportDayDao
     abstract fun ExpensesDao(): ExpensesDao
-
+//
     companion object {
         var INSTANCE: IWaterDB? = null
 
@@ -27,7 +27,7 @@ abstract class IWaterDB : RoomDatabase() {
                         context.applicationContext,
                         IWaterDB::class.java,
                         "database"
-                    ).build()
+                    ).addMigrations(MIGRATION_1_2).build()
                 }
             }
             return INSTANCE
@@ -38,3 +38,11 @@ abstract class IWaterDB : RoomDatabase() {
         }
     }
 }
+
+
+val MIGRATION_1_2 = object : Migration(1, 2) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("ALTER TABLE Expenses ADD COLUMN fileName TEXT DEFAULT null")
+    }
+}
+

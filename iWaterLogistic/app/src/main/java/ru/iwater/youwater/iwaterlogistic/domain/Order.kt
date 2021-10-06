@@ -1,26 +1,32 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import ru.iwater.youwater.iwaterlogistic.util.TimeConverter
+import androidx.annotation.Keep
+import androidx.room.*
+import com.google.gson.annotations.SerializedName
+import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
+import ru.iwater.youwater.iwaterlogistic.util.CoordinateConverter
+import ru.iwater.youwater.iwaterlogistic.util.ProductConverter
 
 @Entity
-@TypeConverters(TimeConverter::class)
+@TypeConverters(ProductConverter::class, CoordinateConverter::class)
+@Keep
 data class Order(
-    @PrimaryKey (autoGenerate = false)
-    val id: Int = 0,
-    val name: String = "",
-    val product: String = "",
-    val cash: Float = 0.0F,
-    val cash_b: Float = 0.0F,
-    val timeStart: String = "",
-    val timeEnd: String = "",
-    val contact: String = "",
-    var notice: String = "",
-    val date: String = "",
-    val period: String = "",
     var address: String = "",
+    var cash: String = "",
+    var cash_b: String = "",
+    var contact: String = "",
+    var name: String  = "",
+    var notice: String = "",
+    @SerializedName("order")
+
+    var products: List<Product> = mutableListOf(),
+    @SerializedName("order_id")
+    @PrimaryKey(autoGenerate = false)
+    var id: Int = 0,
+    var period: String = "",
     var status: Int = 0,
-    var coordinates: List<String> = mutableListOf()
+    var time: String = "",
+
+    var location: Location? = Location(0.0, 0.0),
+    var num: Int = 0,
 )

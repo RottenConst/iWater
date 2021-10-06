@@ -9,6 +9,12 @@
         android:title="Item"
         app:showAsAction="always" />
 
+    <item
+        android:id="@+id/go_to_load_menu"
+        android:icon="@drawable/ic_load_drive"
+        android:title="Загрузка машины"
+        app:showAsAction="ifRoom"/>
+
 <!--    <item-->
 <!--        android:id="@+id/action_counter_3"-->
 <!--        app:actionLayout="@layout/badge_with_counter_icon"-->

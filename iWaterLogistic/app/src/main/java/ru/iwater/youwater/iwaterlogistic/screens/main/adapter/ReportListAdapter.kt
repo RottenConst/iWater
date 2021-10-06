@@ -2,40 +2,59 @@ package ru.iwater.youwater.iwaterlogistic.screens.main.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_report_day.view.*
-import kotlinx.android.synthetic.main.item_report_day.view.*
-import ru.iwater.youwater.iwaterlogistic.R
+import ru.iwater.youwater.iwaterlogistic.databinding.ItemCurrentOrderBinding
+import ru.iwater.youwater.iwaterlogistic.databinding.ItemReportDayBinding
 import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
-import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 
-class ReportListAdapter(
-    val reportDayList: MutableList<ReportDay> = mutableListOf()
-) : RecyclerView.Adapter<ReportListAdapter.ReportListHolder>() {
-
-    lateinit var onReportClick: ((ReportDay) -> Unit)
+class ReportListAdapter(private val onClickListener: OnClickListener) : ListAdapter<ReportDay, ReportListAdapter.ReportListHolder>(ReportDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReportListHolder {
-        return ReportListHolder(LayoutInflater.from(parent.context), parent, R.layout.item_report_day)
+        return ReportListHolder.from(parent)
     }
 
     override fun onBindViewHolder(holder: ReportListHolder, position: Int) {
-        holder.bindReport(reportDayList[position], position)
+        val item = getItem(position)
+        holder.itemView.setOnClickListener {
+            onClickListener.onClick(item)
+        }
+        holder.bindReport(item, position)
     }
 
-    override fun getItemCount(): Int = reportDayList.size
+    class ReportListHolder(val binding: ItemReportDayBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-    inner class ReportListHolder(inflater: LayoutInflater, parent: ViewGroup, resource: Int):
-        RecyclerView.ViewHolder(inflater.inflate(resource, parent, false)) {
-            init {
-                itemView.cv_report_card.setOnClickListener { onReportClick.invoke(reportDayList[adapterPosition]) }
-            }
+        fun bindReport(reportDay: ReportDay, position: Int) {
+            binding.reportDay = reportDay
+            binding.executePendingBindings()
+            "${position + 2}".also { binding.tvNumReport.text = it }
+            "Отчет за ${reportDay.date}".also { binding.tvNameReport.text = it }
+        }
 
-            fun bindReport(reportDay: ReportDay, position: Int) {
-                    itemView.tv_num_report.text = "${position + 2}"
-                    itemView.tv_name_report.text = "Отчет за ${reportDay.date}"
+        companion object {
+            fun from(parent: ViewGroup): ReportListHolder {
+                val layoutInflater = LayoutInflater.from(parent.context)
+                val binding = ItemReportDayBinding.inflate(layoutInflater, parent, false)
+                return ReportListHolder(binding)
             }
+        }
+    }
+
+    companion object ReportDiffCallback : DiffUtil.ItemCallback<ReportDay>() {
+        override fun areItemsTheSame(oldItem: ReportDay, newItem: ReportDay): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: ReportDay, newItem: ReportDay): Boolean {
+            return oldItem == newItem
+        }
+    }
+
+    class OnClickListener(val clickListener: (reportDay: ReportDay) -> Unit) {
+        fun onClick(reportDay: ReportDay) = clickListener(reportDay)
     }
 
 }

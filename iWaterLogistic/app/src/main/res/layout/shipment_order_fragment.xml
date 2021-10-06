@@ -1,284 +1,304 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/tv_ship_num_date_order"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/test_order_num_date"
-        android:textColor="@color/colorPrimaryBlue"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <data>
+        <variable
+            name="viewModelShip"
+            type="ru.iwater.youwater.iwaterlogistic.domain.vm.ShipmentsViewModel" />
+    </data>
 
-    <TextView
-        android:id="@+id/tv_ship_address_order"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/test_order_address"
-        android:textAlignment="center"
-        android:textColor="@color/colorPrimaryBlue"
-        android:textSize="14sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_ship_num_date_order" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/tv_line"
-        android:layout_width="0dp"
-        android:layout_height="1dp"
-        android:background="@color/colorPrimaryBlue"
-        android:text="TextView"
-        android:textColor="@color/colorPrimaryBlue"
-        app:layout_constraintEnd_toEndOf="@+id/tv_ship_address_order"
-        app:layout_constraintStart_toStartOf="@+id/tv_ship_address_order"
-        app:layout_constraintTop_toBottomOf="@+id/tv_ship_address_order" />
-
-    <ImageView
-        android:id="@+id/ic_tank"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_line"
-        app:srcCompat="@drawable/ic_tank" />
-
-    <TextView
-        android:id="@+id/tv_tank_to_back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/count_tank_to_back"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/ic_tank"
-        app:layout_constraintTop_toBottomOf="@+id/tv_line" />
-
-    <EditText
-        android:id="@+id/et_tank_to_back"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:gravity="center_horizontal"
-        android:inputType="number"
-        android:maxLength="3"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/tv_ship_price"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.8"
-        app:layout_constraintStart_toEndOf="@+id/tv_tank_to_back"
-        app:layout_constraintTop_toBottomOf="@+id/tv_ship_address_order" />
-
-    <ImageView
-        android:id="@+id/ic_price_order"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/price_order"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_tank"
-        app:srcCompat="@drawable/ic_price_order_24" />
-
-    <TextView
-        android:id="@+id/tv_ship_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/price_order"
-        app:layout_constraintBottom_toBottomOf="@+id/ic_price_order"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/ic_price_order" />
-
-    <ImageView
-        android:id="@+id/ic_note_orders_ship"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/notes_order"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_check_doc"
-        app:srcCompat="@drawable/ic_note_ship_24" />
-
-    <EditText
-        android:id="@+id/et_note_order_ship"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:background="@drawable/text_area"
-        android:ems="10"
-        android:gravity="start|right"
-        android:inputType="textMultiLine"
-        android:textColor="@color/black"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/guideline3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_note_orders_ship"
-        android:importantForAutofill="no" />
-
-    <Button
-        android:id="@+id/btn_ship_order"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
-        android:text="@string/to_ship_order"
-        app:icon="@drawable/ic_on_ship_order_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/guideline2" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.50121653" />
-
-    <Button
-        android:id="@+id/btn_no_ship_order"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="24dp"
-        android:text="@string/no_to_ship_order"
-        app:icon="@drawable/ic_order_cancel_24"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/guideline3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.65" />
-
-    <RadioGroup
-        android:id="@+id/radio_cash_group"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ic_price_order">
-
-        <RadioButton
-            android:id="@+id/radio_cash"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_ship_num_date_order"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/cash"
-            android:textSize="12sp" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/test_order_num_date"
+            android:textColor="@color/colorPrimaryBlue"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:titleOrderInfo="@{viewModelShip.order}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <RadioButton
-            android:id="@+id/radio_terminal"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_ship_address_order"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/terminal"
-            android:textSize="12sp" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/test_order_address"
+            android:textAlignment="center"
+            android:textColor="@color/colorPrimaryBlue"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            app:addressOrderInfo="@{viewModelShip.order.address}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_ship_num_date_order" />
 
-        <RadioButton
-            android:id="@+id/radio_on_site"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_line"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/colorPrimaryBlue"
+            android:text=""
+            android:textColor="@color/colorPrimaryBlue"
+            app:layout_constraintEnd_toEndOf="@+id/tv_ship_address_order"
+            app:layout_constraintStart_toStartOf="@+id/tv_ship_address_order"
+            app:layout_constraintTop_toBottomOf="@+id/tv_ship_address_order" />
+
+        <ImageView
+            android:id="@+id/ic_tank"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="@string/on_site"
-            android:textSize="12sp" />
-    </RadioGroup>
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="24dp"
+            android:contentDescription="@string/count_tank_to_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_line"
+            app:srcCompat="@drawable/ic_tank" />
 
-    <ImageView
-        android:id="@+id/ic_check_doc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:contentDescription="@string/cash"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/radio_cash_group"
-        app:srcCompat="@drawable/ic_chek_documents_24" />
+        <TextView
+            android:id="@+id/tv_tank_to_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/count_tank_to_back"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/ic_tank"
+            app:layout_constraintTop_toBottomOf="@+id/tv_line" />
 
-    <TextView
-        android:id="@+id/tv_check_doc"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/chek_documents"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/ic_check_doc"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintStart_toEndOf="@+id/ic_check_doc"
-        app:layout_constraintTop_toTopOf="@+id/ic_check_doc" />
+        <EditText
+            android:id="@+id/et_tank_to_back"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="24dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:gravity="center_horizontal"
+            android:inputType="number"
+            android:maxLength="3"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/tv_ship_price"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.8"
+            app:layout_constraintStart_toEndOf="@+id/tv_tank_to_back"
+            app:layout_constraintTop_toBottomOf="@+id/tv_ship_address_order"
+            tools:ignore="LabelFor" />
 
-    <CheckBox
-        android:id="@+id/cb_doc_yes"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/yes"
-        app:layout_constraintBottom_toBottomOf="@+id/tv_check_doc"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/guideline2"
-        app:layout_constraintTop_toBottomOf="@+id/radio_cash_group" />
+        <ImageView
+            android:id="@+id/ic_price_order"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/price_order"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_tank"
+            app:srcCompat="@drawable/ic_price_order_24" />
 
-    <CheckBox
-        android:id="@+id/cb_doc_no"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/no"
-        app:layout_constraintBottom_toBottomOf="@+id/cb_doc_yes"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/cb_doc_yes" />
+        <TextView
+            android:id="@+id/tv_ship_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/price_order"
+            app:cashOrderInfo="@{viewModelShip.order.cash}"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_price_order"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/ic_price_order" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        android:text="@string/note_to_order"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toTopOf="@+id/et_note_order_ship"
-        app:layout_constraintEnd_toStartOf="@+id/guideline2"
-        app:layout_constraintStart_toEndOf="@+id/ic_note_orders_ship"
-        app:layout_constraintTop_toTopOf="@+id/ic_note_orders_ship" />
+        <ImageView
+            android:id="@+id/ic_note_orders_ship"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/notes_order"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_check_doc"
+            app:srcCompat="@drawable/ic_note_ship_24" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <EditText
+            android:id="@+id/et_note_order_ship"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/text_area"
+            android:ems="10"
+            android:gravity="start|end"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/guideline3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_note_orders_ship"
+            tools:ignore="LabelFor" />
+
+        <Button
+            android:id="@+id/btn_ship_order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/to_ship_order"
+            app:icon="@drawable/ic_on_ship_order_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline2" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.50121653" />
+
+        <Button
+            android:id="@+id/btn_no_ship_order"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="24dp"
+            android:text="@string/no_to_ship_order"
+            app:icon="@drawable/ic_order_cancel_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.65" />
+
+        <RadioGroup
+            android:id="@+id/radio_cash_group"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="horizontal"
+            app:isCheckRadio="@{viewModelShip.typeClient}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ic_price_order">
+
+            <RadioButton
+                android:id="@+id/radio_cash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/cash"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/radio_terminal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/terminal"
+                android:textSize="12sp" />
+
+            <RadioButton
+                android:id="@+id/radio_on_site"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/on_site"
+                android:textSize="12sp" />
+        </RadioGroup>
+
+        <ImageView
+            android:id="@+id/ic_check_doc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:contentDescription="@string/cash"
+            app:IvVisOfType="@{viewModelShip.typeClient}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/radio_cash_group"
+            app:srcCompat="@drawable/ic_chek_documents_24" />
+
+        <TextView
+            android:id="@+id/tv_check_doc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/chek_documents"
+            android:textColor="@color/black"
+            app:tvVisOfType="@{viewModelShip.typeClient}"
+            app:layout_constraintBottom_toBottomOf="@+id/ic_check_doc"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toEndOf="@+id/ic_check_doc"
+            app:layout_constraintTop_toTopOf="@+id/ic_check_doc" />
+
+        <CheckBox
+            android:id="@+id/cb_doc_yes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/yes"
+            isCheckDocument="@{viewModelShip.typeClient}"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_check_doc"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/guideline2"
+            app:layout_constraintTop_toBottomOf="@+id/radio_cash_group" />
+
+        <CheckBox
+            android:id="@+id/cb_doc_no"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/no"
+            app:isCheckDocument="@{viewModelShip.typeClient}"
+            app:layout_constraintBottom_toBottomOf="@+id/cb_doc_yes"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/cb_doc_yes" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/note_to_order"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/et_note_order_ship"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toEndOf="@+id/ic_note_orders_ship"
+            app:layout_constraintTop_toTopOf="@+id/ic_note_orders_ship" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

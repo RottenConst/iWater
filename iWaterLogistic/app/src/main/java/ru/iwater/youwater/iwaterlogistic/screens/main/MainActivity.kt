@@ -8,17 +8,23 @@ import android.view.MenuItem
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.view.get
+import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.badge_with_counter_icon.*
-import kotlinx.android.synthetic.main.main_container_activity.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
+import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
+import ru.iwater.youwater.iwaterlogistic.databinding.MainContainerActivityBinding
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListReport
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.LoadDriveFragment
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.StartFragment
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.service.TimeListenerService
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
@@ -35,22 +41,25 @@ class MainActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_container_activity)
+        val binding = DataBindingUtil.setContentView<MainContainerActivityBinding>(
+            this,
+            R.layout.main_container_activity
+        )
         accountRepository = AccountRepository(screenComponent.accountStorage())
 
         val service = Intent(this.applicationContext, TimeListenerService::class.java)
         this.startService(service)
-        Timber.d("account = ${accountRepository.getAccount().login}")
+        Timber.d("account = ${accountRepository.getAccount().id}")
 
-        bottom_bar_navigation.menu[1].isChecked = true
+        binding.bottomBarNavigation.menu[1].isChecked = true
         loadFragment(FragmentCurrentOrders.newInstance())
-        bottom_bar_navigation.setOnNavigationItemSelectedListener(bottomNavFragment)
+        binding.bottomBarNavigation.setOnNavigationItemSelectedListener(bottomNavFragment)
     }
 
-//    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
 //        initThirdCounter(menu)
-//        return super.onPrepareOptionsMenu(menu)
-//    }
+        return super.onPrepareOptionsMenu(menu)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
@@ -58,7 +67,7 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId){
+        when (item.itemId) {
             R.id.log_out_menu -> {
                 AlertDialog.Builder(this)
                     .setMessage(R.string.confirmLogout)
@@ -69,6 +78,9 @@ class MainActivity : BaseActivity() {
                         intent.flags =
                             Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         setLoginProgress(this, ACCOUNT_SAVED, true)
+                        CoroutineScope(Dispatchers.Default).launch {
+                            IWaterDB.getIWaterDB(applicationContext)?.clearAllTables()
+                        }
                         accountRepository.deleteAccount()
                         startActivity(intent)
                     }
@@ -76,12 +88,17 @@ class MainActivity : BaseActivity() {
                         dialog.cancel()
                     }.create().show()
             }
+            R.id.go_to_load_menu -> {
+                val fragment = LoadDriveFragment.newInstance(false)
+                supportFragmentManager.beginTransaction().replace(R.id.fl_container, fragment)
+                    .commit()
+            }
         }
         return super.onOptionsItemSelected(item)
     }
 
     private val bottomNavFragment = BottomNavigationView.OnNavigationItemSelectedListener { item ->
-        when(item.itemId) {
+        when (item.itemId) {
             R.id.complete_order -> {
                 loadFragment(FragmentCompleteOrders.newInstance())
                 return@OnNavigationItemSelectedListener true
@@ -104,32 +121,6 @@ class MainActivity : BaseActivity() {
         transaction.addToBackStack(null)
         transaction.commit()
     }
-
-
-//    private fun initThirdCounter(menu: Menu?) {
-//        val counterItem = menu?.findItem(R.id.action_counter_3)
-//        val counter: View? = counterItem?.actionView
-//        counter?.setOnClickListener { _ -> onThirdCounterClick() }
-//        updateThirdCounter(mCounterValue3)
-//    }
-//
-//    private fun onThirdCounterClick() {
-//        updateThirdCounter(++mCounterValue3)
-//    }
-//
-//    private fun updateThirdCounter(newCounterValue: Int) {
-//        if (icon_badge == null || counter == null) {
-//            return
-//        }
-//        if (newCounterValue == 0) {
-//            icon_badge.setImageResource(R.drawable.ic_grey_notification)
-//            counter.visibility = View.GONE
-//        } else {
-//            icon_badge.setImageResource(R.drawable.ic_grey_notification)
-//            counter.visibility = View.VISIBLE
-//            counter.text = newCounterValue.toString()
-//        }
-//    }
 
     companion object {
 

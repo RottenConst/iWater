@@ -6,6 +6,7 @@
     <string name="enter_text">Войти</string>
     <string name="exit_text">Выход</string>
     <string name="map">Карта</string>
+    <string name="logo">Лого</string>
 
     <string name="completeOrder">Завершенные заказы</string>
     <string name="ProcessedOrders">Обработанные</string>
@@ -18,7 +19,7 @@
     <string name="confirmEndOrder">Пожалуйста выполните все не завершенные заказы прежде чем закончить день или свяжитесь с диспетчером для переноса заказов</string>
 
     <string name="yes">Да</string>
-    <string name="ok">Ok</string>
+    <string name="ok">Ок</string>
     <string name="no">Нет</string>
 
     <string name="cancel">Отмена</string>
@@ -26,15 +27,16 @@
     <string name="no_current_orders">Нет заказов</string>
     <string name="general_map">Общая карта</string>
     <string name="string_one">1</string>
+    <string name="client_tare">Тара у клиента</string>
 
     <string name="order_card">Карточка заказа</string>
-    <string name="test_order_num_date">№ 11114 09.03.2021</string>
-    <string name="test_order_address">г. Коммунар, Спб, ул. Бумажников д.2</string>
+    <string name="test_order_num_date">№ 0 00.00.0000</string>
+    <string name="test_order_address">_. _, _, _. _ _</string>
 
     <string name="to_ship_order">Отгрузить заказ</string>
     <string name="see_on_map">Посмотреть на карте</string>
     <string name="call_client">Позвонить</string>
-    <string name="copy_address">Копировать адрес в буфер обмена</string>
+    <string name="copy_address">Копировать адрес</string>
     <string name="name_order">имя товара</string>
     <string name="price_order">цена заказа</string>
     <string name="info_client">информация о клиенте</string>
@@ -66,18 +68,38 @@
     <string name="cash_on_site">Оплата на сайте:</string>
     <string name="cash_on_terminal">Оплата через терминал:</string>
     <string name="cash_many">Оплата наличными:</string>
-    <string name="no_cash_money">Оплата безналичными</string>
+    <string name="no_cash_money">Оплата безналичными:</string>
     <string name="complete_orders_total">Всего выполнено заказов</string>
-    <string name="name_expenses">Наименование расхода</string>
+    <string name="name_expenses">Наименование расхода:</string>
     <string name="cost">123руб</string>
     <string name="expenses">Расходы</string>
     <string name="end_session">Закончить день</string>
-    <string name="start_worc">Начать день</string>
+    <string name="start_work">Начать день</string>
+    <string name="move_to_load_drive">Перейти к экрану погрузки</string>
     <string name="current_orders">Заказы</string>
     <string name="cash_many_to_report">Наличных к сдаче</string>
     <string name="reports">Oтчеты</string>
     <string name="address_text">адрес</string>
     <string name="open_card_order">открыть карточку заказа</string>
     <string name="time">Время</string>
-    <string name="in_navigator">В навигатор</string>>
+    <string name="in_navigator">В навигатор</string>
+    <string name="product">Товар</string>>
+    
+    <string name="permission_rationale">
+        Необходимо разрешение на определение вашего местоположения
+    </string>
+    <string name="arrow_description">image_arrow</string>
+    <string name="expenses_name_add">Введите имя расхода</string>
+    <string name="one_expenses">РАСХОД</string>
+    <string name="expenses_cost">Введите сумму расхода</string>
+    <string name="expenses_cost_label">Сумма расхода:</string>
+    <string name="add_photo_check">Прикрепить чек(фото)</string>
+    <string name="send">Отправить</string>
+    <string name="check_report">Сверка отчета</string>
+    <string name="send_report">Отправить отчет</string>
+    <string name="add_photo_report">Прикрепить фото Z отчета</string>
+    <string name="total_load">Общая загрузка</string>
+    <string name="additional_loading">Дополнительная загрузка</string>
+    <string name="add">Добавить</string>
+    <string name="restore">восстановить</string>
 </resources>

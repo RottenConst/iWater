@@ -1,7 +1,15 @@
 package ru.iwater.youwater.iwaterlogistic.domain.vm
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,94 +17,120 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.CloseDriverShift
+import ru.iwater.youwater.iwaterlogistic.domain.DayReport
 import ru.iwater.youwater.iwaterlogistic.domain.Expenses
 import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
 import ru.iwater.youwater.iwaterlogistic.repository.ReportRepository
-import ru.iwater.youwater.iwaterlogistic.response.DriverDayClose
-import ru.iwater.youwater.iwaterlogistic.response.MonitorDriverDay
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.ReportActivity
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.IOException
+import java.lang.Exception
+import java.net.URI
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+
+enum class Status {
+    NONE,
+    DONE,
+    ERROR
+}
+
+enum class LoadPhoto {
+    LOADING,
+    DONE,
+    ERROR
+}
 
 @OnScreen
 class ReportViewModel @Inject constructor(
     private val completeOrdersRepository: CompleteOrdersRepository,
     private val reportRepository: ReportRepository,
-    accountRepository: AccountRepository
-): ViewModel() {
+    accountRepository: AccountRepository,
+) : ViewModel() {
 
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
     private var timeComplete = UtilsMethods.getTodayDateString()
 
     private val idDriver = accountRepository.getAccount().id
-    private var many = 0.0F
+    private val driverName = accountRepository.getAccount().login
+    private val company = accountRepository.getAccount().company
+    private val session = accountRepository.getAccount().session
 
-     //отчеты
-    private val mReportsDay: MutableLiveData<List<ReportDay>> = MutableLiveData()
-    //отчет
-    private val mReportDay: MutableLiveData<ReportDay> = MutableLiveData()
-    //расходы
-    private val mExpenses: MutableLiveData<List<Expenses>> = MutableLiveData()
-    //остались ли активные заказы
-    private val mIsCompleteOrder: MutableLiveData<Boolean> = MutableLiveData()
+    var currentPhotoPath: String = ""
 
+    private val _status: MutableLiveData<Status> = MutableLiveData()
+    val status: LiveData<Status>
+        get() = _status
+
+    private val _statusLoad: MutableLiveData<LoadPhoto> = MutableLiveData()
+    val statusLoad: LiveData<LoadPhoto>
+        get() = _statusLoad
+
+    //отчеты
+    private val _reportsDay: MutableLiveData<List<ReportDay>> = MutableLiveData()
     val reportsDay: LiveData<List<ReportDay>>
-        get() = mReportsDay
+        get() = _reportsDay
 
+    //отчет
+    private val _reportDay: MutableLiveData<ReportDay> = MutableLiveData()
     val reportDay: LiveData<ReportDay>
-        get() = mReportDay
+        get() = _reportDay
 
+    //расходы
+    private val _expenses: MutableLiveData<List<Expenses>> = MutableLiveData()
     val expenses: LiveData<List<Expenses>>
-        get() = mExpenses
+        get() = _expenses
 
+    //остались ли активные заказы
+    private val _isCompleteOrder: MutableLiveData<Boolean> = MutableLiveData()
     val isCompleteOrder: LiveData<Boolean>
-        get() = mIsCompleteOrder
+        get() = _isCompleteOrder
 
-    /**
-     * Инициализироавать отчет за день
-     */
-    fun initThisReport() {
-        uiScope.launch {
-            mReportDay.value = ReportDay(
-                timeComplete,
-                completeOrdersRepository.getSumCashFullCompleteOrder(timeComplete),
-                completeOrdersRepository.getSumCashCompleteOrder("Наличные", timeComplete),
-                completeOrdersRepository.getSumCashCompleteOrder("На сайте", timeComplete),
-                completeOrdersRepository.getSumCashCompleteOrder("Оплата через терминал", timeComplete),
-                completeOrdersRepository.getSumCashCompleteOrder("Без наличные", timeComplete),
-                completeOrdersRepository.getSumCashCompleteOrder("Наличные", timeComplete) - reportRepository.getSumOfCostExpenses(timeComplete),
-                completeOrdersRepository.getTankCompleteOrder(timeComplete),
-                completeOrdersRepository.getCountCompleteOrder(timeComplete) )
-        }
+    private val _countOrder: MutableLiveData<String> = MutableLiveData()
+    val countOrder: LiveData<String>
+        get() = _countOrder
+
+
+    init {
+        initDateReport()
+        isSendReportDay()
+        _status.value = Status.NONE
     }
 
     /**
      * загрузить отчет за день из бд по дате
      */
-    fun initDateReport(date: String) {
+    fun initDateReport(date: String = "") {
         uiScope.launch {
-            mReportDay.value = reportRepository.loadReportFromDB(date)
-        }
-    }
-
-    /**
-     * установить передаваемые данные в црм для отчета
-     */
-    fun setPropertyGeneralReport(reportDay: ReportDay) {
-        reportRepository.driverCloseDay.setPropertyGeneralReport(idDriver, reportDay)
-    }
-
-    /**
-     * отправить отчет за день в црм
-     */
-    fun sendGeneralReport() {
-        uiScope.launch {
-            reportRepository.driverCloseDay.sendGeneralReport()
+            if (date != timeComplete && date.isNotBlank()) {
+                _reportDay.value = reportRepository.loadReportFromDB(date)
+            } else {
+                _reportDay.value = ReportDay(
+                    timeComplete,
+                    completeOrdersRepository.getSumCashFullCompleteOrder(timeComplete),
+                    completeOrdersRepository.getSumCashCompleteOrder("Наличные"),
+                    completeOrdersRepository.getSumCashCompleteOrder("На сайте"),
+                    completeOrdersRepository.getSumCashCompleteOrder("Оплата через терминал"),
+                    completeOrdersRepository.getSumCashCompleteOrder("Без наличные"),
+                    completeOrdersRepository.getSumCashCompleteOrder("Наличные") - reportRepository.getSumOfCostExpenses(
+                        timeComplete
+                    ),
+                    completeOrdersRepository.getTankCompleteOrder(),
+                    completeOrdersRepository.getCountCompleteOrder(timeComplete)
+                )
+            }
         }
     }
 
@@ -109,32 +143,88 @@ class ReportViewModel @Inject constructor(
                 ReportDay(
                     timeComplete,
                     completeOrdersRepository.getSumCashFullCompleteOrder(timeComplete),
-                    completeOrdersRepository.getSumCashCompleteOrder("Наличные", timeComplete),
-                    completeOrdersRepository.getSumCashCompleteOrder("На сайте", timeComplete),
-                    completeOrdersRepository.getSumCashCompleteOrder("Оплата через терминал", timeComplete),
-                    completeOrdersRepository.getSumCashCompleteOrder("Без наличные", timeComplete),
-                    completeOrdersRepository.getSumCashCompleteOrder("Наличные", timeComplete) - reportRepository.getSumOfCostExpenses(timeComplete),
-                    completeOrdersRepository.getTankCompleteOrder(timeComplete),
-                    completeOrdersRepository.getCountCompleteOrder(timeComplete) )
+                    completeOrdersRepository.getSumCashCompleteOrder("Наличные"),
+                    completeOrdersRepository.getSumCashCompleteOrder("На сайте"),
+                    completeOrdersRepository.getSumCashCompleteOrder("Оплата через терминал"),
+                    completeOrdersRepository.getSumCashCompleteOrder("Без наличные"),
+                    completeOrdersRepository.getSumCashCompleteOrder("Наличные") - reportRepository.getSumOfCostExpenses(
+                        timeComplete
+                    ),
+                    completeOrdersRepository.getTankCompleteOrder(),
+                    completeOrdersRepository.getCountCompleteOrder(timeComplete)
+                )
             )
         }
     }
 
-    fun setDriverCloseMonitor() {
+    fun getDriverCloseMonitor(): DayReport {
+        val report = _reportDay.value
+        val dateCreate = Calendar.getInstance().timeInMillis / 1000
+        return DayReport(
+            idDriver,
+            report?.tank ?: 0,
+            report?.orderComplete ?: 0,
+            report?.cashOnSite ?: 0.0F,
+            report?.cashOnTerminal ?: 0.0F,
+            report?.cashMoney ?: 0.0F,
+            report?.noCashMoney ?: 0.0F,
+            report?.moneyDelivery ?: 0.0F,
+            report?.totalMoney,
+            dateCreate.toString(),
+            report?.date,
+            company
+        )
+    }
+
+    fun driverCloseDay(dayReport: DayReport) {
         uiScope.launch {
-            val getDriverMonitor = MonitorDriverDay()
-            getDriverMonitor.setMonitorDriverClose(idDriver)
-            val idDay = getDriverMonitor.driverDay().split("</id>")
-            val id = idDay[0].replace("\\s+|<info>|<id>".toRegex(), "")
-            driverCloseDay(id.toInt())
+            if (reportRepository.sendDayReport(dayReport)) {
+                closeShift()
+            } else {
+                _status.value = Status.ERROR
+            }
         }
     }
 
-    suspend fun driverCloseDay(idDay: Int) {
-        val closeMonitorDriver = DriverDayClose()
-        closeMonitorDriver.setDriverDayClose(idDay)
-        val message = closeMonitorDriver.driverDayClose()
-        Timber.d(message)
+    fun sendPhotoZReport(photos: List<String>) {
+        _statusLoad.value = LoadPhoto.LOADING
+        for (photo in photos) {
+            val image = BitmapFactory.decodeFile(photo)
+            val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+            val stream = ByteArrayOutputStream()
+            image.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+            val byteArray = stream.toByteArray()
+            val body = MultipartBody.Part.createFormData(
+                "image", "JPEG${timeStamp}.jpg",
+                byteArray.toRequestBody("multipart/form-data".toMediaTypeOrNull(),  0, byteArray.size)
+            )
+            val id = MultipartBody.Part.createFormData("driver_id", idDriver.toString())
+            val date = MultipartBody.Part.createFormData("date", timeComplete.replace("/", "-"))
+            val driverName = MultipartBody.Part.createFormData("driver_name", driverName)
+            uiScope.launch {
+                try {
+                    reportRepository.sendPhoto( id , date , driverName, body)
+                }catch (e: Exception) {
+                    _statusLoad.value = LoadPhoto.ERROR
+                }
+            }
+        }
+        _statusLoad.value = LoadPhoto.DONE
+    }
+
+    private fun closeShift() {
+        uiScope.launch {
+            val closeDriverShift = CloseDriverShift (
+                idDriver,
+                Calendar.getInstance().timeInMillis.toString(),
+                timeComplete
+                    )
+            if (reportRepository.closeDriverShift(closeDriverShift)) {
+                _status.value = Status.DONE
+            } else {
+                _status.value = Status.ERROR
+            }
+        }
     }
 
     /**
@@ -143,21 +233,23 @@ class ReportViewModel @Inject constructor(
     fun getReports() {
         uiScope.launch {
             val reports = reportRepository.loadAllReport()
-            for (report in reports) {
-                if (report.date == UtilsMethods.getTodayDateString()) {
-                    reportRepository.deleteReport(report)
+            Timber.d("TODAY = ${UtilsMethods.getTodayDateString()}")
+            if (reports.size > 1) {
+                val dateReport = reports[0].date
+                val expenses = reportRepository.loadExpenses(dateReport)
+                expenses.forEach {
+                    val filePath = it.fileName
+                    if (!filePath.isNullOrBlank()) {
+                        val file = File(filePath)
+                        if (file.exists()) {
+                            file.delete()
+                        }
+                    }
+                    reportRepository.deleteExpenses(it)
                 }
+                reportRepository.deleteReport(reports[0])
             }
-            mReportsDay.value = reports
-        }
-    }
-
-    /**
-     * загрузить все расходы за день из бд
-     */
-    fun getTodayExpenses() {
-        uiScope.launch {
-            mExpenses.value = reportRepository.loadExpenses(timeComplete)
+            _reportsDay.value = reports
         }
     }
 
@@ -166,16 +258,26 @@ class ReportViewModel @Inject constructor(
      */
     fun getExpenses(date: String) {
         uiScope.launch {
-            mExpenses.value = reportRepository.loadExpenses(date)
+            if (date != timeComplete) _expenses.value = reportRepository.loadExpenses(date)
+            else _expenses.value = reportRepository.loadExpenses(timeComplete)
         }
     }
 
     /**
      * добавить расход в бд
      */
-    fun addExpensesInBD(name: String, cost: Float) {
+    fun addExpensesInBD(name: String, cost: Float, fileName: String) {
         uiScope.launch {
-            reportRepository.saveExpenses(Expenses(timeComplete, name, cost))
+            reportRepository.saveExpenses(
+                Expenses(
+                    idDriver,
+                    timeComplete,
+                    name,
+                    cost,
+                    fileName,
+                    company
+                )
+            )
         }
     }
 
@@ -184,8 +286,12 @@ class ReportViewModel @Inject constructor(
         uiScope.launch {
             val completeOrders = completeOrdersRepository.getAllCompleteOrders()
             for (completeOrder in completeOrders) {
-                if (completeOrder.date != timeComplete) {
-                    completeOrdersRepository.deleteCompleteOrder(completeOrder)
+                completeOrdersRepository.deleteCompleteOrder(completeOrder)
+            }
+            val orders = reportRepository.getDBOrders()
+            if (!orders.isNullOrEmpty()) {
+                for (order in orders) {
+                    reportRepository.deleteOrder(order)
                 }
             }
         }
@@ -194,17 +300,51 @@ class ReportViewModel @Inject constructor(
     /**
      * отправить расход в в црм
      */
-    fun sendExpenses(name: String, cost: Float) {
-        reportRepository.addExpenses.setPropertyExpenses(idDriver, name, cost)
+    fun sendExpenses(name: String, cost: Float, fileName: String) {
         uiScope.launch {
-            reportRepository.addExpenses.sendExpenses()
+            if (reportRepository.sendExpenses(Expenses(idDriver, timeComplete, name, cost, fileName, company))) {
+                reportRepository.saveExpenses(Expenses(idDriver, timeComplete, name, cost, fileName, company))
+                _statusLoad.value = LoadPhoto.DONE
+            } else {
+                _statusLoad.value = LoadPhoto.ERROR
+            }
         }
     }
 
-    //отправить отчет в црм
-    fun isSendReportDay() {
+    fun sendPhotoExpenses(photo: String) {
+        val image = BitmapFactory.decodeFile(photo)
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val stream = ByteArrayOutputStream()
+        image.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+        val byteArray = stream.toByteArray()
+        val body = MultipartBody.Part.createFormData(
+            "image", "CHECK${timeStamp}.jpg",
+            byteArray.toRequestBody("multipart/form-data".toMediaTypeOrNull(),  0, byteArray.size)
+        )
+        val id = MultipartBody.Part.createFormData("driver_id", idDriver.toString())
+        val date = MultipartBody.Part.createFormData("date", timeComplete.replace("/", "-"))
+        val driverName = MultipartBody.Part.createFormData("driver_name", driverName)
         uiScope.launch {
-            mIsCompleteOrder.value = reportRepository.getSumCurrentOrder()
+            if (reportRepository.sendExpensesPhoto(id, date, driverName, body)) {
+                _statusLoad.value = LoadPhoto.LOADING
+            } else {
+                _statusLoad.value = LoadPhoto.ERROR
+            }
+        }
+
+    }
+
+    fun setStatusExpenses(status: Status) {
+        _status.value = status
+    }
+
+    //остались еще не законченые заказы
+    private fun isSendReportDay() {
+        uiScope.launch {
+            val completeOrders = completeOrdersRepository.getAllCompleteOrders()
+            val currentOrders = reportRepository.getLoadTotalOrder(session)
+            _countOrder.value = "${completeOrders.filter { it.typeOfCash != "-" }.size} из ${currentOrders.size}"
+            _isCompleteOrder.value = completeOrders.filter { it.typeOfCash != "-" }.size == currentOrders.size
         }
     }
 
@@ -216,6 +356,26 @@ class ReportViewModel @Inject constructor(
         intent.putExtra("dateReport", date)
         ReportActivity.start(context, intent)
     }
+
+    /**
+     * создать файл
+     **/
+    @SuppressLint("SimpleDateFormat")
+    @Throws(IOException::class)
+    fun createImageFile(context: Context): File {
+        // Create an image file name
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val storageDir: File? = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            "JPEG_${timeStamp}_", /* prefix */
+            ".jpg", /* suffix */
+            storageDir /* directory */
+        ).apply { // Save a file: path for use with ACTION_VIEW intents
+            currentPhotoPath = absolutePath
+        }
+    }
+
+
 
     /**
      * закрываем и отменяем корутины

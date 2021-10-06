@@ -17,6 +17,6 @@ interface ExpensesDao {
     @Query("SELECT * FROM `expenses` WHERE date IS :date " )
     fun load(date:String): List<Expenses>
 
-    @Query("SELECT sum(cost) FROM `expenses` WHERE date IS :date " )
+    @Query("SELECT sum(money) FROM `expenses` WHERE date IS :date " )
     fun sumCost(date:String): Float
 }

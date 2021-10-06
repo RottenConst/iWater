@@ -1,9 +1,13 @@
+
+
+
 package ru.iwater.youwater.iwaterlogistic.base
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import ru.iwater.youwater.iwaterlogistic.BuildConfig
 import ru.iwater.youwater.iwaterlogistic.di.AccountStorageModule
 import ru.iwater.youwater.iwaterlogistic.di.ContextModule
 import ru.iwater.youwater.iwaterlogistic.di.DataBaseModule
@@ -11,12 +15,13 @@ import ru.iwater.youwater.iwaterlogistic.di.components.AppComponent
 import ru.iwater.youwater.iwaterlogistic.di.components.DaggerAppComponent
 import ru.iwater.youwater.iwaterlogistic.di.components.DaggerScreenComponent
 import ru.iwater.youwater.iwaterlogistic.di.components.ScreenComponent
+import ru.iwater.youwater.iwaterlogistic.util.ReleaseTree
 import timber.log.Timber
 
 /**
  * Базовый класс приложения.
  **/
-const val CHANEL_SERVICE_ID = "ru.iwater.logistic.service"
+const val CHANNEL_SERVICE_ID = "ru.iwater.logistic.service"
 
 class App : Application() {
 
@@ -26,7 +31,12 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Timber.plant(Timber.DebugTree())
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        } else {
+            Timber.plant(ReleaseTree())
+        }
+
         createNotificationChanel()
         initAppComponent()
     }
@@ -39,10 +49,10 @@ class App : Application() {
             .build()
     }
 
-    fun createNotificationChanel() {
+    private fun createNotificationChanel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val serviceChanel = NotificationChannel(
-                CHANEL_SERVICE_ID,
+                CHANNEL_SERVICE_ID,
                 "Service Notification Chanel",
                 NotificationManager.IMPORTANCE_DEFAULT)
             val manager = getSystemService(NotificationManager::class.java)

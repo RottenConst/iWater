@@ -14,14 +14,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.android.synthetic.main.about_order_fragment.*
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
+import ru.iwater.youwater.iwaterlogistic.databinding.AboutOrderFragmentBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.InfoOrderViewModel
-import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
+import ru.iwater.youwater.iwaterlogistic.screens.splash.LoadMapActivity
 import javax.inject.Inject
 
 class AboutOrderFragment : BaseFragment() {
@@ -41,37 +42,50 @@ class AboutOrderFragment : BaseFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.about_order_fragment, container, false)
-    }
+    ): View {
+        val binding = DataBindingUtil.inflate<AboutOrderFragmentBinding>(
+            inflater,
+            R.layout.about_order_fragment,
+            container,
+            false
+        )
+        binding.lifecycleOwner = this
+        binding.viewModelDetail = viewModel
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        //достаём id заказа
         val arg = arguments
         val id = arg?.getInt("id")
-        observeVM()
-        viewModel.getOrderInfo(id)
+        if (id != null) viewModel.getOrderInfo2(context, id)
+
         //кнопка "позвонить клиенту"
-        btn_call_client.setOnClickListener {
+        binding.btnCallClient.setOnClickListener {
             callClient(viewModel.getPhoneNumberClient())
         }
+
         //кнопка "посмотреть на карте"
-        btn_see_on_map.setOnClickListener {
-            val intent = Intent(this.context, MapsActivity::class.java)
+        binding.btnSeeOnMap.setOnClickListener {
+            val intent = Intent(this.context, LoadMapActivity::class.java)
             startActivity(intent)
         }
+
         //кнопка в навигатор
-        btn_navigator.setOnClickListener {
+        binding.btnNavigator.setOnClickListener {
             val openApp = Intent(Intent.ACTION_VIEW)
-            openApp.data = Uri.parse(
-                "geo:" + "${viewModel.order.value?.coordinates?.get(0)}, ${
-                    viewModel.order.value?.coordinates?.get(1)
-                }"
-            )
-            startActivity(openApp)
+            if (viewModel.order.value?.location?.lat == 0.0 && viewModel.order.value?.location?.lng == 0.0) {
+                Toast.makeText(this.context, "Не удалось определить координаты", Toast.LENGTH_LONG)
+                    .show()
+            } else {
+                openApp.data = Uri.parse(
+                    "geo:" + "${viewModel.order.value?.location?.lat}, ${
+                        viewModel.order.value?.location?.lng
+                    }"
+                )
+                startActivity(openApp)
+            }
         }
+
         //кнопка "копировать адрес"
-        btn_copy_address.setOnClickListener {
+        binding.btnCopyAddress.setOnClickListener {
             val address = viewModel.order.value?.address?.split(";")
             val clipBoard =
                 activity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -79,31 +93,18 @@ class AboutOrderFragment : BaseFragment() {
             clipBoard.setPrimaryClip(clipData)
             getToast("адресс скопирован")
         }
+
         //кнопка "отгрузить заказ"
-        btn_to_shipment_order.setOnClickListener {
-            viewModel.saveOrder()
+        binding.btnToShipmentOrder.setOnClickListener {
+//            viewModel.saveOrder()
             val fragment = ShipmentsFragment.newInstance()
             fragment.arguments = arg
             activity?.supportFragmentManager?.beginTransaction()
                 ?.replace(R.id.fl_card_order_container, fragment)
                 ?.commit()
         }
-    }
 
-    private fun observeVM() {
-        viewModel.order.observe(viewLifecycleOwner, { order ->
-            "№ ${order.id}, ${order.date}".also { tv_name_date_order.text = it }
-            tv_address_order.text = order.address
-            tv_name_order.text = order.product
-            if (order.cash != 0.00F) {
-                "Наличные: ${order.cash}".also { tv_price_order.text = it }
-            } else {
-                "Безналичные: ${order.cash_b}".also { tv_price_order.text = it }
-            }
-            "${order.name}; \n${order.address};".also { tv_about_client.text = it }
-            tv_phone_number_client.text = order.contact
-            tv_note_order.text = order.notice
-        })
+        return binding.root
     }
 
     /**
@@ -111,33 +112,38 @@ class AboutOrderFragment : BaseFragment() {
      **/
     private fun callClient(phones: Array<String>) {
         val intentCall = Intent(Intent.ACTION_CALL)
+        val activity = this.activity
+        val context = this.context
         if (ActivityCompat.checkSelfPermission(
                 screenComponent.appContext(),
                 Manifest.permission.CALL_PHONE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            ActivityCompat.requestPermissions(
-                this.activity!!, arrayOf(Manifest.permission.CALL_PHONE),
+            if (activity != null) ActivityCompat.requestPermissions(
+                activity,
+                arrayOf(Manifest.permission.CALL_PHONE),
                 0
             )
         }
-        AlertDialog.Builder(this.context!!)
-            .setTitle(R.string.makeCall)
-            .setPositiveButton("Ok") { _, _ ->
-                if (intentCall.data != null) {
-                    if (ActivityCompat.checkSelfPermission(
-                            screenComponent.appContext(),
-                            Manifest.permission.CALL_PHONE
-                        ) == PackageManager.PERMISSION_GRANTED
-                    ) {
-                        startActivity(intentCall)
+        if (context != null) {
+            AlertDialog.Builder(context)
+                .setTitle(R.string.makeCall)
+                .setPositiveButton("Ok") { _, _ ->
+                    if (intentCall.data != null) {
+                        if (ActivityCompat.checkSelfPermission(
+                                screenComponent.appContext(),
+                                Manifest.permission.CALL_PHONE
+                            ) == PackageManager.PERMISSION_GRANTED
+                        ) {
+                            startActivity(intentCall)
+                        }
                     }
                 }
-            }
-            .setNegativeButton("Отмена") { dialog, _ -> dialog.cancel() }
-            .setSingleChoiceItems(phones, -1) { _, item ->
-                intentCall.data = Uri.parse("tel: ${phones[item]}")
-            }.create().show()
+                .setNegativeButton("Отмена") { dialog, _ -> dialog.cancel() }
+                .setSingleChoiceItems(phones, -1) { _, item ->
+                    intentCall.data = Uri.parse("tel: ${phones[item]}")
+                }.create().show()
+        }
     }
 
     private fun getToast(message: String) {

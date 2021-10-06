@@ -2,7 +2,8 @@ package ru.iwater.youwater.iwaterlogistic.repository
 
 import ru.iwater.youwater.iwaterlogistic.domain.Account
 import ru.iwater.youwater.iwaterlogistic.iteractor.StorageStateAccount
-import ru.iwater.youwater.iwaterlogistic.response.Authorisation
+import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
+import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -13,28 +14,34 @@ class AccountRepository @Inject constructor(
     private val accountStorage: StorageStateAccount
 ) {
 
-    suspend fun getAuth(
-        authorisation: Authorisation,
+    private val service: ApiRequest = RetrofitFactory.makeRetrofit()
+
+    suspend fun authDriver(
+        company: String,
         login: String,
-        company: String
-    ): Pair<String, Account> {
-        val answer = authorisation.auth()
-        var message = ""
-        var account = Account(0, "", "", "")
-        if (answer.first == 0) {
-            val arg = answer.second.split("</session>")
-            val session = arg[0].replace("\\s+|<session>".toRegex(), "")
-            val id = arg[1].replace("\\s+|<id>|</id>".toRegex(), "")
-            account = Account(id.toInt(), login, session, company)
-        } else {
-            message = "Ошибка авторизации"
+        password: String,
+        notification: String
+    ): Account {
+        var account = Account("", 0, "", "", "")
+        try {
+            account = service.authDriver("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", login, company, password, notification)!!
+            if (account.session.isNotBlank()) {
+                account.company = company
+                account.login = login
+                account.status = "ok"
+                return account
+            }
+        } catch (e: Exception) {
+            Timber.e(e)
         }
-        Timber.d("$message, ${account.id}")
-        return Pair(message, account)
+        account.status = "Неверный логин или пароль, возможны проблемы с интернетом"
+        return account
     }
 
-    fun setAccount(account: Account) {
-        accountStorage.save(account)
+    fun setAccount(account: Account?) {
+        if (account != null) {
+            accountStorage.save(account)
+        }
     }
 
     fun deleteAccount() {

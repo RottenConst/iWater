@@ -1,10 +1,14 @@
 package ru.iwater.youwater.iwaterlogistic.domain.vm
 
-import androidx.lifecycle.*
+import android.annotation.SuppressLint
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
-import ru.iwater.youwater.iwaterlogistic.response.Authorisation
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -14,28 +18,24 @@ class AccountViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
 ) : ViewModel() {
 
-    private val mMessageLD: MutableLiveData<String> = MutableLiveData()
-
+    private val _messageLD: MutableLiveData<String> = MutableLiveData()
     val messageLD: LiveData<String>
-        get() = mMessageLD
+        get() = _messageLD
 
-    /**
-     * авторизация волителя
-     */
-    fun auth(company: String, login: String, password: String) {
-        val calendar = Calendar.getInstance()
-        calendar.timeInMillis = System.currentTimeMillis()
-        calendar.add(Calendar.DAY_OF_YEAR, 0)
-        val sdf = SimpleDateFormat("yyyy-MM-dd")
-        val notification = sdf.format(calendar.time)
-        val authorisation = Authorisation(company, login, password, notification)
+    @SuppressLint("SimpleDateFormat")
+    fun authDriver(login: String, company: String, password: String) {
         viewModelScope.launch {
-            val auth = accountRepository.getAuth(authorisation, login, company)
-            if (auth.first.isEmpty()) {
-                mMessageLD.value = ""
-                accountRepository.setAccount(auth.second)
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = System.currentTimeMillis()
+            calendar.add(Calendar.DAY_OF_YEAR, 0)
+            val sdf = SimpleDateFormat("yyyy-MM-dd")
+            val notification = sdf.format(calendar.time)
+            val account = accountRepository.authDriver(company, login, password, notification)
+            if (account.status == "ok") {
+                _messageLD.value = ""
+                accountRepository.setAccount(account)
             } else {
-                mMessageLD.value = auth.first
+                _messageLD.value = account.status
             }
         }
     }

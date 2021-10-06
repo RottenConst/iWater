@@ -1,29 +1,32 @@
 package ru.iwater.youwater.iwaterlogistic.domain.vm
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.location.Geocoder
-import androidx.core.content.ContextCompat.startActivity
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.Account
+import ru.iwater.youwater.iwaterlogistic.domain.OpenDriverShift
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
-import ru.iwater.youwater.iwaterlogistic.response.MonitorDriverOpening
-import ru.iwater.youwater.iwaterlogistic.response.TypeClient
-import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.CardOrderActivity
-import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
-import ru.iwater.youwater.iwaterlogistic.util.HelpState
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.LoadDriveFragment
+import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
-import java.io.IOException
-import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+
+
+enum class OrderLoadStatus { LOADING, DONE, ERROR }
 
 /**
  * viewModel класс для действий с заказами
@@ -34,14 +37,13 @@ class OrderListViewModel @Inject constructor(
     accountRepository: AccountRepository
 ) : ViewModel() {
 
-//    val openDriverMonitor = MonitorDriverOpening()
+    private var account: Account = accountRepository.getAccount()
 
     /**
      * при инициализации устанавливаем сессию
      */
     init {
-        orderListRepository.driverWayBill.setProperty(accountRepository.getAccount().session)
-//        openDriverMonitor.setMonitorDriverOpening(accountRepository.getAccount().id)
+        account = accountRepository.getAccount()
     }
 
     /**
@@ -50,49 +52,127 @@ class OrderListViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val mCoordinate: MutableLiveData<String> = MutableLiveData()
+    private val _status: MutableLiveData<OrderLoadStatus> = MutableLiveData()
+    val status: LiveData<OrderLoadStatus>
+        get() = _status
 
-    private val mListOrder: MutableLiveData<List<Order>> = MutableLiveData()
-    private val mDbListOrder: MutableLiveData<List<Order>> = MutableLiveData()
-
+    private val _listOrder: MutableLiveData<List<Order>> = MutableLiveData()
     val listOrder: LiveData<List<Order>>
-        get() = mListOrder
+        get() = _listOrder
 
+    private val _dbListOrder: MutableLiveData<List<Order>> = MutableLiveData()
     val dbListOrder: LiveData<List<Order>>
-        get() = mDbListOrder
+        get() = _dbListOrder
 
-    val coordinate: LiveData<String>
-        get() = mCoordinate
 
-    /**
-     * загружаем инфу о заказах
-     * и обновляем liveData
-     */
-    fun getLoadOrder() {
+    fun getWorkShift(context: Context?, activity: FragmentActivity?) {
         uiScope.launch {
-            orderListRepository.getLoadOrderList()
-            orderListRepository.checkDbOrder()
-            val orders = orderListRepository.getOrders()
-            orderListRepository.saveOrders(orders)
-            mListOrder.value = orderListRepository.getDBOrders()
+            val driverShift = OpenDriverShift(
+                account.id,
+                account.login,
+                account.company,
+                Calendar.getInstance().timeInMillis.toString(),
+                UtilsMethods.getTodayDateString(),
+                account.session
+            )
+            if (orderListRepository.getOpenDriverShift(driverShift)) {
+                val fragment = LoadDriveFragment.newInstance(true)
+                activity?.supportFragmentManager?.beginTransaction()
+                    ?.replace(R.id.container, fragment)
+                    ?.commit()
+            } else {
+                UtilsMethods.showToast(context, "За сегодня у вас уже закрыта смена ")
+            }
         }
     }
 
-    fun openDriverDay(context: Context) {
+    fun getLoadCurrent() {
         uiScope.launch {
-//           val answer = openDriverMonitor.driverOpeningDay()
-//           Timber.d(answer)
-           val intent = Intent(context, MainActivity::class.java)
-           HelpLoadingProgress.setLoginProgress(context, HelpState.IS_WORK_START, false)
-           intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-           startActivity(context, intent, null)
+            _status.value = OrderLoadStatus.LOADING
+            val listOrderNet = orderListRepository.getLoadOrder(account.session)
+            val notCurrentId = orderListRepository.getLoadNotCurrentOrder(account.session)
+            if (listOrderNet.isNullOrEmpty()) {
+                _status.value = OrderLoadStatus.ERROR
+            } else {
+                saveOrder(listOrderNet, notCurrentId)
+                _listOrder.value = listOrderNet
+                _status.value = OrderLoadStatus.DONE
+            }
         }
     }
 
-    fun getLoadOrderWithFactAddress() {
+    private suspend fun saveOrder(ordersNET: List<Order>, notCurrentId: List<Int>) {
+        val ordersDb = orderListRepository.getDBOrders()
+        if (ordersDb.isNullOrEmpty() && ordersNET.isNotEmpty()) {
+            orderListRepository.saveOrders(ordersNET)
+        } else {
+            val iterator = ordersDb.iterator()
+            while (iterator.hasNext()) {
+                val order = iterator.next()
+                for (id in notCurrentId) {
+                    if (order.id == id) orderListRepository.deleteOrder(order)
+                }
+            }
+            updateOrder(ordersNET, ordersDb)
+        }
+    }
+
+    private suspend fun updateOrder(ordersNET: List<Order>, ordersDB: List<Order>) {
+        if (ordersDB.size < ordersNET.size) {
+            val iterator = ordersNET.iterator()
+            while (iterator.hasNext()) {
+                val order = iterator.next()
+                var count = 0
+                for (orderSaved in ordersDB) {
+                    if (order.id == orderSaved.id) {
+                        count += 1
+                        Timber.d("1test!!!!! $count ${order.products.size} ${orderSaved.products.size}")
+                        if (orderSaved.location?.lat == 0.0) {
+                            orderListRepository.updateOrder(order)
+                        } else {
+                            orderListRepository.updateOrder(order)
+                            orderListRepository.updateDBLocation(order, orderSaved.location)
+                        }
+                    }
+                    if (count == 0) {
+                        orderListRepository.saveOrder(order)
+                    }
+                }
+            }
+        }
+        for (order in ordersNET) {
+            orderListRepository.getUpdateDBNum(order)
+        }
+    }
+
+    private suspend fun updateOrder(order: Order) {
+        orderListRepository.updateOrder(order)
+    }
+
+    private suspend fun getCoordinate(address: String): Location {
+        val mapData = orderListRepository.getCoordinates(address)
+        return if (mapData != null && mapData.status != "ZERO_RESULTS") {
+            mapData.results[0].geometry.location
+        } else {
+            Location(0.0, 0.0)
+        }
+    }
+
+    fun loadCoordinate(orders: List<Order>) {
         uiScope.launch {
-            orderListRepository.getLoadOrderList()
-            mListOrder.value = orderListRepository.getOrders()
+            orders.forEach { order ->
+                if (order.location?.lat == 0.0 && order.location?.lng == 0.0) {
+                    order.location = getCoordinate(order.address)
+                    updateOrder(order)
+                }
+            }
+            _status.value = OrderLoadStatus.DONE
+        }
+    }
+
+    fun getLoadOrderFromDB() {
+        uiScope.launch {
+            _dbListOrder.value = orderListRepository.getDBOrders()
         }
     }
 
@@ -104,41 +184,6 @@ class OrderListViewModel @Inject constructor(
         intent.putExtra("id", id)
         if (context != null) {
             CardOrderActivity.start(context, intent)
-        }
-    }
-
-    /**
-     * Получить координаты для заказа
-     */
-    @SuppressLint("TimberArgCount")
-    fun getCoordinatesOnAddressOrder(order: Order, context: Context) {
-        val locationAddress = order.address
-        uiScope.launch {
-            val geoCoder = Geocoder(context, Locale.getDefault())
-            try {
-                val addressList = geoCoder.getFromLocationName(locationAddress, 1)
-                if (addressList != null && addressList.size > 0) {
-                    val address = addressList[0]
-                    val coordinate = "${address.latitude}-${address.longitude}"
-                    order.coordinates = coordinate.split("-")
-                    orderListRepository.saveOrder(order)
-                    Timber.d("coordinate = $")
-                }
-            } catch (e: IOException) {
-                Timber.e(e, "Unable to connect to Geocoder")
-            }
-        }
-    }
-
-    /**
-     * Получить заказы за выбранную дату из бд
-     */
-    fun getLoadOrderCurrentOrderFromBd() {
-        val currentDate = Calendar.getInstance()
-        val formatter = SimpleDateFormat("dd/MM/yyyy")
-        val timeComplete = formatter.format(currentDate.time)
-        uiScope.launch {
-            mDbListOrder.value = orderListRepository.getDBLoadCurrentOrder(timeComplete)
         }
     }
 

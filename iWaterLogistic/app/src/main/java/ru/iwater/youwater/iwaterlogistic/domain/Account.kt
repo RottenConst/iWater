@@ -1,11 +1,16 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import androidx.annotation.Keep
+import com.google.gson.annotations.SerializedName
+
 /**
  * Класс аккаунта
  **/
+@Keep
 data class Account(
-    var id: Int,
-    var login: String,
     var session: String,
-    var company: String
+    var id: Int,
+    var company: String,
+    var login: String,
+    var status: String
 )
