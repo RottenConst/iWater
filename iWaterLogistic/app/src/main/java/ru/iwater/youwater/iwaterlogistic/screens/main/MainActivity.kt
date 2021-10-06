@@ -10,15 +10,21 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.get
 import androidx.databinding.DataBindingUtil
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
+import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.databinding.MainContainerActivityBinding
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.FragmentCompleteOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.current.FragmentCurrentOrders
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.report.FragmentListReport
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.LoadDriveFragment
+import ru.iwater.youwater.iwaterlogistic.screens.main.tab.start.StartFragment
 import ru.iwater.youwater.iwaterlogistic.screens.splash.SplashActivity
 import ru.iwater.youwater.iwaterlogistic.service.TimeListenerService
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress.setLoginProgress
@@ -72,12 +78,20 @@ class MainActivity : BaseActivity() {
                         intent.flags =
                             Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                         setLoginProgress(this, ACCOUNT_SAVED, true)
+                        CoroutineScope(Dispatchers.Default).launch {
+                            IWaterDB.getIWaterDB(applicationContext)?.clearAllTables()
+                        }
                         accountRepository.deleteAccount()
                         startActivity(intent)
                     }
                     .setNegativeButton(R.string.no) { dialog, _ ->
                         dialog.cancel()
                     }.create().show()
+            }
+            R.id.go_to_load_menu -> {
+                val fragment = LoadDriveFragment.newInstance(false)
+                supportFragmentManager.beginTransaction().replace(R.id.fl_container, fragment)
+                    .commit()
             }
         }
         return super.onOptionsItemSelected(item)

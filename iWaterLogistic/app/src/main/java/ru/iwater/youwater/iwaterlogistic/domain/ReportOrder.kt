@@ -1,5 +1,8 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import androidx.annotation.Keep
+
+@Keep
 data class ReportOrder(
     val company_id: String,
     val date: String,

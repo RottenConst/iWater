@@ -1,7 +1,9 @@
 package ru.iwater.youwater.iwaterlogistic.domain
 
+import androidx.annotation.Keep
 import com.google.gson.annotations.SerializedName
 
+@Keep
 data class OpenDriverShift(
     @SerializedName("driver_id")
     val driverId: Int,
@@ -17,6 +19,7 @@ data class OpenDriverShift(
     val session: String
 )
 
+@Keep
 data class CloseDriverShift(
     @SerializedName("driver_id")
     val driverId: Int,

@@ -176,11 +176,11 @@
                     android:layout_marginEnd="16dp"
                     android:text="@string/phone_numbers"
                     android:textColor="@color/black"
-                    app:phoneClient="@{viewModelDetail.order.contact}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toEndOf="@+id/iv_call_phone"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_about_client" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_empy_bottle"
+                    app:phoneClient="@{viewModelDetail.order.contact}" />
 
                 <ImageView
                     android:id="@+id/iv_note_order"
@@ -221,6 +221,30 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/tv_empy_bottle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/client_tare"
+                    android:textColor="@color/black"
+                    app:countBottle="@{viewModelDetail.clientInfo}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_about_client" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/tv_empy_bottle"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/tv_empy_bottle"
+                    app:srcCompat="@drawable/ic_tank" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

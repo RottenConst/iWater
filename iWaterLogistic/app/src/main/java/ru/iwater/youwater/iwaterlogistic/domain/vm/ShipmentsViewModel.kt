@@ -77,11 +77,10 @@ class ShipmentsViewModel @Inject constructor(
         return money
     }
 
-    fun setCompleteOrder2(context: Context?, id: Int, tank: Int, noticeDriver: String) {
+    fun setCompleteOrder2(context: Context?, id: Int, cash: Float, tank: Int, noticeDriver: String) {
         uiScope.launch {
             val timeComplete = Calendar.getInstance().timeInMillis / 1000
             val typeCash = _typeCash.value
-            val cash = _order.value?.cash?.toFloat()
             val decontrolReport = DecontrolReport(id, timeComplete, myCoordinate, tank, noticeDriver)
             if (completeOrdersRepository.addDecontrol(decontrolReport)) {
                 if (cash != null && typeCash != null) {
@@ -111,10 +110,11 @@ class ShipmentsViewModel @Inject constructor(
         }
     }
 
-    fun setEmptyBottle(context: Context?, id: Int, clientId: Int, tank: Int, address: String, noticeDriver: String) {
+    fun setEmptyBottle(context: Context?, id: Int, clientId: Int, cash: String, tank: Int, address: String, noticeDriver: String) {
         uiScope.launch {
+            val cashOrder = cash.toFloat()
             if (orderListRepository.setEmptyBottle(clientId, tank, id, address)) {
-                setCompleteOrder2(context, id, tank, noticeDriver)
+                setCompleteOrder2(context, id, cashOrder, tank, noticeDriver)
             } else {
                 UtilsMethods.showToast(context, "Кол-во забранной тары не может превышать кол-во имеющейся у клиента!")
             }

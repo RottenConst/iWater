@@ -98,7 +98,7 @@ class StartFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
                 }
                 OrderLoadStatus.ERROR -> {
                     binding?.apply {
-                        tvTitle.text = "Плаеновых заказов пока нет"
+                        tvTitle.text = "Плановых заказов пока нет"
                         rvListCurrentPreview.visibility = View.GONE
                     }
                 }

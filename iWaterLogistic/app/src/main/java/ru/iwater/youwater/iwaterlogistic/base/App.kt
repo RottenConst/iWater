@@ -1,9 +1,13 @@
+
+
+
 package ru.iwater.youwater.iwaterlogistic.base
 
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
+import ru.iwater.youwater.iwaterlogistic.BuildConfig
 import ru.iwater.youwater.iwaterlogistic.di.AccountStorageModule
 import ru.iwater.youwater.iwaterlogistic.di.ContextModule
 import ru.iwater.youwater.iwaterlogistic.di.DataBaseModule
@@ -11,6 +15,7 @@ import ru.iwater.youwater.iwaterlogistic.di.components.AppComponent
 import ru.iwater.youwater.iwaterlogistic.di.components.DaggerAppComponent
 import ru.iwater.youwater.iwaterlogistic.di.components.DaggerScreenComponent
 import ru.iwater.youwater.iwaterlogistic.di.components.ScreenComponent
+import ru.iwater.youwater.iwaterlogistic.util.ReleaseTree
 import timber.log.Timber
 
 /**
@@ -26,7 +31,12 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Timber.plant(Timber.DebugTree())
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        } else {
+            Timber.plant(ReleaseTree())
+        }
+
         createNotificationChanel()
         initAppComponent()
     }

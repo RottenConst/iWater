@@ -45,7 +45,6 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     private lateinit var myPoint: LatLng
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
-    private var coordinate = ""
     private lateinit var binding: ActivityMapsBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

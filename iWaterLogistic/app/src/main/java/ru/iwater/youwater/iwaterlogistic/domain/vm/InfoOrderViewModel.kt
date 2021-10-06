@@ -9,7 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
+import ru.iwater.youwater.iwaterlogistic.domain.ClientInfo
 import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
@@ -30,6 +32,9 @@ class InfoOrderViewModel @Inject constructor(
     private val _order: MutableLiveData<Order> = MutableLiveData()
     val order: LiveData<Order>
         get() = _order
+    private val _clientInfo: MutableLiveData<ClientInfo> = MutableLiveData()
+    val clientInfo: LiveData<ClientInfo>
+        get() = _clientInfo
 
 
     /**
@@ -40,28 +45,35 @@ class InfoOrderViewModel @Inject constructor(
             try {
                 val orderDetail = orderListRepository.getDBOrderOnId(id)
                 val orderInfoDetail = orderListRepository.getLoadOrderInfo(id)
+                val clientInfo = orderListRepository.getAddressBottle(orderInfoDetail?.client_id, orderDetail.address)
                 if (orderInfoDetail != null) {
-                    if (orderDetail.cash.isNotEmpty()) {
+                    if (!orderDetail.cash.isNullOrEmpty()) {
                         orderDetail.cash = orderInfoDetail.cash
                     } else {
                         orderDetail.cash_b = orderInfoDetail.cash
                     }
-                    orderDetail.location = getCoordinate(orderDetail.address)
-                    if (orderDetail.contact.isNotBlank()) {
-                        val room = orderInfoDetail.contact.split(",").size
-                        orderDetail.address = "${orderInfoDetail.address} ${
-                            orderInfoDetail.contact.split(",").get(room - 2)
-                        }"
+                    if (orderDetail.location?.lat == 0.0 && orderDetail.location?.lng == 0.0) {
+                        orderDetail.location = getCoordinate(orderInfoDetail.address)
+                        orderListRepository.updateDBLocation(orderDetail, orderDetail.location)
+                    }
+                    if (clientInfo?.fact_address?.isNotEmpty() == true) {
+                        orderDetail.address = "${clientInfo?.fact_address}"
                     } else {
-                        orderDetail.contact = orderInfoDetail.contact.split(",").last().toString()
                         orderDetail.address = "${orderInfoDetail.address} - ${
                             orderInfoDetail.contact
                         }"
                     }
+                    try {
+                        if (orderDetail.contact.isEmpty()) orderDetail.contact = orderInfoDetail.contact.split(",").last()
+                    } catch (e: Exception) {
+                        UtilsMethods.showToast(context, "Ошибка оформления заказа, телефон не отображен")
+                    }
+
                     _order.value = orderDetail
-                    updateOrder(orderDetail)
+                    _clientInfo.value = clientInfo
                 } else {
                     _order.value = orderDetail
+                    _clientInfo.value = ClientInfo("", 0)
                     UtilsMethods.showToast(
                         context,
                         "Проблемы с интернетом, данные могут быть не коктными"

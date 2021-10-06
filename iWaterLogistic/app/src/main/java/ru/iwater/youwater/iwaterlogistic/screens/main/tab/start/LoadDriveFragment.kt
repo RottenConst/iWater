@@ -13,6 +13,8 @@ import ru.iwater.youwater.iwaterlogistic.domain.vm.ProductViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ProductsListAdapter
 import javax.inject.Inject
 
+private const val VISIBLE = "visible"
+
 class LoadDriveFragment : BaseFragment() {
 
     @Inject
@@ -20,6 +22,7 @@ class LoadDriveFragment : BaseFragment() {
     private val viewModel: ProductViewModel by viewModels { factory }
     private val screenComponent = App().buildScreenComponent()
 
+    private var visibleButton: Boolean? = null
     private val adapter = ProductsListAdapter()
     private val advancedAdapter = ProductsListAdapter()
     private var binding: LoadDriveFragmentBinding? = null
@@ -27,6 +30,9 @@ class LoadDriveFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         screenComponent.inject(this)
+        arguments?.let {
+            visibleButton = it.getBoolean(VISIBLE, false)
+        }
     }
 
     override fun onCreateView(
@@ -56,7 +62,11 @@ class LoadDriveFragment : BaseFragment() {
             binding?.tvAdvancedCount?.text = count.toString()
             advancedAdapter.submitList(it)
         })
-
+        if (visibleButton == true) {
+            binding?.btnStart?.visibility = View.VISIBLE
+        } else {
+            binding?.btnStart?.visibility = View.GONE
+        }
         binding?.btnStart?.setOnClickListener {
             val context = this.context
             if (context != null) viewModel.openDriverShift(context)
@@ -67,7 +77,12 @@ class LoadDriveFragment : BaseFragment() {
     }
 
     companion object {
-        fun newInstance(): LoadDriveFragment = LoadDriveFragment()
+        fun newInstance(visibleButton: Boolean): LoadDriveFragment =
+            LoadDriveFragment().apply {
+            arguments = Bundle().apply {
+                putBoolean(VISIBLE, visibleButton)
+            }
+        }
     }
 
 }

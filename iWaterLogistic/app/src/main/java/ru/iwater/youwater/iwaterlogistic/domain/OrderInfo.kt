@@ -18,6 +18,7 @@ data class OrderInfo(
     val period : String,
     val notice : String,
     val cash : String,
+    val cash_b : String,
     val driver : Int,
     val status : Int,
 )

@@ -27,10 +27,11 @@
     <string name="no_current_orders">Нет заказов</string>
     <string name="general_map">Общая карта</string>
     <string name="string_one">1</string>
+    <string name="client_tare">Тара у клиента</string>
 
     <string name="order_card">Карточка заказа</string>
-    <string name="test_order_num_date">№ 11114 09.03.2021</string>
-    <string name="test_order_address">г. Коммунар, Спб, ул. Бумажников д.2</string>
+    <string name="test_order_num_date">№ 0 00.00.0000</string>
+    <string name="test_order_address">_. _, _, _. _ _</string>
 
     <string name="to_ship_order">Отгрузить заказ</string>
     <string name="see_on_map">Посмотреть на карте</string>
@@ -67,7 +68,7 @@
     <string name="cash_on_site">Оплата на сайте:</string>
     <string name="cash_on_terminal">Оплата через терминал:</string>
     <string name="cash_many">Оплата наличными:</string>
-    <string name="no_cash_money">Оплата безналичными</string>
+    <string name="no_cash_money">Оплата безналичными:</string>
     <string name="complete_orders_total">Всего выполнено заказов</string>
     <string name="name_expenses">Наименование расхода:</string>
     <string name="cost">123руб</string>
@@ -91,7 +92,7 @@
     <string name="expenses_name_add">Введите имя расхода</string>
     <string name="one_expenses">РАСХОД</string>
     <string name="expenses_cost">Введите сумму расхода</string>
-    <string name="expenses_cost_label">Сумма расхоа:</string>
+    <string name="expenses_cost_label">Сумма расхода:</string>
     <string name="add_photo_check">Прикрепить чек(фото)</string>
     <string name="send">Отправить</string>
     <string name="check_report">Сверка отчета</string>
@@ -100,4 +101,5 @@
     <string name="total_load">Общая загрузка</string>
     <string name="additional_loading">Дополнительная загрузка</string>
     <string name="add">Добавить</string>
+    <string name="restore">восстановить</string>
 </resources>

@@ -45,7 +45,6 @@ class ShipmentsFragment: BaseFragment() {
     private var documentsIsChecked: Boolean? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         screenComponent.inject(this)
@@ -132,10 +131,18 @@ class ShipmentsFragment: BaseFragment() {
                 binding.cbDocYes.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
             } else {
                 if (id != null) viewModel.order.observe(this.viewLifecycleOwner, {
-                    viewModel.setEmptyBottle(this.context, it.id, it.client_id,
-                        binding.etTankToBack.text.toString().toInt(),
-                        it.address,
-                        binding.etNoteOrderShip.text.toString())
+                    Timber.d("SHIP ORDER = ${it.id}, ${it.client_id}, cash_b = ${it.cash_b} ; cash = ${it.cash}, ${binding.etTankToBack.text.toString()}, ${it.address} ${binding.etNoteOrderShip.text.toString()}")
+                    if (it.cash.isEmpty() || it.cash.isBlank()) {
+                        viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash_b,
+                            binding.etTankToBack.text.toString().toInt(),
+                            it.address,
+                            binding.etNoteOrderShip.text.toString())
+                    } else {
+                        viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash,
+                            binding.etTankToBack.text.toString().toInt(),
+                            it.address,
+                            binding.etNoteOrderShip.text.toString())
+                    }
                 })
             }
         }
