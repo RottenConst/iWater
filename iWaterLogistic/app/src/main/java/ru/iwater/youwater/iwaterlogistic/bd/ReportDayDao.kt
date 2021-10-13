@@ -1,7 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.bd
 
 import androidx.room.*
-import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 
 @Dao

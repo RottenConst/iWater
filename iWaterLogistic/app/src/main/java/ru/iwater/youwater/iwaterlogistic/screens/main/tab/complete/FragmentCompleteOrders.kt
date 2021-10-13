@@ -49,6 +49,7 @@ class FragmentCompleteOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListe
     }
 
     override fun onRefresh() {
+        viewModel.getLoadLostOrder()
         viewModel.getCompleteListOrders()
         binding.refreshContainerComplete.isRefreshing = false
     }

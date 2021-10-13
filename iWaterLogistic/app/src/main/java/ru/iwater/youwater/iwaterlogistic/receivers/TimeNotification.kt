@@ -1,4 +1,4 @@
-package ru.iwater.youwater.iwaterlogistic.Receivers
+package ru.iwater.youwater.iwaterlogistic.receivers
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
-import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.util.NotificationSender
@@ -28,10 +28,10 @@ class TimeNotification : BroadcastReceiver() {
     }
 
 
-    private lateinit var ordersNet: List<Order>
-    private lateinit var dbOrders: List<Order>
+    private lateinit var ordersNet: List<OrderNewItem>
+    private lateinit var dbOrders: List<OrderNewItem>
 
-    lateinit var notificationSender: NotificationSender
+    private lateinit var notificationSender: NotificationSender
 
     override fun onReceive(context: Context?, intent: Intent?) {
         orderListRepository = OrderListRepository(iWaterDB)
@@ -45,7 +45,7 @@ class TimeNotification : BroadcastReceiver() {
             for (order in ordersNet) {
                 NotificationOrders.notifyOrders.add(
                     NotifyOrder(
-                        order.id, order.time.split("-").last(), order.address,
+                        order.order_id, order.time.split("-").last(), order.address,
                         notification = false,
                         fail = false
                     )
@@ -56,7 +56,7 @@ class TimeNotification : BroadcastReceiver() {
             if (ordersNet.size > dbOrders.size) {
                 for (orderNet in ordersNet) {
                     for (dbOrder in dbOrders) {
-                        if (dbOrder.id != orderNet.id) {
+                        if (dbOrder.order_id != orderNet.order_id) {
                             notificationSender.sendNotification(
                                 "Появились новые заказы, пожалуйста обновите список заказов",
                                 ordersNet.size + 100,
@@ -69,12 +69,6 @@ class TimeNotification : BroadcastReceiver() {
             }
         }
 
-//        if (UtilsMethods.timeDifference("20:00", UtilsMethods.getFormatedDate()) < 0 && NotificationOrders.countNotification != 3) {
-//            notificationSender.sendNotification("По завершению всех заказов не забудьте закончить день и отправить отчет" , ordersNet.size + 200, false)
-//            NotificationOrders.countNotification++
-//        }
-
-//        Timber.d(" OrderDB ${NotificationOrders.notifyOrders.size}")
         for (dbOrder in NotificationOrders.notifyOrders) {
             for (notify in NotificationOrders.isNotify) {
                 if (notify == dbOrder.id) dbOrder.notification = true

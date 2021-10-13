@@ -5,11 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Environment
-import android.provider.MediaStore
-import androidx.core.app.ActivityCompat.startActivityForResult
-import androidx.core.content.FileProvider
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -35,7 +31,6 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.lang.Exception
-import java.net.URI
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -119,7 +114,7 @@ class ReportViewModel @Inject constructor(
             } else {
                 _reportDay.value = ReportDay(
                     timeComplete,
-                    completeOrdersRepository.getSumCashFullCompleteOrder(timeComplete),
+                    completeOrdersRepository.getSumCashFullCompleteOrder(),
                     completeOrdersRepository.getSumCashCompleteOrder("Наличные"),
                     completeOrdersRepository.getSumCashCompleteOrder("На сайте"),
                     completeOrdersRepository.getSumCashCompleteOrder("Оплата через терминал"),
@@ -128,7 +123,7 @@ class ReportViewModel @Inject constructor(
                         timeComplete
                     ),
                     completeOrdersRepository.getTankCompleteOrder(),
-                    completeOrdersRepository.getCountCompleteOrder(timeComplete)
+                    completeOrdersRepository.getCountCompleteOrder()
                 )
             }
         }
@@ -142,7 +137,7 @@ class ReportViewModel @Inject constructor(
             reportRepository.saveReport(
                 ReportDay(
                     timeComplete,
-                    completeOrdersRepository.getSumCashFullCompleteOrder(timeComplete),
+                    completeOrdersRepository.getSumCashFullCompleteOrder(),
                     completeOrdersRepository.getSumCashCompleteOrder("Наличные"),
                     completeOrdersRepository.getSumCashCompleteOrder("На сайте"),
                     completeOrdersRepository.getSumCashCompleteOrder("Оплата через терминал"),
@@ -151,7 +146,7 @@ class ReportViewModel @Inject constructor(
                         timeComplete
                     ),
                     completeOrdersRepository.getTankCompleteOrder(),
-                    completeOrdersRepository.getCountCompleteOrder(timeComplete)
+                    completeOrdersRepository.getCountCompleteOrder()
                 )
             )
         }
@@ -260,24 +255,6 @@ class ReportViewModel @Inject constructor(
         uiScope.launch {
             if (date != timeComplete) _expenses.value = reportRepository.loadExpenses(date)
             else _expenses.value = reportRepository.loadExpenses(timeComplete)
-        }
-    }
-
-    /**
-     * добавить расход в бд
-     */
-    fun addExpensesInBD(name: String, cost: Float, fileName: String) {
-        uiScope.launch {
-            reportRepository.saveExpenses(
-                Expenses(
-                    idDriver,
-                    timeComplete,
-                    name,
-                    cost,
-                    fileName,
-                    company
-                )
-            )
         }
     }
 

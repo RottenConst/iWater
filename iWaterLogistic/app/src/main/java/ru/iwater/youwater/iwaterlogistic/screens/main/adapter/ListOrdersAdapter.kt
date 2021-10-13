@@ -7,12 +7,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.iwater.youwater.iwaterlogistic.databinding.ItemCurrentOrderBinding
-import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
 
 class ListOrdersAdapter(private val onClickListener: OnClickListener) :
-    ListAdapter<Order, ListOrdersAdapter.ListOrderHolder>(OrderDiffCallback) {
+    ListAdapter<OrderNewItem, ListOrdersAdapter.ListOrderHolder>(OrderDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListOrderHolder {
         return ListOrderHolder.from(parent)
@@ -30,7 +30,7 @@ class ListOrdersAdapter(private val onClickListener: OnClickListener) :
         RecyclerView.ViewHolder(binding.root) {
 
 
-        fun bindOrders(order: Order) {
+        fun bindOrders(order: OrderNewItem) {
             binding.order = order
             binding.executePendingBindings()
             if (HelpLoadingProgress.getStartDayShow(
@@ -52,17 +52,17 @@ class ListOrdersAdapter(private val onClickListener: OnClickListener) :
 
     }
 
-    companion object OrderDiffCallback : DiffUtil.ItemCallback<Order>() {
-        override fun areItemsTheSame(oldItem: Order, newItem: Order): Boolean {
-            return oldItem.id == newItem.id
+    companion object OrderDiffCallback : DiffUtil.ItemCallback<OrderNewItem>() {
+        override fun areItemsTheSame(oldItem: OrderNewItem, newItem: OrderNewItem): Boolean {
+            return oldItem.order_id == newItem.order_id
         }
 
-        override fun areContentsTheSame(oldItem: Order, newItem: Order): Boolean {
+        override fun areContentsTheSame(oldItem: OrderNewItem, newItem: OrderNewItem): Boolean {
             return oldItem == newItem
         }
     }
 
-    class OnClickListener(val clickListener: (order: Order) -> Unit) {
-        fun onClick(order: Order) = clickListener(order)
+    class OnClickListener(val clickListener: (order: OrderNewItem) -> Unit) {
+        fun onClick(order: OrderNewItem) = clickListener(order)
     }
 }

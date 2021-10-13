@@ -6,13 +6,9 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.BuildConfig
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
-import ru.iwater.youwater.iwaterlogistic.bd.OrderDao
+import ru.iwater.youwater.iwaterlogistic.bd.OrderNewItemDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
-import ru.iwater.youwater.iwaterlogistic.domain.ClientInfo
-import ru.iwater.youwater.iwaterlogistic.domain.OpenDriverShift
-import ru.iwater.youwater.iwaterlogistic.domain.Order
-import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
-import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
+import ru.iwater.youwater.iwaterlogistic.domain.*
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.MapData
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
 import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
@@ -26,50 +22,44 @@ class  OrderListRepository @Inject constructor(
 )
 {
     val service: ApiRequest = RetrofitFactory.makeRetrofit()
-    private val orderDao: OrderDao = IWaterDB.orderDao() //обьект бд
+    private val orderDao: OrderNewItemDao = IWaterDB.orderNewItemDao() //обьект бд
 
 
     /**
      * сохранить заказы в бд
      */
-    suspend fun saveOrders(orders: List<Order>) {
+    suspend fun saveOrders(orders: List<OrderNewItem>) {
         orderDao.saveAll(orders)
     }
 
     /**
      * сохранить заказ в бд
      */
-    suspend fun saveOrder(order: Order) {
+    suspend fun saveOrder(order: OrderNewItem) {
         orderDao.save(order)
     }
 
-    suspend fun updateOrder(order: Order){
+    suspend fun updateOrder(order: OrderNewItem){
         orderDao.update(order)
     }
 
-    suspend fun updateOrders(orders: List<Order>){
-        orders.forEach {
-            updateOrder(it)
-        }
-    }
-
-    suspend fun deleteOrder(order: Order) = withContext(Dispatchers.Default) {
+    suspend fun deleteOrder(order: OrderNewItem) = withContext(Dispatchers.Default) {
         orderDao.delete(order)
     }
 
     /**
      * вернуть заказы из бд
      */
-    suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
+    suspend fun getDBOrders(): List<OrderNewItem> = withContext(Dispatchers.Default){
         return@withContext orderDao.load()
     }
 
-    suspend fun getUpdateDBNum(order: Order) {
-        orderDao.updateNum(order.num, order.id)
+    suspend fun getUpdateDBNum(order: OrderNewItem) {
+        orderDao.updateNum(order.num, order.order_id)
     }
 
-    suspend fun updateDBLocation(order: Order, location: Location?) {
-        orderDao.updateLocation(location, order.id)
+    suspend fun updateDBLocation(order: OrderNewItem, location: String?) {
+        orderDao.updateLocation(location, order.order_id)
     }
 
     suspend fun getOpenDriverShift(openDriverShift: OpenDriverShift): Boolean {
@@ -117,16 +107,16 @@ class  OrderListRepository @Inject constructor(
     /**
      * вернуть заказы из бд по id
      */
-    suspend fun getDBOrderOnId(id: Int): Order = withContext(Dispatchers.Default) {
+    suspend fun getDBOrderOnId(id: Int): OrderNewItem = withContext(Dispatchers.Default) {
         return@withContext orderDao.getOrderOnId(id)
     }
 
     suspend fun getLoadNotCurrentOrder(session: String): List<Int> {
-        var currentOrders: List<Order> = emptyList()
+        val currentOrders: List<OrderNewItem>
         try {
             currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {
-                return currentOrders.filter { it.status == 2 }.map { it.id }
+                return currentOrders.filter { it.status == 2 }.map { it.order_id }
             }
         }catch (e: Exception) {
             Timber.e(e)
@@ -135,8 +125,8 @@ class  OrderListRepository @Inject constructor(
         return emptyList()
     }
 
-    suspend fun getLoadOrder(session: String): List<Order> {
-        var currentOrders: List<Order> = emptyList()
+    suspend fun getLoadOrder(session: String): List<OrderNewItem> {
+        var currentOrders: List<OrderNewItem> = emptyList()
         try {
             currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {
@@ -146,20 +136,23 @@ class  OrderListRepository @Inject constructor(
                 }.filter { it.status != 2}.map {
                     num++
                     it.num += num
-                    Order(
+                    OrderNewItem(
                         address = it.address,
                         cash = it.cash,
                         cash_b = it.cash_b,
                         contact = it.contact,
+                        date = it.date,
+                        mobile = it.mobile,
                         name = it.name,
                         notice = it.notice,
-                        products = it.products,
-                        id = it.id,
+                        order = it.order,
+                        order_id = it.order_id,
                         period = it.period,
                         status = it.status,
                         time = it.time,
-                        location = it.location,
-                        num = it.num
+                        type = it.type,
+                        coords = it.coords,
+                        num = if (it.type == "1") "П.${num}" else num.toString()
                     )
                 }
             }

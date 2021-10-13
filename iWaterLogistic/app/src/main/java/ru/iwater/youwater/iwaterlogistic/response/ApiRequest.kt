@@ -24,11 +24,11 @@ interface ApiRequest {
     /**
      * получить список заказов водителя по его сессии
      */
-    @GET("iwater/getDriverList/{session}/")
+    @GET("iwater/drivers_orders_instructions/{session}")
     suspend fun getDriverOrders(
         @Header("X-Authorization") key: String,
         @Path("session") session: String
-    ): List<Order>
+    ): List<OrderNewItem>
 
     /**
      * получить подробную информацию о заказе по его id

@@ -9,9 +9,10 @@ import ru.iwater.youwater.iwaterlogistic.util.CoordinateConverter
 import ru.iwater.youwater.iwaterlogistic.util.ProductConverter
 
 @Database(version = 2,
-    entities = [Order::class, CompleteOrder::class, ReportDay::class, Expenses::class],)
+    entities = [OrderNewItem::class, Order::class, CompleteOrder::class, ReportDay::class, Expenses::class],)
 @TypeConverters(ProductConverter::class, CoordinateConverter::class)
 abstract class IWaterDB : RoomDatabase() {
+    abstract fun orderNewItemDao(): OrderNewItemDao
     abstract fun orderDao(): OrderDao
     abstract fun completeOrderDao(): CompleteOrderDao
     abstract fun reportDayDao(): ReportDayDao
@@ -43,6 +44,12 @@ abstract class IWaterDB : RoomDatabase() {
 val MIGRATION_1_2 = object : Migration(1, 2) {
     override fun migrate(database: SupportSQLiteDatabase) {
         database.execSQL("ALTER TABLE Expenses ADD COLUMN fileName TEXT DEFAULT null")
+    }
+}
+
+val MIGRATION_2_3 = object : Migration(2, 3) {
+    override fun migrate(database: SupportSQLiteDatabase) {
+        database.execSQL("DROP TABLE IF EXISTS 'order'")
     }
 }
 

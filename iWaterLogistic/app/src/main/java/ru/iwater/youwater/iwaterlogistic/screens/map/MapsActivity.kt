@@ -27,7 +27,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.databinding.ActivityMapsBinding
-import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
@@ -149,14 +149,19 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     }
 
 
-    private fun getMarker(orders: List<Order>) {
+    private fun getMarker(orders: List<OrderNewItem>) {
         for (order in orders) {
-            val point = LatLng(order.location?.lat!!, order.location?.lng!!)
+            Timber.i("${order.coords.split(",")[0]} ${order.coords.split(",")[1]}")
+            val point = LatLng(order.coords.split(",")[0].toDouble(), order.coords.split(",")[1].toDouble())
             val hour = order.time.split("-").last()
             Timber.i("Time - $hour")
             val color = hour.split(":")[0].toInt()
             val orderProduct: String by lazy {
-                UtilsMethods.productToStringMap(order.products)
+                if (order.type == "1") {
+                    order.notice
+                } else {
+                    UtilsMethods.productToStringMap(order.order)
+                }
             }
 
             when {
@@ -166,7 +171,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                             getCustomIcon(order.num, R.drawable.marker_red)
                         )
                     )
-                        .title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
+                        .title("${order.order_id};${order.num};${order.address};${order.time};${orderProduct}")
                     Timber.d("orderproduct $orderProduct")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
@@ -177,7 +182,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                             getCustomIcon(order.num, R.drawable.marker_yellow)
                         )
                     )
-                        .title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
+                        .title("${order.order_id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -187,7 +192,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                             getCustomIcon(order.num, R.drawable.marker_green)
                         )
                     )
-                        .title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
+                        .title("${order.order_id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -197,7 +202,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                             getCustomIcon(order.num, R.drawable.marker_violet)
                         )
                     )
-                        .title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
+                        .title("${order.order_id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -207,7 +212,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                             getCustomIcon(order.num, R.drawable.marker_blue)
                         )
                     )
-                        .title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
+                        .title("${order.order_id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -217,7 +222,7 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
                             getCustomIcon(order.num, R.drawable.marker_grey)
                         )
                     )
-                        .title("${order.id};${order.num};${order.address};${order.time};${orderProduct}")
+                        .title("${order.order_id};${order.num};${order.address};${order.time};${orderProduct}")
                     mMap.addMarker(marker)
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(point, 10.0f))
                 }
@@ -227,10 +232,10 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
 
     //    Кастомные иконки с номерами точек
     @SuppressLint("UseCompatLoadingForDrawables")
-    private fun getCustomIcon(count: Int, icon: Int): Bitmap? {
+    private fun getCustomIcon(count: String, icon: Int): Bitmap? {
         val generator = IconGenerator(this)
         generator.setTextAppearance(this, R.style.TextMarker)
         generator.setBackground(this.resources.getDrawable(icon))
-        return generator.makeIcon(count.toString())
+        return generator.makeIcon(count)
     }
 }

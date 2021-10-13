@@ -25,9 +25,9 @@ import java.util.*
  **/
 
 @BindingAdapter("titleOrder")
-fun TextView.bindDateTitle(order: Order?) {
+fun TextView.bindDateTitle(order: OrderNewItem?) {
     if (order != null) {
-        "№ ${order.id}, ${order.time}".also { text = it }
+        "№ ${order.order_id}, ${order.time}".also { text = it }
     }
 }
 
@@ -37,41 +37,52 @@ fun TextView.bindAddressOrder(address: String?) {
 }
 
 @BindingAdapter("productOrder")
-fun TextView.bindProductThis(products: List<Product>?) {
-    when (products == null) {
-        true -> {
-            visibility = View.GONE
-        }
-        else -> {
-            visibility = View.VISIBLE
-            if (products.size > 1) {
-                text = ""
-                for (product in products) {
-                    append("${product.name} - ${product.count}шт.\n")
-                }
-            } else {
-                "${products[0].name} - ${products[0].count}шт.".also {
-                    text = it
+fun TextView.bindProductThis(order: OrderNewItem?) {
+    if (order != null) {
+        val products = order.order
+        when (order.type == "1") {
+            true -> {
+                visibility = View.GONE
+            }
+            else -> {
+                visibility = View.VISIBLE
+                if (products.size > 1) {
+                    text = ""
+                    for (product in products) {
+                        append("${product.name} - ${product.count}шт.\n")
+                    }
+                } else {
+                    "${products[0].name} - ${products[0].count}шт.".also {
+                        text = it
+                    }
                 }
             }
         }
     }
+}
 
+@BindingAdapter("setTypeOrder")
+fun TextView.bindTypeOrder(order: OrderNewItem?) {
+    visibility = if (order?.type == "1") {
+        View.GONE
+    } else View.VISIBLE
 }
 
 @BindingAdapter("cashOrder")
-fun TextView.bindCashOrder(order: Order?) {
+fun TextView.bindCashOrder(order: OrderNewItem?) {
     if (order != null) {
-        if (order.cash.isNotBlank()) {
+        if (order.cash?.isNotBlank() == true) {
             "Наличные: ${order.cash}".also { text = it }
         } else {
-            "Безналичные: ${order.cash_b}".also { text = it }
+            if (order.cash_b.isNullOrBlank()){
+                "Безналичные: 0".also { text = it }
+            } else "Безналичные: ${order.cash_b}".also { text = it }
         }
     } else text = ""
 }
 
 @BindingAdapter("pointNum")
-fun TextView.bindPointNum(num: Int?) {
+fun TextView.bindPointNum(num: String?) {
     if (num != null) {
         "Точка #$num".also { text = it }
     } else text = "Ошибка"
@@ -79,9 +90,16 @@ fun TextView.bindPointNum(num: Int?) {
 }
 
 @BindingAdapter("infoClient")
-fun TextView.bindInfoClient(order: Order?) {
+fun TextView.bindInfoClient(order: OrderNewItem?) {
     if (order != null) {
-        "${order.name}; \n${order.address};".also { text = it }
+        "${order.name};".also { text = it }
+    } else text = ""
+}
+
+@BindingAdapter("timeOrder")
+fun TextView.bindTimeOrder(order: OrderNewItem?) {
+    if (order != null) {
+        "${order.time};".also { text = it }
     } else text = ""
 }
 
@@ -109,21 +127,25 @@ fun TextView.bindNotice(notice: String?) {
  **/
 
 @BindingAdapter("listOrder")
-fun bindRecycleView(recyclerView: RecyclerView, data: List<Order>?) {
+fun bindRecycleView(recyclerView: RecyclerView, data: List<OrderNewItem>?) {
     val adapter = recyclerView.adapter as ListOrdersAdapter
     adapter.submitList(data)
 }
 
 @BindingAdapter("descriptionOrder")
-fun TextView.setDescriptionOrder(item: Order) {
-    "Заказ ${item.time},\n${item.address}".also { text = it }
-    for (product in item.products) {
-        append("\n${product.name} - ${product.count}шт.")
+fun TextView.setDescriptionOrder(item: OrderNewItem) {
+    if (item.type == "0") {
+        "Заказ ${item.time},\n${item.address}".also { text = it }
+        for (product in item.order) {
+            append("\n${product.name} - ${product.count}шт.")
+        }
+    } else {
+        "Поручение ${item.time},\n${item.address},\n${item.notice}".also { text = it }
     }
 }
 
 @BindingAdapter("numOrder")
-fun TextView.setNumOrder(item: Order) {
+fun TextView.setNumOrder(item: OrderNewItem) {
     text = "${item.num}"
     val time = item.time.split("-").last()
     if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) > 7200) {
@@ -161,7 +183,9 @@ fun TextView.bindAddressOrderInfo(address: String?) {
 
 @BindingAdapter("cashOrderInfo")
 fun TextView.bindCashOrderInfo(cash: String?) {
-    "Цена заказа: $cash".also { text = it }
+    if (cash.isNullOrBlank()) {
+        "Цена заказа: 0".also { text = it }
+    } else "Цена заказа: $cash".also { text = it }
 }
 
 @BindingAdapter("IvVisOfType")

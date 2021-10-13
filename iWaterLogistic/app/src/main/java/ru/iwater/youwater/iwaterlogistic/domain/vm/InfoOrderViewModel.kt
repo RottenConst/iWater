@@ -10,8 +10,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.ClientInfo
-import ru.iwater.youwater.iwaterlogistic.domain.Order
-import ru.iwater.youwater.iwaterlogistic.domain.OrderInfo
+import ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
@@ -29,8 +28,8 @@ class InfoOrderViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val _order: MutableLiveData<Order> = MutableLiveData()
-    val order: LiveData<Order>
+    private val _order: MutableLiveData<OrderNewItem> = MutableLiveData()
+    val order: LiveData<OrderNewItem>
         get() = _order
     private val _clientInfo: MutableLiveData<ClientInfo> = MutableLiveData()
     val clientInfo: LiveData<ClientInfo>
@@ -40,7 +39,7 @@ class InfoOrderViewModel @Inject constructor(
     /**
      * возвращает заказ по id
      **/
-    fun getOrderInfo2(context: Context?, id: Int) {
+    fun getOrderInfo(context: Context?, id: Int) {
         uiScope.launch {
             try {
                 val orderDetail = orderListRepository.getDBOrderOnId(id)
@@ -50,14 +49,14 @@ class InfoOrderViewModel @Inject constructor(
                     if (!orderDetail.cash.isNullOrEmpty()) {
                         orderDetail.cash = orderInfoDetail.cash
                     } else {
-                        orderDetail.cash_b = orderInfoDetail.cash
+                        orderDetail.cash_b = orderInfoDetail.cash_b
                     }
-                    if (orderDetail.location?.lat == 0.0 && orderDetail.location?.lng == 0.0) {
-                        orderDetail.location = getCoordinate(orderInfoDetail.address)
-                        orderListRepository.updateDBLocation(orderDetail, orderDetail.location)
+                    if (orderDetail.coords.isEmpty()) {
+                        orderDetail.coords = getCoordinate(orderInfoDetail.address).toString()
+                        orderListRepository.updateDBLocation(orderDetail, orderDetail.coords)
                     }
                     if (clientInfo?.fact_address?.isNotEmpty() == true) {
-                        orderDetail.address = "${clientInfo?.fact_address}"
+                        clientInfo.fact_address.also { orderDetail.address = it }
                     } else {
                         orderDetail.address = "${orderInfoDetail.address} - ${
                             orderInfoDetail.contact
@@ -92,15 +91,6 @@ class InfoOrderViewModel @Inject constructor(
             mapData.results[0].geometry.location
         } else {
             Location(0.0, 0.0)
-        }
-    }
-
-    /**
-     * сохранить заказ
-     **/
-    private fun updateOrder(order: Order) {
-        uiScope.launch {
-            orderListRepository.updateOrder(order)
         }
     }
 

@@ -6,7 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
 import ru.iwater.youwater.iwaterlogistic.R
-import ru.iwater.youwater.iwaterlogistic.Receivers.TimeNotification
+import ru.iwater.youwater.iwaterlogistic.receivers.TimeNotification
 import ru.iwater.youwater.iwaterlogistic.base.CHANNEL_SERVICE_ID
 import timber.log.Timber
 

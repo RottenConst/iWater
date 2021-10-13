@@ -2,10 +2,7 @@ package ru.iwater.youwater.iwaterlogistic.repository
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import okhttp3.MediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.bd.*
 import ru.iwater.youwater.iwaterlogistic.domain.*
 import ru.iwater.youwater.iwaterlogistic.response.ApiRequest
@@ -13,7 +10,6 @@ import ru.iwater.youwater.iwaterlogistic.response.RetrofitFactory
 import timber.log.Timber
 import java.lang.Exception
 import javax.inject.Inject
-import kotlin.coroutines.suspendCoroutine
 
 class ReportRepository @Inject constructor(
     iWaterDB: IWaterDB
@@ -21,7 +17,7 @@ class ReportRepository @Inject constructor(
     val service: ApiRequest = RetrofitFactory.makeRetrofit()
 
     private val expensesDao: ExpensesDao = iWaterDB.ExpensesDao()
-    private val orderDao: OrderDao = iWaterDB.orderDao()
+    private val orderDao: OrderNewItemDao = iWaterDB.orderNewItemDao()
     private val reportDayDao: ReportDayDao = iWaterDB.reportDayDao()
 
     /**
@@ -80,46 +76,16 @@ class ReportRepository @Inject constructor(
     /**
      * вернуть не завершенные заказы из бд
      */
-    suspend fun getDBOrders(): List<Order> = withContext(Dispatchers.Default){
+    suspend fun getDBOrders(): List<OrderNewItem> = withContext(Dispatchers.Default){
         return@withContext orderDao.load()
     }
 
-    suspend fun deleteOrder(order: Order) {
+    fun deleteOrder(order: OrderNewItem) {
         orderDao.delete(order)
     }
 
-    /**
-     * узнать остались еще активные заказы
-     */
-    suspend fun getSumCurrentOrder(): Boolean {
-        val orders = getDBOrders()
-        var size = orders.size
-        for (order in orders) {
-            if (order.status == 2) {
-                size -= 1
-            }
-        }
-        Timber.d("$size!!!!!!!!!!!")
-        return size <= 0
-    }
-
-    suspend fun getLoadCurrentOrder(session: String): List<Order> {
-        var currentOrders: List<Order> = emptyList()
-        try {
-            currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
-            if (!currentOrders.isNullOrEmpty()) {
-                var num = 0
-                return currentOrders.filter { it.status != 2 }
-            }
-        }catch (e: Exception) {
-            Timber.e(e)
-            return currentOrders
-        }
-        return currentOrders
-    }
-
-    suspend fun getLoadTotalOrder(session: String): List<Order> {
-        var currentOrders: List<Order> = emptyList()
+    suspend fun getLoadTotalOrder(session: String): List<OrderNewItem> {
+        var currentOrders: List<OrderNewItem> = emptyList()
         try {
             currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {

@@ -14,7 +14,7 @@ import ru.iwater.youwater.iwaterlogistic.databinding.FragmentOrdersListBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderLoadStatus
 import ru.iwater.youwater.iwaterlogistic.screens.main.adapter.ListOrdersAdapter
-import ru.iwater.youwater.iwaterlogistic.screens.splash.LoadMapActivity
+import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import javax.inject.Inject
 
 class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
@@ -41,12 +41,12 @@ class FragmentCurrentOrders : BaseFragment(), SwipeRefreshLayout.OnRefreshListen
         binding.lifecycleOwner = this
         binding.viewModelCurrentOrder = viewModel
         binding.listCurrentOrder.adapter = ListOrdersAdapter(ListOrdersAdapter.OnClickListener {
-            viewModel.getAboutOrder(context, it.id)
+            viewModel.getAboutOrder(context, it.order_id)
         })
         observeStatus()
         viewModel.getLoadCurrent()
         binding.btnGeneralMap.setOnClickListener {
-            val intent = Intent(this.context, LoadMapActivity::class.java)
+            val intent = Intent(this.context, MapsActivity::class.java)
             startActivity(intent)
         }
         return binding.root

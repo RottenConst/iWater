@@ -7,7 +7,7 @@
         
         <variable
             name="order"
-            type="ru.iwater.youwater.iwaterlogistic.domain.Order" />
+            type="ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem" />
     </data>
 
     <androidx.cardview.widget.CardView

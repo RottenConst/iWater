@@ -23,6 +23,7 @@ class CompleteShipActivity : BaseActivity() {
         val timeComplete = intent.getLongExtra("timeComplete", 0)
         val address = intent.getStringExtra("address")
         val error = intent.getIntExtra("error", 1)
+        val notice = intent.getStringExtra("notice")
 
         val sdf = SimpleDateFormat("HH:mm")
         val time = Date(timeComplete * 1000)
@@ -36,7 +37,7 @@ class CompleteShipActivity : BaseActivity() {
         } else {
             binding.ivComplete.setImageResource(R.drawable.ic_order_cancel_90)
             "Заказ № $id".also { binding.tvCompleteOrder.text = it }
-            binding.tvTimeComplete.text = "Отгузить не удалось"
+            "Отгузить не удалось, $notice".also { binding.tvTimeComplete.text = it }
             binding.tvAddressOrder.text =
                 "Что-то пошло не так, попробуйте отрузить еще раз"
         }

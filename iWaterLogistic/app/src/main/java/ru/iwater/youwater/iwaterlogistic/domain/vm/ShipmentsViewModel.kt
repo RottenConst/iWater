@@ -5,7 +5,6 @@ import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -28,7 +27,7 @@ enum class TypeClient { PHYSICS, JURISTIC, ERROR }
 class ShipmentsViewModel @Inject constructor(
     private val orderListRepository: OrderListRepository,
     private val completeOrdersRepository: CompleteOrdersRepository,
-    private val accountRepository: AccountRepository
+    accountRepository: AccountRepository
 ) : ViewModel() {
 
     /**
@@ -77,13 +76,13 @@ class ShipmentsViewModel @Inject constructor(
         return money
     }
 
-    fun setCompleteOrder2(context: Context?, id: Int, cash: Float, tank: Int, noticeDriver: String) {
+    private fun setCompleteOrder(context: Context?, id: Int, cash: Float, tank: Int, noticeDriver: String) {
         uiScope.launch {
             val timeComplete = Calendar.getInstance().timeInMillis / 1000
             val typeCash = _typeCash.value
             val decontrolReport = DecontrolReport(id, timeComplete, myCoordinate, tank, noticeDriver)
             if (completeOrdersRepository.addDecontrol(decontrolReport)) {
-                if (cash != null && typeCash != null) {
+                if (typeCash != null) {
                     if (isSendReportOrder(id, typeCash, cash, tank, timeComplete)) {
                         val answer = completeOrdersRepository.updateStatusOrder(id)
                         if (answer.error == 0 && answer.oper == "Запись изменена") {
@@ -95,26 +94,26 @@ class ShipmentsViewModel @Inject constructor(
                                     timeComplete,
                                     noticeDriver
                                 )
-                                setShipmentOrder(context, id, timeComplete, answer.error)
+                                setShipmentOrder(context, id, timeComplete, answer.error, "")
 
                         } else {
-                            setShipmentOrder(context, id, timeComplete, answer.error)
+                            setShipmentOrder(context, id, timeComplete, answer.error, "не удалось изменить статус")
                         }
                     } else {
-                        setShipmentOrder(context, id, timeComplete, 1)
+                        setShipmentOrder(context, id, timeComplete, 1, "Ошибка отправки данных для отчета")
                     }
                 }
             } else {
-                setShipmentOrder(context, id, timeComplete, 1)
+                setShipmentOrder(context, id, timeComplete, 1, "ошибка с таблицой контроля")
             }
         }
     }
 
     fun setEmptyBottle(context: Context?, id: Int, clientId: Int, cash: String, tank: Int, address: String, noticeDriver: String) {
         uiScope.launch {
-            val cashOrder = cash.toFloat()
-            if (orderListRepository.setEmptyBottle(clientId, tank, id, address)) {
-                setCompleteOrder2(context, id, cashOrder, tank, noticeDriver)
+            val cashOrder = if (cash.isEmpty()) 0F else cash.toFloat()
+            if (orderListRepository.setEmptyBottle(clientId, tank, id, address) || clientId == 0) {
+                setCompleteOrder(context, id, cashOrder, tank, noticeDriver)
             } else {
                 UtilsMethods.showToast(context, "Кол-во забранной тары не может превышать кол-во имеющейся у клиента!")
             }
@@ -122,22 +121,23 @@ class ShipmentsViewModel @Inject constructor(
 
     }
 
-    private fun setShipmentOrder(context: Context?, id: Int, timeComplete: Long, error: Int) {
+    private fun setShipmentOrder(context: Context?, id: Int, timeComplete: Long, error: Int, notice: String) {
         val intent = Intent(context, CompleteShipActivity::class.java)
         intent.putExtra("id", id)
         intent.putExtra("typeCash", _typeCash.value)
         intent.putExtra("timeComplete", timeComplete)
         intent.putExtra("address", _order.value?.address)
         intent.putExtra("error", error)
+        intent.putExtra("notice", notice)
         CompleteShipActivity.start(context, intent)
     }
 
     private suspend fun saveCompleteOrder(id: Int, cash: Float, typeCash: String, tank: Int, timeComplete: Long, noticeDriver: String) {
         val order = orderListRepository.getDBOrderOnId(id)
         val completeOrder = CompleteOrder(
-            order.id,
+            order.order_id,
             order.name,
-            order.products,
+            order.order,
             cash,
             typeCash,
             tank,
@@ -152,51 +152,6 @@ class ShipmentsViewModel @Inject constructor(
         )
         completeOrdersRepository.saveCompleteOrder(completeOrder)
         orderListRepository.deleteOrder(order)
-    }
-
-    fun setCompleteOrder(context: Context?, id: Int, tank: Int, noticeDriver: String) {
-        uiScope.launch {
-            val answer = completeOrdersRepository.updateStatusOrder(id)
-            val cash = _order.value?.cash?.toFloat()
-            val typeCash = _typeCash.value
-            val timeComplete = Calendar.getInstance().timeInMillis/1000
-            if (answer.error == 0 && answer.oper == "Запись изменена") {
-                if (cash != null && typeCash != null) {
-                    val order = orderListRepository.getDBOrderOnId(id)
-                    val reportOrder =
-                        DecontrolReport(id, timeComplete, myCoordinate, tank, noticeDriver)
-                    val completeOrder = CompleteOrder(
-                        order.id,
-                        order.name,
-                        order.products,
-                        cash,
-                        typeCash,
-                        tank,
-                        order.time,
-                        timeComplete,
-                        order.contact,
-                        order.notice,
-                        noticeDriver,
-                        order.period,
-                        order.address,
-                        2,
-                    )
-                    completeOrdersRepository.saveCompleteOrder(completeOrder)
-                    orderListRepository.deleteOrder(order)
-                    completeOrdersRepository.addDecontrol(
-                        reportOrder
-                    )
-                }
-            }
-
-            val intent = Intent(context, CompleteShipActivity::class.java)
-            intent.putExtra("id", id)
-            intent.putExtra("typeCash", _typeCash.value)
-            intent.putExtra("timeComplete", timeComplete)
-            intent.putExtra("address", _order.value?.address)
-            intent.putExtra("error", answer.error)
-            CompleteShipActivity.start(context, intent)
-        }
     }
 
     private suspend fun isSendReportOrder(id: Int, typeCash: String, cash: Float, tank: Int, timeComplete: Long): Boolean {

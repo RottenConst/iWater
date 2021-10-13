@@ -22,7 +22,7 @@ import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.AboutOrderFragmentBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.InfoOrderViewModel
-import ru.iwater.youwater.iwaterlogistic.screens.splash.LoadMapActivity
+import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
 import javax.inject.Inject
 
 class AboutOrderFragment : BaseFragment() {
@@ -55,7 +55,7 @@ class AboutOrderFragment : BaseFragment() {
         //достаём id заказа
         val arg = arguments
         val id = arg?.getInt("id")
-        if (id != null) viewModel.getOrderInfo2(context, id)
+        if (id != null) viewModel.getOrderInfo(context, id)
 
         //кнопка "позвонить клиенту"
         binding.btnCallClient.setOnClickListener {
@@ -64,20 +64,20 @@ class AboutOrderFragment : BaseFragment() {
 
         //кнопка "посмотреть на карте"
         binding.btnSeeOnMap.setOnClickListener {
-            val intent = Intent(this.context, LoadMapActivity::class.java)
+            val intent = Intent(this.context, MapsActivity::class.java)
             startActivity(intent)
         }
 
         //кнопка в навигатор
         binding.btnNavigator.setOnClickListener {
             val openApp = Intent(Intent.ACTION_VIEW)
-            if (viewModel.order.value?.location?.lat == 0.0 && viewModel.order.value?.location?.lng == 0.0) {
+            if (viewModel.order.value?.coords.isNullOrBlank()) {
                 Toast.makeText(this.context, "Не удалось определить координаты", Toast.LENGTH_LONG)
                     .show()
             } else {
                 openApp.data = Uri.parse(
-                    "geo:" + "${viewModel.order.value?.location?.lat}, ${
-                        viewModel.order.value?.location?.lng
+                    "geo:" + "${viewModel.order.value?.coords?.split(",")?.get(0)?.toDouble()}, ${
+                        viewModel.order.value?.coords?.split(",")?.get(1)?.toDouble()
                     }"
                 )
                 startActivity(openApp)
@@ -96,7 +96,6 @@ class AboutOrderFragment : BaseFragment() {
 
         //кнопка "отгрузить заказ"
         binding.btnToShipmentOrder.setOnClickListener {
-//            viewModel.saveOrder()
             val fragment = ShipmentsFragment.newInstance()
             fragment.arguments = arg
             activity?.supportFragmentManager?.beginTransaction()

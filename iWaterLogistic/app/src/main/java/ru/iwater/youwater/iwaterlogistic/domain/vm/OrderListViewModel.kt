@@ -14,7 +14,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.Account
 import ru.iwater.youwater.iwaterlogistic.domain.OpenDriverShift
-import ru.iwater.youwater.iwaterlogistic.domain.Order
+import ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
@@ -56,12 +56,12 @@ class OrderListViewModel @Inject constructor(
     val status: LiveData<OrderLoadStatus>
         get() = _status
 
-    private val _listOrder: MutableLiveData<List<Order>> = MutableLiveData()
-    val listOrder: LiveData<List<Order>>
+    private val _listOrder: MutableLiveData<List<OrderNewItem>> = MutableLiveData()
+    val listOrder: LiveData<List<OrderNewItem>>
         get() = _listOrder
 
-    private val _dbListOrder: MutableLiveData<List<Order>> = MutableLiveData()
-    val dbListOrder: LiveData<List<Order>>
+    private val _dbListOrder: MutableLiveData<List<OrderNewItem>> = MutableLiveData()
+    val dbListOrder: LiveData<List<OrderNewItem>>
         get() = _dbListOrder
 
 
@@ -101,7 +101,7 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun saveOrder(ordersNET: List<Order>, notCurrentId: List<Int>) {
+    private suspend fun saveOrder(ordersNET: List<OrderNewItem>, notCurrentId: List<Int>) {
         val ordersDb = orderListRepository.getDBOrders()
         if (ordersDb.isNullOrEmpty() && ordersNET.isNotEmpty()) {
             orderListRepository.saveOrders(ordersNET)
@@ -110,28 +110,28 @@ class OrderListViewModel @Inject constructor(
             while (iterator.hasNext()) {
                 val order = iterator.next()
                 for (id in notCurrentId) {
-                    if (order.id == id) orderListRepository.deleteOrder(order)
+                    if (order.order_id == id) orderListRepository.deleteOrder(order)
                 }
             }
             updateOrder(ordersNET, ordersDb)
         }
     }
 
-    private suspend fun updateOrder(ordersNET: List<Order>, ordersDB: List<Order>) {
+    private suspend fun updateOrder(ordersNET: List<OrderNewItem>, ordersDB: List<OrderNewItem>) {
         if (ordersDB.size < ordersNET.size) {
             val iterator = ordersNET.iterator()
             while (iterator.hasNext()) {
                 val order = iterator.next()
                 var count = 0
                 for (orderSaved in ordersDB) {
-                    if (order.id == orderSaved.id) {
+                    if (order.order_id == orderSaved.order_id) {
                         count += 1
-                        Timber.d("1test!!!!! $count ${order.products.size} ${orderSaved.products.size}")
-                        if (orderSaved.location?.lat == 0.0) {
+                        Timber.d("1test!!!!! $count ${order.order.size} ${orderSaved.order.size}")
+                        if (orderSaved.coords.isEmpty()) {
                             orderListRepository.updateOrder(order)
                         } else {
                             orderListRepository.updateOrder(order)
-                            orderListRepository.updateDBLocation(order, orderSaved.location)
+                            orderListRepository.updateDBLocation(order, orderSaved.coords)
                         }
                     }
                     if (count == 0) {
@@ -145,7 +145,7 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    private suspend fun updateOrder(order: Order) {
+    private suspend fun updateOrder(order: OrderNewItem) {
         orderListRepository.updateOrder(order)
     }
 
@@ -158,17 +158,17 @@ class OrderListViewModel @Inject constructor(
         }
     }
 
-    fun loadCoordinate(orders: List<Order>) {
-        uiScope.launch {
-            orders.forEach { order ->
-                if (order.location?.lat == 0.0 && order.location?.lng == 0.0) {
-                    order.location = getCoordinate(order.address)
-                    updateOrder(order)
-                }
-            }
-            _status.value = OrderLoadStatus.DONE
-        }
-    }
+//    fun loadCoordinate(orders: List<OrderNewItem>) {
+//        uiScope.launch {
+//            orders.forEach { order ->
+//                if (order.location?.lat == 0.0 && order.location?.lng == 0.0) {
+//                    order.location = getCoordinate(order.address)
+//                    updateOrder(order)
+//                }
+//            }
+//            _status.value = OrderLoadStatus.DONE
+//        }
+//    }
 
     fun getLoadOrderFromDB() {
         uiScope.launch {

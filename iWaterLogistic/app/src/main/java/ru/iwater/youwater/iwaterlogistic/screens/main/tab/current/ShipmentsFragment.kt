@@ -131,7 +131,7 @@ class ShipmentsFragment: BaseFragment() {
                 binding.cbDocYes.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
             } else {
                 if (id != null) viewModel.order.observe(this.viewLifecycleOwner, {
-                    Timber.d("SHIP ORDER = ${it.id}, ${it.client_id}, cash_b = ${it.cash_b} ; cash = ${it.cash}, ${binding.etTankToBack.text.toString()}, ${it.address} ${binding.etNoteOrderShip.text.toString()}")
+                    Timber.d("SHIP ORDER = ${it.id}, ${it.client_id}, cash_b = ${it.cash_b} ; cash = ${it.cash}, ${binding.etTankToBack.text}, ${it.address} ${binding.etNoteOrderShip.text}")
                     if (it.cash.isEmpty() || it.cash.isBlank()) {
                         viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash_b,
                             binding.etTankToBack.text.toString().toInt(),
@@ -198,7 +198,7 @@ class ShipmentsFragment: BaseFragment() {
             // Provide an additional rationale to the user. This would happen if the user denied the
             // request previously, but didn't check the "Don't ask again" checkbox.
             Timber.i("Displaying permission rationale to provide additional context.")
-            showSnackBar(R.string.permission_rationale, android.R.string.ok) {
+            android.R.string.ok.showSnackBar(R.string.permission_rationale) {
                 // Request permission
                 startLocationPermissionRequest()
             }
@@ -248,16 +248,15 @@ class ShipmentsFragment: BaseFragment() {
     }
 
     @SuppressLint("UseRequireInsteadOfGet")
-    private fun showSnackBar(
+    private fun Int.showSnackBar(
         snackStrId: Int,
-        actionStrId: Int = 0,
         listener: View.OnClickListener? = null
     ) {
         val snackBar = Snackbar.make(
-            this.context!!, view!!.findViewById(android.R.id.content), getString(snackStrId),
+            this@ShipmentsFragment.context!!, view!!.findViewById(android.R.id.content), getString(snackStrId),
             LENGTH_INDEFINITE)
-        if (actionStrId != 0 && listener != null) {
-            snackBar.setAction(getString(actionStrId), listener)
+        if (this != 0 && listener != null) {
+            snackBar.setAction(getString(this), listener)
         }
         snackBar.show()
     }

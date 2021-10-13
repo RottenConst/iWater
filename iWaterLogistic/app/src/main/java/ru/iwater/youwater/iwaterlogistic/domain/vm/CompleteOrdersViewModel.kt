@@ -13,7 +13,6 @@ import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.*
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.CompleteOrdersRepository
-import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.screens.main.tab.complete.CardCompleteActivity
 import timber.log.Timber
 import java.text.SimpleDateFormat
@@ -23,7 +22,6 @@ import javax.inject.Inject
 @OnScreen
 class CompleteOrdersViewModel @Inject constructor(
     private val completeOrdersRepository: CompleteOrdersRepository,
-    private val orderListRepository: OrderListRepository,
     accountRepository: AccountRepository
 ) : ViewModel() {
 
@@ -47,7 +45,7 @@ class CompleteOrdersViewModel @Inject constructor(
 
     init {
         val currentDate = Calendar.getInstance()
-        val formatter = SimpleDateFormat("dd/MM/yyyy")
+        val formatter = SimpleDateFormat("dd/MM/yyyy", Locale.ROOT)
         timeComplete = formatter.format(currentDate.time)
     }
     /**
@@ -77,21 +75,21 @@ class CompleteOrdersViewModel @Inject constructor(
 
     fun getLoadLostOrder() {
         uiScope.launch {
-            val orders = completeOrdersRepository.getLoadCompleteOrder(account.session).sortedBy { it.id }
+            val orders = completeOrdersRepository.getLoadCompleteOrder(account.session).sortedBy { it.order_id }
             val completeOrders = completeOrdersRepository.getAllCompleteOrders().sortedBy { it.id }
-            val lostOrder = mutableListOf<Order>()
+            val lostOrder = mutableListOf<OrderNewItem>()
             lostOrder.addAll(orders)
             if (completeOrders.isNotEmpty()) completeOrders.forEach { completeOrder ->
-                lostOrder.remove(orders.find { it.id == completeOrder.id })
+                lostOrder.remove(orders.find { it.order_id == completeOrder.id })
             }
             val savedOrders = mutableListOf<CompleteOrder>()
             if (lostOrder.isNotEmpty()) {
                 savedOrders.addAll(lostOrder.map { order ->
                     CompleteOrder(
-                        order.id,
+                        order.order_id,
                         order.name,
-                        order.products,
-                        if (order.cash.isEmpty()) order.cash_b.toFloat() else order.cash.toFloat(),
+                        order.order,
+                        if (order.cash.isNullOrEmpty()) order.cash_b?.toFloat() ?: 0F else order.cash?.toFloat() ?: 0F,
                         "-",
                         0,
                         order.time,

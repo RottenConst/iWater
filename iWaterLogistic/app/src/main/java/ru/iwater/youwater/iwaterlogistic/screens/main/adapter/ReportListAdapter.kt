@@ -5,9 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import ru.iwater.youwater.iwaterlogistic.databinding.ItemCurrentOrderBinding
 import ru.iwater.youwater.iwaterlogistic.databinding.ItemReportDayBinding
-import ru.iwater.youwater.iwaterlogistic.domain.Order
 import ru.iwater.youwater.iwaterlogistic.domain.ReportDay
 
 class ReportListAdapter(private val onClickListener: OnClickListener) : ListAdapter<ReportDay, ReportListAdapter.ReportListHolder>(ReportDiffCallback) {

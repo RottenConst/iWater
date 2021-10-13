@@ -38,7 +38,7 @@
     <string name="call_client">Позвонить</string>
     <string name="copy_address">Копировать адрес</string>
     <string name="name_order">имя товара</string>
-    <string name="price_order">цена заказа</string>
+    <string name="price_order">цена:</string>
     <string name="info_client">информация о клиенте</string>
     <string name="phone_numbers">телефоны для связи</string>
     <string name="notes_order">примичания к заказу</string>
@@ -79,7 +79,7 @@
     <string name="current_orders">Заказы</string>
     <string name="cash_many_to_report">Наличных к сдаче</string>
     <string name="reports">Oтчеты</string>
-    <string name="address_text">адрес</string>
+    <string name="address_text">адрес:</string>
     <string name="open_card_order">открыть карточку заказа</string>
     <string name="time">Время</string>
     <string name="in_navigator">В навигатор</string>
@@ -102,4 +102,10 @@
     <string name="additional_loading">Дополнительная загрузка</string>
     <string name="add">Добавить</string>
     <string name="restore">восстановить</string>
+    <string name="return_time">Когда доставить:</string>
+    <string name="client_label">Клиент:</string>
+    <string name="phone">Телефон:</string>
+    <string name="products">Товары:</string>
+    <string name="price_method">Метод оплаты:</string>
+    <string name="tank_client_return">Тары у клиента:</string>
 </resources>

@@ -1,8 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.repository
 
-import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.OpenDriverShift
 import ru.iwater.youwater.iwaterlogistic.domain.Product
@@ -23,7 +21,9 @@ class ProductRepository @Inject constructor() {
             if (!orders.isNullOrEmpty()) {
                 val currentProducts = orders.filter { it.status != 2}
                 currentProducts.forEach {
-                    products.addAll(it.products)
+                    products.addAll(it.order.filter { prduct ->
+                        prduct.name != "pusto"
+                    })
                 }
                 return products
             }

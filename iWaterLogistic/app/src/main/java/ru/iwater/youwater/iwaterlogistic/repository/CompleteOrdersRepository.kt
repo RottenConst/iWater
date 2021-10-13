@@ -37,13 +37,6 @@ class CompleteOrdersRepository @Inject constructor(
         return@withContext completeOrderDao.getCompleteOrderById(id)
     }
 
-    /**
-     * Получить все выполненные заказы из базы за выбранную дату
-     */
-    suspend fun getCompleteListOrders(): List<CompleteOrder> = withContext(Dispatchers.Default) {
-        return@withContext completeOrderDao.load()
-    }
-
     suspend fun getAllCompleteOrders():List<CompleteOrder> = withContext(Dispatchers.Default) {
         return@withContext completeOrderDao.loadAll()
     }
@@ -51,7 +44,7 @@ class CompleteOrdersRepository @Inject constructor(
     /**
      * Получить колличество выполненных заказов за выбранную дату
      */
-    suspend fun getCountCompleteOrder(date: String): Int = withContext(Dispatchers.Default) {
+    suspend fun getCountCompleteOrder(): Int = withContext(Dispatchers.Default) {
         return@withContext completeOrderDao.getCountCompleteOrder()
     }
 
@@ -65,7 +58,7 @@ class CompleteOrdersRepository @Inject constructor(
     /**
      * Получить сумму деннег из таблицы выполненных заказов
      */
-    suspend fun getSumCashFullCompleteOrder(date: String): Float = withContext(Dispatchers.Default) {
+    suspend fun getSumCashFullCompleteOrder(): Float = withContext(Dispatchers.Default) {
         return@withContext completeOrderDao.getSumCashFull()
     }
 
@@ -76,8 +69,8 @@ class CompleteOrdersRepository @Inject constructor(
         return@withContext completeOrderDao.getTankOfOrders()
     }
 
-    suspend fun getLoadCompleteOrder(session: String): List<Order> {
-        val completeOrders: List<Order>
+    suspend fun getLoadCompleteOrder(session: String): List<OrderNewItem> {
+        val completeOrders: List<OrderNewItem>
         try {
             completeOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!completeOrders.isNullOrEmpty()) {

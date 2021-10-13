@@ -7,9 +7,6 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.iwater.youwater.iwaterlogistic.databinding.ItemCompleteOrderBinding
 import ru.iwater.youwater.iwaterlogistic.domain.CompleteOrder
-import ru.iwater.youwater.iwaterlogistic.domain.Order
-import java.text.SimpleDateFormat
-import java.util.*
 
 class CompleteListOrdersAdapter(private val onClickListener: OnClickListener) :
     ListAdapter<CompleteOrder, CompleteListOrdersAdapter.CompleteListOrdersHolder>(CompleteOrderDiffCallback) {

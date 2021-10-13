@@ -16,6 +16,7 @@ class CardOrderActivity : BaseActivity() {
         val intent = intent
         val id = intent.getIntExtra("id", 0)
         Timber.d("get order id $id")
+        supportActionBar?.title = "Карточка заказа #$id"
         getFragment(id)
     }
 
