@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import ru.iwater.youwater.iwaterlogistic.BuildConfig
 import ru.iwater.youwater.iwaterlogistic.bd.IWaterDB
-import ru.iwater.youwater.iwaterlogistic.bd.OrderNewItemDao
+import ru.iwater.youwater.iwaterlogistic.bd.WaterOrderDao
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.*
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.MapData
@@ -22,44 +22,44 @@ class  OrderListRepository @Inject constructor(
 )
 {
     val service: ApiRequest = RetrofitFactory.makeRetrofit()
-    private val orderDao: OrderNewItemDao = IWaterDB.orderNewItemDao() //обьект бд
+    private val orderDao: WaterOrderDao = IWaterDB.waterOrderDao() //обьект бд
 
 
     /**
      * сохранить заказы в бд
      */
-    suspend fun saveOrders(orders: List<OrderNewItem>) {
+    suspend fun saveOrders(orders: List<WaterOrder>) {
         orderDao.saveAll(orders)
     }
 
     /**
      * сохранить заказ в бд
      */
-    suspend fun saveOrder(order: OrderNewItem) {
-        orderDao.save(order)
+    suspend fun saveOrder(waterOrder: WaterOrder) {
+        orderDao.save(waterOrder)
     }
 
-    suspend fun updateOrder(order: OrderNewItem){
-        orderDao.update(order)
+    suspend fun updateOrder(waterOrder: WaterOrder){
+        orderDao.update(waterOrder)
     }
 
-    suspend fun deleteOrder(order: OrderNewItem) = withContext(Dispatchers.Default) {
-        orderDao.delete(order)
+    suspend fun deleteOrder(waterOrder: WaterOrder) = withContext(Dispatchers.Default) {
+        orderDao.delete(waterOrder)
     }
 
     /**
      * вернуть заказы из бд
      */
-    suspend fun getDBOrders(): List<OrderNewItem> = withContext(Dispatchers.Default){
+    suspend fun getDBOrders(): List<WaterOrder> = withContext(Dispatchers.Default){
         return@withContext orderDao.load()
     }
 
-    suspend fun getUpdateDBNum(order: OrderNewItem) {
-        orderDao.updateNum(order.num, order.order_id)
+    suspend fun getUpdateDBNum(waterOrder: WaterOrder) {
+        orderDao.updateNum(waterOrder.num, waterOrder.order_id)
     }
 
-    suspend fun updateDBLocation(order: OrderNewItem, location: String?) {
-        orderDao.updateLocation(location, order.order_id)
+    suspend fun updateDBLocation(waterOrder: WaterOrder, location: String?) {
+        orderDao.updateLocation(location, waterOrder.order_id)
     }
 
     suspend fun getOpenDriverShift(openDriverShift: OpenDriverShift): Boolean {
@@ -107,12 +107,12 @@ class  OrderListRepository @Inject constructor(
     /**
      * вернуть заказы из бд по id
      */
-    suspend fun getDBOrderOnId(id: Int): OrderNewItem = withContext(Dispatchers.Default) {
+    suspend fun getDBOrderOnId(id: Int): WaterOrder = withContext(Dispatchers.Default) {
         return@withContext orderDao.getOrderOnId(id)
     }
 
     suspend fun getLoadNotCurrentOrder(session: String): List<Int> {
-        val currentOrders: List<OrderNewItem>
+        val currentOrders: List<WaterOrder>
         try {
             currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {
@@ -125,8 +125,8 @@ class  OrderListRepository @Inject constructor(
         return emptyList()
     }
 
-    suspend fun getLoadOrder(session: String): List<OrderNewItem> {
-        var currentOrders: List<OrderNewItem> = emptyList()
+    suspend fun getLoadOrder(session: String): List<WaterOrder> {
+        var currentOrders: List<WaterOrder> = emptyList()
         try {
             currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {
@@ -136,7 +136,7 @@ class  OrderListRepository @Inject constructor(
                 }.filter { it.status != 2}.map {
                     num++
                     it.num += num
-                    OrderNewItem(
+                    WaterOrder(
                         address = it.address,
                         cash = it.cash,
                         cash_b = it.cash_b,
@@ -173,12 +173,12 @@ class  OrderListRepository @Inject constructor(
     }
 
     suspend fun getCoordinates(address: String): MapData? {
-        val answer = service.getCoordinatesPlace(
-            "https://maps.googleapis.com/maps/api/place/textsearch/json",
-            address,
-            BuildConfig.GOOGLE_MAPS_API_KEY
-        )
         try {
+            val answer = service.getCoordinatesPlace(
+                "https://maps.googleapis.com/maps/api/place/textsearch/json",
+                address,
+                BuildConfig.GOOGLE_MAPS_API_KEY
+            )
             if (answer.isSuccessful) {
                 Timber.d("${answer.body()?.status}")
                 return answer.body()

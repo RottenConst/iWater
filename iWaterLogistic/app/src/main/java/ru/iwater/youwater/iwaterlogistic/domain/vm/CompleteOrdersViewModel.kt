@@ -77,7 +77,7 @@ class CompleteOrdersViewModel @Inject constructor(
         uiScope.launch {
             val orders = completeOrdersRepository.getLoadCompleteOrder(account.session).sortedBy { it.order_id }
             val completeOrders = completeOrdersRepository.getAllCompleteOrders().sortedBy { it.id }
-            val lostOrder = mutableListOf<OrderNewItem>()
+            val lostOrder = mutableListOf<WaterOrder>()
             lostOrder.addAll(orders)
             if (completeOrders.isNotEmpty()) completeOrders.forEach { completeOrder ->
                 lostOrder.remove(orders.find { it.order_id == completeOrder.id })

@@ -69,8 +69,8 @@ class CompleteOrdersRepository @Inject constructor(
         return@withContext completeOrderDao.getTankOfOrders()
     }
 
-    suspend fun getLoadCompleteOrder(session: String): List<OrderNewItem> {
-        val completeOrders: List<OrderNewItem>
+    suspend fun getLoadCompleteOrder(session: String): List<WaterOrder> {
+        val completeOrders: List<WaterOrder>
         try {
             completeOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!completeOrders.isNullOrEmpty()) {

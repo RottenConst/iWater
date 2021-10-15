@@ -66,7 +66,6 @@ class ReportCheckFragment: BaseFragment() {
         binding.btnAddCheck.setOnClickListener {
             try {
                dispatchTakePictureIntent(context)
-//                startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
             }catch (e: Exception) {
                 e.printStackTrace()
                 UtilsMethods.showToast(this.context, "Не удалось добавить фотографию")

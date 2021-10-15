@@ -9,7 +9,7 @@ import ru.iwater.youwater.iwaterlogistic.util.ProductConverter
 
 
 @Entity
-data class OrderNewItem(
+data class WaterOrder(
     @SerializedName("order_id")
     @PrimaryKey(autoGenerate = false)
     val order_id: Int,
@@ -40,6 +40,6 @@ data class OrderNewItem(
     @SerializedName("date")
     val date: Int,
     @SerializedName("coords")
-    var coords: String,
+    var coords: String?,
     var num: String,
 )

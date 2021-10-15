@@ -7,12 +7,12 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ru.iwater.youwater.iwaterlogistic.databinding.ItemCurrentOrderBinding
-import ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem
+import ru.iwater.youwater.iwaterlogistic.domain.WaterOrder
 import ru.iwater.youwater.iwaterlogistic.util.HelpLoadingProgress
 import ru.iwater.youwater.iwaterlogistic.util.HelpState
 
 class ListOrdersAdapter(private val onClickListener: OnClickListener) :
-    ListAdapter<OrderNewItem, ListOrdersAdapter.ListOrderHolder>(OrderDiffCallback) {
+    ListAdapter<WaterOrder, ListOrdersAdapter.ListOrderHolder>(OrderDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListOrderHolder {
         return ListOrderHolder.from(parent)
@@ -30,8 +30,8 @@ class ListOrdersAdapter(private val onClickListener: OnClickListener) :
         RecyclerView.ViewHolder(binding.root) {
 
 
-        fun bindOrders(order: OrderNewItem) {
-            binding.order = order
+        fun bindOrders(waterOrder: WaterOrder) {
+            binding.order = waterOrder
             binding.executePendingBindings()
             if (HelpLoadingProgress.getStartDayShow(
                     binding.root.context,
@@ -52,17 +52,17 @@ class ListOrdersAdapter(private val onClickListener: OnClickListener) :
 
     }
 
-    companion object OrderDiffCallback : DiffUtil.ItemCallback<OrderNewItem>() {
-        override fun areItemsTheSame(oldItem: OrderNewItem, newItem: OrderNewItem): Boolean {
+    companion object OrderDiffCallback : DiffUtil.ItemCallback<WaterOrder>() {
+        override fun areItemsTheSame(oldItem: WaterOrder, newItem: WaterOrder): Boolean {
             return oldItem.order_id == newItem.order_id
         }
 
-        override fun areContentsTheSame(oldItem: OrderNewItem, newItem: OrderNewItem): Boolean {
-            return oldItem == newItem
+        override fun areContentsTheSame(oldItem: WaterOrder, water: WaterOrder): Boolean {
+            return oldItem == water
         }
     }
 
-    class OnClickListener(val clickListener: (order: OrderNewItem) -> Unit) {
-        fun onClick(order: OrderNewItem) = clickListener(order)
+    class OnClickListener(val clickListener: (waterOrder: WaterOrder) -> Unit) {
+        fun onClick(order: WaterOrder) = clickListener(order)
     }
 }

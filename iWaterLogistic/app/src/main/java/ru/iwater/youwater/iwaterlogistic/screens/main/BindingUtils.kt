@@ -21,13 +21,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * Detail order binding
+ * Detail waterOrder binding
  **/
 
 @BindingAdapter("titleOrder")
-fun TextView.bindDateTitle(order: OrderNewItem?) {
-    if (order != null) {
-        "№ ${order.order_id}, ${order.time}".also { text = it }
+fun TextView.bindDateTitle(waterOrder: WaterOrder?) {
+    if (waterOrder != null) {
+        "№ ${waterOrder.order_id}, ${waterOrder.time}".also { text = it }
     }
 }
 
@@ -37,10 +37,10 @@ fun TextView.bindAddressOrder(address: String?) {
 }
 
 @BindingAdapter("productOrder")
-fun TextView.bindProductThis(order: OrderNewItem?) {
-    if (order != null) {
-        val products = order.order
-        when (order.type == "1") {
+fun TextView.bindProductThis(waterOrder: WaterOrder?) {
+    if (waterOrder != null) {
+        val products = waterOrder.order
+        when (waterOrder.type == "1") {
             true -> {
                 visibility = View.GONE
             }
@@ -62,21 +62,21 @@ fun TextView.bindProductThis(order: OrderNewItem?) {
 }
 
 @BindingAdapter("setTypeOrder")
-fun TextView.bindTypeOrder(order: OrderNewItem?) {
-    visibility = if (order?.type == "1") {
+fun TextView.bindTypeOrder(waterOrder: WaterOrder?) {
+    visibility = if (waterOrder?.type == "1") {
         View.GONE
     } else View.VISIBLE
 }
 
 @BindingAdapter("cashOrder")
-fun TextView.bindCashOrder(order: OrderNewItem?) {
-    if (order != null) {
-        if (order.cash?.isNotBlank() == true) {
-            "Наличные: ${order.cash}".also { text = it }
+fun TextView.bindCashOrder(waterOrder: WaterOrder?) {
+    if (waterOrder != null) {
+        if (waterOrder.cash?.isNotBlank() == true) {
+            "Наличные: ${waterOrder.cash}".also { text = it }
         } else {
-            if (order.cash_b.isNullOrBlank()){
+            if (waterOrder.cash_b.isNullOrEmpty()){
                 "Безналичные: 0".also { text = it }
-            } else "Безналичные: ${order.cash_b}".also { text = it }
+            } else "Безналичные: ${waterOrder.cash_b}".also { text = it }
         }
     } else text = ""
 }
@@ -90,16 +90,16 @@ fun TextView.bindPointNum(num: String?) {
 }
 
 @BindingAdapter("infoClient")
-fun TextView.bindInfoClient(order: OrderNewItem?) {
-    if (order != null) {
-        "${order.name};".also { text = it }
+fun TextView.bindInfoClient(waterOrder: WaterOrder?) {
+    if (waterOrder != null) {
+        "${waterOrder.name};".also { text = it }
     } else text = ""
 }
 
 @BindingAdapter("timeOrder")
-fun TextView.bindTimeOrder(order: OrderNewItem?) {
-    if (order != null) {
-        "${order.time};".also { text = it }
+fun TextView.bindTimeOrder(waterOrder: WaterOrder?) {
+    if (waterOrder != null) {
+        "${waterOrder.time};".also { text = it }
     } else text = ""
 }
 
@@ -127,13 +127,13 @@ fun TextView.bindNotice(notice: String?) {
  **/
 
 @BindingAdapter("listOrder")
-fun bindRecycleView(recyclerView: RecyclerView, data: List<OrderNewItem>?) {
+fun bindRecycleView(recyclerView: RecyclerView, data: List<WaterOrder>?) {
     val adapter = recyclerView.adapter as ListOrdersAdapter
     adapter.submitList(data)
 }
 
 @BindingAdapter("descriptionOrder")
-fun TextView.setDescriptionOrder(item: OrderNewItem) {
+fun TextView.setDescriptionOrder(item: WaterOrder) {
     if (item.type == "0") {
         "Заказ ${item.time},\n${item.address}".also { text = it }
         for (product in item.order) {
@@ -145,7 +145,7 @@ fun TextView.setDescriptionOrder(item: OrderNewItem) {
 }
 
 @BindingAdapter("numOrder")
-fun TextView.setNumOrder(item: OrderNewItem) {
+fun TextView.setNumOrder(item: WaterOrder) {
     text = "${item.num}"
     val time = item.time.split("-").last()
     if (UtilsMethods.timeDifference(time, UtilsMethods.getFormatedDate()) > 7200) {

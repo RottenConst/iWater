@@ -10,7 +10,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.ClientInfo
-import ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem
+import ru.iwater.youwater.iwaterlogistic.domain.WaterOrder
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
@@ -28,8 +28,8 @@ class InfoOrderViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val _order: MutableLiveData<OrderNewItem> = MutableLiveData()
-    val order: LiveData<OrderNewItem>
+    private val _order: MutableLiveData<WaterOrder> = MutableLiveData()
+    val order: LiveData<WaterOrder>
         get() = _order
     private val _clientInfo: MutableLiveData<ClientInfo> = MutableLiveData()
     val clientInfo: LiveData<ClientInfo>
@@ -51,7 +51,7 @@ class InfoOrderViewModel @Inject constructor(
                     } else {
                         orderDetail.cash_b = orderInfoDetail.cash_b
                     }
-                    if (orderDetail.coords.isEmpty()) {
+                    if (orderDetail.coords.isNullOrEmpty()) {
                         orderDetail.coords = getCoordinate(orderInfoDetail.address).toString()
                         orderListRepository.updateDBLocation(orderDetail, orderDetail.coords)
                     }

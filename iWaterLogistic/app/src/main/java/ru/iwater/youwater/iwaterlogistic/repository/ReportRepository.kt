@@ -17,7 +17,7 @@ class ReportRepository @Inject constructor(
     val service: ApiRequest = RetrofitFactory.makeRetrofit()
 
     private val expensesDao: ExpensesDao = iWaterDB.ExpensesDao()
-    private val orderDao: OrderNewItemDao = iWaterDB.orderNewItemDao()
+    private val orderDao: WaterOrderDao = iWaterDB.waterOrderDao()
     private val reportDayDao: ReportDayDao = iWaterDB.reportDayDao()
 
     /**
@@ -76,16 +76,16 @@ class ReportRepository @Inject constructor(
     /**
      * вернуть не завершенные заказы из бд
      */
-    suspend fun getDBOrders(): List<OrderNewItem> = withContext(Dispatchers.Default){
+    suspend fun getDBOrders(): List<WaterOrder> = withContext(Dispatchers.Default){
         return@withContext orderDao.load()
     }
 
-    fun deleteOrder(order: OrderNewItem) {
-        orderDao.delete(order)
+    fun deleteOrder(waterOrder: WaterOrder) {
+        orderDao.delete(waterOrder)
     }
 
-    suspend fun getLoadTotalOrder(session: String): List<OrderNewItem> {
-        var currentOrders: List<OrderNewItem> = emptyList()
+    suspend fun getLoadTotalOrder(session: String): List<WaterOrder> {
+        var currentOrders: List<WaterOrder> = emptyList()
         try {
             currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
             if (!currentOrders.isNullOrEmpty()) {

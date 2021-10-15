@@ -107,7 +107,7 @@ class RestoreViewModel @Inject constructor(
     fun setEmptyBottle(context: Context?, id: Int, clientId: Int, cash: String, tank: Int, address: String, noticeDriver: String) {
         uiScope.launch {
             val cashOrder = cash.toFloat()
-            if (orderListRepository.setEmptyBottle(clientId, tank, id, address)) {
+            if (orderListRepository.setEmptyBottle(clientId, tank, id, address) || clientId == 0) {
                 setCompleteOrder(context, id, cashOrder, tank, noticeDriver)
             } else {
                 UtilsMethods.showToast(context, "Кол-во забранной тары не может превышать кол-во имеющейся у клиента!")

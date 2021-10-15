@@ -28,7 +28,7 @@ interface ApiRequest {
     suspend fun getDriverOrders(
         @Header("X-Authorization") key: String,
         @Path("session") session: String
-    ): List<OrderNewItem>
+    ): List<WaterOrder>
 
     /**
      * получить подробную информацию о заказе по его id

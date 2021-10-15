@@ -8,12 +8,11 @@ import ru.iwater.youwater.iwaterlogistic.domain.*
 import ru.iwater.youwater.iwaterlogistic.util.CoordinateConverter
 import ru.iwater.youwater.iwaterlogistic.util.ProductConverter
 
-@Database(version = 2,
-    entities = [OrderNewItem::class, Order::class, CompleteOrder::class, ReportDay::class, Expenses::class],)
+@Database(version = 3,
+    entities = [WaterOrder::class, CompleteOrder::class, ReportDay::class, Expenses::class],)
 @TypeConverters(ProductConverter::class, CoordinateConverter::class)
 abstract class IWaterDB : RoomDatabase() {
-    abstract fun orderNewItemDao(): OrderNewItemDao
-    abstract fun orderDao(): OrderDao
+    abstract fun waterOrderDao(): WaterOrderDao
     abstract fun completeOrderDao(): CompleteOrderDao
     abstract fun reportDayDao(): ReportDayDao
     abstract fun ExpensesDao(): ExpensesDao

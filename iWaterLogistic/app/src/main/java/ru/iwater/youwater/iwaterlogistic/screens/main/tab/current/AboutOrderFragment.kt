@@ -23,6 +23,7 @@ import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.AboutOrderFragmentBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.InfoOrderViewModel
 import ru.iwater.youwater.iwaterlogistic.screens.map.MapsActivity
+import ru.iwater.youwater.iwaterlogistic.screens.splash.LoadMapActivity
 import javax.inject.Inject
 
 class AboutOrderFragment : BaseFragment() {
@@ -64,7 +65,7 @@ class AboutOrderFragment : BaseFragment() {
 
         //кнопка "посмотреть на карте"
         binding.btnSeeOnMap.setOnClickListener {
-            val intent = Intent(this.context, MapsActivity::class.java)
+            val intent = Intent(this.context, LoadMapActivity::class.java)
             startActivity(intent)
         }
 

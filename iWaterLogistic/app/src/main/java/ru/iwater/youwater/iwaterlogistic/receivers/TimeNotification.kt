@@ -8,7 +8,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.domain.NotifyOrder
-import ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem
+import ru.iwater.youwater.iwaterlogistic.domain.WaterOrder
 import ru.iwater.youwater.iwaterlogistic.repository.AccountRepository
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
 import ru.iwater.youwater.iwaterlogistic.util.NotificationSender
@@ -28,8 +28,8 @@ class TimeNotification : BroadcastReceiver() {
     }
 
 
-    private lateinit var ordersNet: List<OrderNewItem>
-    private lateinit var dbOrders: List<OrderNewItem>
+    private lateinit var ordersNet: List<WaterOrder>
+    private lateinit var dbOrders: List<WaterOrder>
 
     private lateinit var notificationSender: NotificationSender
 

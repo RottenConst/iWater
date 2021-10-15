@@ -27,7 +27,7 @@ import ru.iwater.youwater.iwaterlogistic.R
 import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseActivity
 import ru.iwater.youwater.iwaterlogistic.databinding.ActivityMapsBinding
-import ru.iwater.youwater.iwaterlogistic.domain.OrderNewItem
+import ru.iwater.youwater.iwaterlogistic.domain.WaterOrder
 import ru.iwater.youwater.iwaterlogistic.domain.vm.OrderListViewModel
 import ru.iwater.youwater.iwaterlogistic.util.UtilsMethods
 import timber.log.Timber
@@ -149,10 +149,12 @@ class MapsActivity : BaseActivity(), OnMapReadyCallback {
     }
 
 
-    private fun getMarker(orders: List<OrderNewItem>) {
+    private fun getMarker(orders: List<WaterOrder>) {
         for (order in orders) {
-            Timber.i("${order.coords.split(",")[0]} ${order.coords.split(",")[1]}")
-            val point = LatLng(order.coords.split(",")[0].toDouble(), order.coords.split(",")[1].toDouble())
+            Timber.i("${order.coords?.split(",")?.get(0)} ${order.coords?.split(",")?.get(1)}")
+            val lat = order.coords?.split(",")?.get(0)?.toDouble() ?: 0.0
+            val lng = order.coords?.split(",")?.get(1)?.toDouble() ?: 0.0
+            val point = LatLng(lat, lng)
             val hour = order.time.split("-").last()
             Timber.i("Time - $hour")
             val color = hour.split(":")[0].toInt()
