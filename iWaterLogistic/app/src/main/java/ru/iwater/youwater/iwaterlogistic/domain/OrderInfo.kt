@@ -21,4 +21,5 @@ data class OrderInfo(
     val cash_b : String,
     val driver : Int,
     val status : Int,
+    val type: String
 )

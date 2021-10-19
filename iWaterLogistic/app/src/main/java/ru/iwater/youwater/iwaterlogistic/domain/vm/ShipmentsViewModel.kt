@@ -76,14 +76,14 @@ class ShipmentsViewModel @Inject constructor(
         return money
     }
 
-    private fun setCompleteOrder(context: Context?, id: Int, cash: Float, tank: Int, noticeDriver: String) {
+    private fun setCompleteOrder(context: Context?, id: Int, cash: Float, tank: Int, noticeDriver: String, type: String) {
         uiScope.launch {
             val timeComplete = Calendar.getInstance().timeInMillis / 1000
             val typeCash = _typeCash.value
             val decontrolReport = DecontrolReport(id, timeComplete, myCoordinate, tank, noticeDriver)
             if (completeOrdersRepository.addDecontrol(decontrolReport)) {
                 if (typeCash != null) {
-                    if (isSendReportOrder(id, typeCash, cash, tank, timeComplete)) {
+                    if (isSendReportOrder(id, typeCash, cash, tank, timeComplete, type)) {
                         val answer = completeOrdersRepository.updateStatusOrder(id)
                         if (answer.error == 0 && answer.oper == "Запись изменена") {
                                 saveCompleteOrder(
@@ -109,11 +109,11 @@ class ShipmentsViewModel @Inject constructor(
         }
     }
 
-    fun setEmptyBottle(context: Context?, id: Int, clientId: Int, cash: String, tank: Int, address: String, noticeDriver: String) {
+    fun setEmptyBottle(context: Context?, id: Int, clientId: Int, cash: String, tank: Int, address: String, noticeDriver: String, type: String) {
         uiScope.launch {
             val cashOrder = if (cash.isEmpty()) 0F else cash.toFloat()
             if (orderListRepository.setEmptyBottle(clientId, tank, id, address) || clientId == 0) {
-                setCompleteOrder(context, id, cashOrder, tank, noticeDriver)
+                setCompleteOrder(context, id, cashOrder, tank, noticeDriver, type)
             } else {
                 UtilsMethods.showToast(context, "Кол-во забранной тары не может превышать кол-во имеющейся у клиента!")
             }
@@ -154,7 +154,7 @@ class ShipmentsViewModel @Inject constructor(
         orderListRepository.deleteOrder(order)
     }
 
-    private suspend fun isSendReportOrder(id: Int, typeCash: String, cash: Float, tank: Int, timeComplete: Long): Boolean {
+    private suspend fun isSendReportOrder(id: Int, typeCash: String, cash: Float, tank: Int, timeComplete: Long, type: String): Boolean {
         val typeClient = if (_typeClient.value == PHYSICS) "0" else "1"
         val reportOrder = ReportOrder(
             company_id = account.company,
@@ -168,7 +168,8 @@ class ShipmentsViewModel @Inject constructor(
             payment = cash,
             number_containers = tank,
             orders_delivered = getCountCompleteOrder(),
-            total_money = getTotalMoney() + cash
+            total_money = getTotalMoney() + cash,
+            type = type.toInt()
         )
         return completeOrdersRepository.addReport(reportOrder)
     }

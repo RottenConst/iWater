@@ -136,12 +136,12 @@ class ShipmentsFragment: BaseFragment() {
                         viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash_b,
                             binding.etTankToBack.text.toString().toInt(),
                             it.address,
-                            binding.etNoteOrderShip.text.toString())
+                            binding.etNoteOrderShip.text.toString(), it.type)
                     } else {
                         viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash,
                             binding.etTankToBack.text.toString().toInt(),
                             it.address,
-                            binding.etNoteOrderShip.text.toString())
+                            binding.etNoteOrderShip.text.toString(), it.type)
                     }
                 })
             }

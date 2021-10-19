@@ -25,7 +25,6 @@ import ru.iwater.youwater.iwaterlogistic.base.App
 import ru.iwater.youwater.iwaterlogistic.base.BaseFragment
 import ru.iwater.youwater.iwaterlogistic.databinding.RestoreOrderFragmentBinding
 import ru.iwater.youwater.iwaterlogistic.domain.vm.RestoreViewModel
-import ru.iwater.youwater.iwaterlogistic.domain.vm.ShipmentsViewModel
 import ru.iwater.youwater.iwaterlogistic.domain.vm.TypeClient
 import ru.iwater.youwater.iwaterlogistic.screens.main.MainActivity
 import timber.log.Timber
@@ -141,12 +140,12 @@ class RestoreOrderFragment : BaseFragment() {
                         viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash_b,
                             binding.etTankRestore.text.toString().toInt(),
                             it.address,
-                            binding.etNoteOrderRestore.text.toString())
+                            binding.etNoteOrderRestore.text.toString(), it.type)
                     } else {
                         viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash,
                             binding.etTankRestore.text.toString().toInt(),
                             it.address,
-                            binding.etNoteOrderRestore.text.toString())
+                            binding.etNoteOrderRestore.text.toString(), it.type)
                     }
                 })
             }
