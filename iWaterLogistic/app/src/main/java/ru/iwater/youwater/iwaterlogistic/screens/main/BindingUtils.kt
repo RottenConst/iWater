@@ -27,7 +27,7 @@ import java.util.*
 @BindingAdapter("titleOrder")
 fun TextView.bindDateTitle(waterOrder: WaterOrder?) {
     if (waterOrder != null) {
-        "№ ${waterOrder.order_id}, ${waterOrder.time}".also { text = it }
+        "Карточка заказа № ${waterOrder.order_id};".also { text = it }
     }
 }
 

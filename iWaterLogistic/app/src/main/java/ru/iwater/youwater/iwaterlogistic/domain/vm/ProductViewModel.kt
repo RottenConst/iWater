@@ -63,6 +63,21 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    fun checkShift(context: Context) {
+        viewModelScope.launch {
+            when (productRepository.checkShift(account.id)) {
+                "true" -> {
+                    openDriverShift(context)
+                }
+                "false" -> {
+                    UtilsMethods.showToast(context, "Пока вы не закроете смену у вас не появятся заказы за слкдующий день")
+                    openDriverDay(context)
+                }
+                else -> UtilsMethods.showToast(context, "Проблемы с интернетом")
+            }
+        }
+    }
+
     fun openDriverShift(context: Context) {
         viewModelScope.launch {
             val driverShift = OpenDriverShift(

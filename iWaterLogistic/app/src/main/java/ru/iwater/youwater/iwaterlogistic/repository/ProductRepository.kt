@@ -69,4 +69,15 @@ class ProductRepository @Inject constructor() {
         }
         return message
     }
+
+    suspend fun checkShift(idDriver: Int): String? {
+        try {
+            val message = service.checkShiftDriver("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", idDriver)
+            Timber.i("Shift is close? $message")
+            return message
+        }catch (e: Exception) {
+            Timber.e(e)
+        }
+        return null
+    }
 }

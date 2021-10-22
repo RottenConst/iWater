@@ -69,7 +69,7 @@ class LoadDriveFragment : BaseFragment() {
         }
         binding?.btnStart?.setOnClickListener {
             val context = this.context
-            if (context != null) viewModel.openDriverShift(context)
+            if (context != null) viewModel.checkShift(context)
             this.activity?.finish()
         }
 

@@ -163,4 +163,10 @@ interface ApiRequest {
         @Header("X-Authorization") key: String,
         @Path("id") idOrder: Int?
     ): ReportOrder?
+
+    @GET("iwater/check_shift_closure/{id_driver}")
+    suspend fun checkShiftDriver(
+        @Header("X-Authorization") key: String,
+        @Path("id_driver") idDriver: Int
+    ):String?
 }
