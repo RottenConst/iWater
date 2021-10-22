@@ -21,8 +21,8 @@ android {
         vectorDrawables.useSupportLibrary = true
         minSdkVersion 19
         targetSdkVersion 31
-        versionCode 44
-        versionName "4.2.3"
+        versionCode 45
+        versionName "4.3.3"
         manifestPlaceholders = [ GOOGLE_MAPS_API_KEY:getApiKey()]
 
         multiDexEnabled true

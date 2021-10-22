@@ -109,9 +109,9 @@ class ShipmentsViewModel @Inject constructor(
         }
     }
 
-    fun setEmptyBottle(context: Context?, id: Int, clientId: Int, cash: String, tank: Int, address: String, noticeDriver: String, type: String) {
+    fun setEmptyBottle(context: Context?, id: Int, clientId: Int, cash: String?, tank: Int, address: String, noticeDriver: String, type: String) {
         uiScope.launch {
-            val cashOrder = if (cash.isEmpty()) 0F else cash.toFloat()
+            val cashOrder = if (cash.isNullOrEmpty()) 0F else cash.toFloat()
             if (orderListRepository.setEmptyBottle(clientId, tank, id, address) || clientId == 0) {
                 setCompleteOrder(context, id, cashOrder, tank, noticeDriver, type)
             } else {
