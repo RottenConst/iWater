@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.OpenDriverShift
@@ -80,17 +81,20 @@ class ProductViewModel @Inject constructor(
 
     fun openDriverShift(context: Context) {
         viewModelScope.launch {
+            val unix = System.currentTimeMillis() / 1000L
             val driverShift = OpenDriverShift(
                 account.id,
                 account.login,
                 account.company,
-                Calendar.getInstance().timeInMillis.toString(),
+                unix.toString(),
                 UtilsMethods.getTodayDateString(),
                 account.session
             )
             val message = productRepository.openDriverShift(driverShift)
             Timber.i("dasdadsasdadsadsadasda $message")
+            delay(1000L)
             if (message == "Status open shift sent" || message?.isEmpty() == true) {
+
                 openDriverDay(context)
             }
             else {

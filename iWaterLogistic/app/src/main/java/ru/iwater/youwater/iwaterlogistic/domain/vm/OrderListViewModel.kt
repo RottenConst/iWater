@@ -66,12 +66,13 @@ class OrderListViewModel @Inject constructor(
 
 
     fun getWorkShift(context: Context?, activity: FragmentActivity?) {
+        val unix = System.currentTimeMillis() / 1000L
         uiScope.launch {
             val driverShift = OpenDriverShift(
                 account.id,
                 account.login,
                 account.company,
-                Calendar.getInstance().timeInMillis.toString(),
+                unix.toString(),
                 UtilsMethods.getTodayDateString(),
                 account.session
             )

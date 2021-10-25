@@ -115,7 +115,7 @@ class ShipmentsViewModel @Inject constructor(
             if (orderListRepository.setEmptyBottle(clientId, tank, id, address) || clientId == 0) {
                 setCompleteOrder(context, id, cashOrder, tank, noticeDriver, type)
             } else {
-                UtilsMethods.showToast(context, "Кол-во забранной тары не может превышать кол-во имеющейся у клиента!")
+                UtilsMethods.showToast(context, "ОШИБКА")
             }
         }
 

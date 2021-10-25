@@ -169,4 +169,10 @@ interface ApiRequest {
         @Header("X-Authorization") key: String,
         @Path("id_driver") idDriver: Int
     ):String?
+
+    @POST("iwater/products_of_the_day")
+    suspend fun getProduct(
+        @Header("X-Authorization") key: String,
+        @Body driverInfo: JsonObject
+    ): List<Product>
 }

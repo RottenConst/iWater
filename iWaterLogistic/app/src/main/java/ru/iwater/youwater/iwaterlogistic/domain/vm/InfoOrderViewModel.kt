@@ -44,6 +44,7 @@ class InfoOrderViewModel @Inject constructor(
             try {
                 val orderDetail = orderListRepository.getDBOrderOnId(id)
                 val orderInfoDetail = orderListRepository.getLoadOrderInfo(id)
+                Timber.d("client = ${orderInfoDetail?.client_id} ${orderDetail.address}")
                 val clientInfo = orderListRepository.getAddressBottle(orderInfoDetail?.client_id, orderDetail.address)
                 if (orderInfoDetail != null) {
                     if (!orderDetail.cash.isNullOrEmpty()) {

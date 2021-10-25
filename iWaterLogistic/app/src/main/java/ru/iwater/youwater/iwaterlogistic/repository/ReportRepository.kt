@@ -156,4 +156,17 @@ class ReportRepository @Inject constructor(
         }
         return false
     }
+
+    suspend fun getOpenLastShiftDay(): String? {
+        try {
+            val list = service.getWorkShift("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX")
+            val session = list.filter { !it?.session.isNullOrEmpty() }
+            if (!session.isNullOrEmpty()) {
+                return session.last()?.date
+            }
+        }catch (e: Exception) {
+            Timber.e(e)
+        }
+        return ""
+    }
 }

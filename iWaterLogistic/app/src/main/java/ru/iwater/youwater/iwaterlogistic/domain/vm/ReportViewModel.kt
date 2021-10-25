@@ -209,16 +209,21 @@ class ReportViewModel @Inject constructor(
 
     private fun closeShift() {
         uiScope.launch {
-            val closeDriverShift = CloseDriverShift (
-                idDriver,
-                Calendar.getInstance().timeInMillis.toString(),
-                timeComplete
-                    )
-            if (reportRepository.closeDriverShift(closeDriverShift)) {
-                _status.value = Status.DONE
-            } else {
-                _status.value = Status.ERROR
+            val unix = System.currentTimeMillis() / 1000L
+            val date = reportRepository.getOpenLastShiftDay()
+            if (date != null) {
+                val closeDriverShift = CloseDriverShift(
+                    idDriver,
+                    unix.toString(),
+                    date
+                )
+                if (reportRepository.closeDriverShift(closeDriverShift)) {
+                    _status.value = Status.DONE
+                } else {
+                    _status.value = Status.ERROR
+                }
             }
+
         }
     }
 
