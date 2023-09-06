@@ -18,11 +18,11 @@ class NotificationSender(private val context: Context?) {
     var notificationIntent: Intent = Intent(context, MainActivity::class.java)
     var notificationManager: NotificationManager? = context?.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     var notificationChannel: NotificationChannel? = null
-    var contentIntent: PendingIntent = PendingIntent.getActivity(
+    private var contentIntent: PendingIntent = PendingIntent.getActivity(
         context,
         0,
         notificationIntent,
-        PendingIntent.FLAG_UPDATE_CURRENT
+        PendingIntent.FLAG_MUTABLE
     )
 
     fun sendNotification(text: String?, NOTIFY_ID: Int, isNotify: Boolean) {

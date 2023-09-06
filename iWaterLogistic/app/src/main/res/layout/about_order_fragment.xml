@@ -72,7 +72,7 @@
                     app:layout_constraintBaseline_toBaselineOf="@+id/textView9"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/textView9"
-                    app:phoneClient="@{viewModelDetail.order.contact}" />
+                    app:phoneClient="@{viewModelDetail.order.mobile}" />
 
                 <ImageView
                     android:id="@+id/iv_note_order"

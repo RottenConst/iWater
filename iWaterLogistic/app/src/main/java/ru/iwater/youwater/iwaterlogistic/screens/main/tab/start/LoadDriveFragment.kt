@@ -45,23 +45,23 @@ class LoadDriveFragment : BaseFragment() {
         binding?.viewModel = viewModel
         binding?.rvTotalLoad?.adapter = adapter
         binding?.rvAdvancedAdapter?.adapter = advancedAdapter
-        viewModel.product.observe(this.viewLifecycleOwner, {
+        viewModel.product.observe(this.viewLifecycleOwner) {
             var count = 0
             it.forEach { product ->
                 count += product.count
             }
             binding?.tvTotalLoadCount?.text = count.toString()
             adapter.submitList(it)
-        })
+        }
 
-        viewModel.advancedProduct.observe(this.viewLifecycleOwner, {
+        viewModel.advancedProduct.observe(this.viewLifecycleOwner) {
             var count = 0
             it.forEach { product ->
                 count += product.count
             }
             binding?.tvAdvancedCount?.text = count.toString()
             advancedAdapter.submitList(it)
-        })
+        }
         if (visibleButton == true) {
             binding?.btnStart?.visibility = View.VISIBLE
         } else {

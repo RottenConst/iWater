@@ -6,7 +6,7 @@
         android:id="@+id/log_out_menu"
         android:icon="@drawable/ic_logout"
         android:orderInCategory="1"
-        android:title="Item"
+        android:title="Item_exit"
         app:showAsAction="always" />
 
     <item

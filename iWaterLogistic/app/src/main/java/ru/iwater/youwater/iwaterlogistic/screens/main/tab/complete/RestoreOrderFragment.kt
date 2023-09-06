@@ -16,8 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import ru.iwater.youwater.iwaterlogistic.R
@@ -41,12 +39,12 @@ class RestoreOrderFragment : BaseFragment() {
     private val screenComponent = App().buildScreenComponent()
 
     private var documentsIsChecked: Boolean? = null
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
+//    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         screenComponent.inject(this)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(screenComponent.appContext())
+//        fusedLocationClient = LocationServices.getFusedLocationProviderClient(screenComponent.appContext())
     }
 
     override fun onCreateView(
@@ -62,7 +60,7 @@ class RestoreOrderFragment : BaseFragment() {
         val id = arg?.getInt("id")
         viewModel.getOrderInfo(context, id)
         viewModel.getTypeClient(context, id)
-        initDocuments(binding)
+//        initDocuments(binding)
 
         binding.radioCashGroupRestore.setOnCheckedChangeListener { _, checkedId ->
             binding.radioCashGroupRestore.setBackgroundColor(
@@ -116,39 +114,39 @@ class RestoreOrderFragment : BaseFragment() {
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                showSnack("Включите GPS")
+//                showSnack("Включите GPS")
             }
 
-            if (binding.etTankRestore.text.toString().isEmpty() && viewModel.typeCash.value == null) {
-                showSnack("Укажиете количество бутылок к возврату и тип оплаты")
-                binding.radioCashGroupRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
-                binding.etTankRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
-            } else if (binding.etTankRestore.text.toString().isEmpty()) {
-                showSnack("Укажиете количество бутылок к возврату и тип оплаты")
-                binding.etTankRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
-            } else if (viewModel.typeCash.value == null) {
-                showSnack("Укажиете тип оплаты")
-                binding.radioCashGroupRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
-            } else if (documentsIsChecked == null && viewModel.typeClient.value == TypeClient.JURISTIC){
-                showSnack("Укажиете подписаны ли документы")
-                binding.cbDocNoRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
-                binding.cbDocYesRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
-            } else {
-                if (id != null) viewModel.order.observe(this.viewLifecycleOwner, {
-                    Timber.d("SHIP ORDER = ${it.id}, ${it.client_id}, cash_b = ${it.cash_b} ; cash = ${it.cash}, ${binding.etTankRestore.text.toString()}, ${it.address} ${binding.etNoteOrderRestore.text.toString()}")
-                    if (it.cash.isEmpty() || it.cash.isBlank()) {
-                        viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash_b,
-                            binding.etTankRestore.text.toString().toInt(),
-                            it.address,
-                            binding.etNoteOrderRestore.text.toString(), it.type)
-                    } else {
-                        viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash,
-                            binding.etTankRestore.text.toString().toInt(),
-                            it.address,
-                            binding.etNoteOrderRestore.text.toString(), it.type)
-                    }
-                })
-            }
+//            if (binding.etTankRestore.text.toString().isEmpty() && viewModel.typeCash.value == null) {
+//                showSnack("Укажиете количество бутылок к возврату и тип оплаты")
+//                binding.radioCashGroupRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
+//                binding.etTankRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
+//            } else if (binding.etTankRestore.text.toString().isEmpty()) {
+//                showSnack("Укажиете количество бутылок к возврату и тип оплаты")
+//                binding.etTankRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
+//            } else if (viewModel.typeCash.value == null) {
+//                showSnack("Укажиете тип оплаты")
+//                binding.radioCashGroupRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
+//            } else if (documentsIsChecked == null && viewModel.typeClient.value == TypeClient.JURISTIC){
+//                showSnack("Укажиете подписаны ли документы")
+//                binding.cbDocNoRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
+//                binding.cbDocYesRestore.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.shipmentBackground))
+//            } else {
+//                if (id != null) viewModel.order.observe(this.viewLifecycleOwner, {
+//                    Timber.d("SHIP ORDER = ${it.id}, ${it.client_id}, cash_b = ${it.cash_b} ; cash = ${it.cash}, ${binding.etTankRestore.text.toString()}, ${it.address} ${binding.etNoteOrderRestore.text.toString()}")
+//                    if (it.cash.isEmpty() || it.cash.isBlank()) {
+//                        viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash_b,
+//                            binding.etTankRestore.text.toString().toInt(),
+//                            it.address,
+//                            binding.etNoteOrderRestore.text.toString(), it.type)
+//                    } else {
+//                        viewModel.setEmptyBottle(this.context, it.id, it.client_id, it.cash,
+//                            binding.etTankRestore.text.toString().toInt(),
+//                            it.address,
+//                            binding.etNoteOrderRestore.text.toString(), it.type)
+//                    }
+//                })
+//            }
         }
 
         binding.btnNoRestoreOrder.setOnClickListener {
@@ -189,108 +187,108 @@ class RestoreOrderFragment : BaseFragment() {
 
     @SuppressLint("MissingPermission")
     private fun getLastLocation() {
-        fusedLocationClient.lastLocation.addOnCompleteListener { taskLocation ->
-            if (taskLocation.isSuccessful && taskLocation.result !== null) {
-                val location = taskLocation.result
-                viewModel.setMyCoordinate("${location.latitude}-${location.longitude}")
-            } else {
-                Timber.w(taskLocation.exception, "getLastLocation:exception")
-            }
+//        fusedLocationClient.lastLocation.addOnCompleteListener { taskLocation ->
+//            if (taskLocation.isSuccessful && taskLocation.result !== null) {
+//                val location = taskLocation.result
+//                viewModel.setMyCoordinate("${location.latitude}-${location.longitude}")
+//            } else {
+//                Timber.w(taskLocation.exception, "getLastLocation:exception")
+//            }
         }
     }
 
     @SuppressLint("UseRequireInsteadOfGet")
     private fun requestPermissions() {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!.parent,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )) {
+//        if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!.parent,
+//                Manifest.permission.ACCESS_COARSE_LOCATION
+//            )) {
             // Provide an additional rationale to the user. This would happen if the user denied the
             // request previously, but didn't check the "Don't ask again" checkbox.
-            Timber.i("Displaying permission rationale to provide additional context.")
-            showSnackBar(R.string.permission_rationale, android.R.string.ok) {
+//            Timber.i("Displaying permission rationale to provide additional context.")
+//            showSnackBar(R.string.permission_rationale, android.R.string.ok) {
                 // Request permission
-                startLocationPermissionRequest()
+//                startLocationPermissionRequest()
             }
 
-        } else {
+//        } else {
             // Request permission. It's possible this can be auto answered if device policy
             // sets the permission in a given state or the user denied the permission
             // previously and checked "Never ask again".
-            Timber.i("Requesting permission")
-            startLocationPermissionRequest()
-        }
-    }
+//            Timber.i("Requesting permission")
+//            startLocationPermissionRequest()
+//        }
+//    }
     /**
      * для юр лиц устанавливается были подписаны документы или нет
      **/
-    private fun initDocuments(binding: RestoreOrderFragmentBinding) {
-        binding.cbDocYesRestore.setOnClickListener {
-            if (binding.cbDocYesRestore.isChecked) {
-                binding.apply {
-                    cbDocNoRestore.isChecked = false
-                    etNoteOrderRestore.text.clear()
-                    cbDocNoRestore.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(),
-                            R.color.transperent
-                        ))
-                    cbDocYesRestore.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(),
-                            R.color.transperent
-                        ))
-                    etNoteOrderRestore.text.insert(0, "Документы подписаны, ")
-                }
-                documentsIsChecked = true
-            } else {
-                binding.etNoteOrderRestore.text.clear()
-                documentsIsChecked = null
-            }
-        }
-        binding.cbDocNoRestore.setOnClickListener {
-            if (binding.cbDocNoRestore.isChecked) {
-                binding.apply {
-                    cbDocYesRestore.isChecked = false
-                    etNoteOrderRestore.text.clear()
-                    cbDocNoRestore.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(),
-                            R.color.transperent
-                        ))
-                    cbDocYesRestore.setBackgroundColor(
-                        ContextCompat.getColor(requireContext(),
-                            R.color.transperent
-                        ))
-                    etNoteOrderRestore.text.insert(0, "Документы не подписаны, ")
-                }
-                documentsIsChecked = false
-            } else {
-                binding.etNoteOrderRestore.text.clear()
-                documentsIsChecked = null
-            }
-        }
-    }
+//    private fun initDocuments(binding: RestoreOrderFragmentBinding) {
+//        binding.cbDocYesRestore.setOnClickListener {
+//            if (binding.cbDocYesRestore.isChecked) {
+//                binding.apply {
+//                    cbDocNoRestore.isChecked = false
+//                    etNoteOrderRestore.text.clear()
+//                    cbDocNoRestore.setBackgroundColor(
+//                        ContextCompat.getColor(requireContext(),
+//                            R.color.transperent
+//                        ))
+//                    cbDocYesRestore.setBackgroundColor(
+//                        ContextCompat.getColor(requireContext(),
+//                            R.color.transperent
+//                        ))
+//                    etNoteOrderRestore.text.insert(0, "Документы подписаны, ")
+//                }
+//                documentsIsChecked = true
+//            } else {
+//                binding.etNoteOrderRestore.text.clear()
+//                documentsIsChecked = null
+//            }
+//        }
+//        binding.cbDocNoRestore.setOnClickListener {
+//            if (binding.cbDocNoRestore.isChecked) {
+//                binding.apply {
+//                    cbDocYesRestore.isChecked = false
+//                    etNoteOrderRestore.text.clear()
+//                    cbDocNoRestore.setBackgroundColor(
+//                        ContextCompat.getColor(requireContext(),
+//                            R.color.transperent
+//                        ))
+//                    cbDocYesRestore.setBackgroundColor(
+//                        ContextCompat.getColor(requireContext(),
+//                            R.color.transperent
+//                        ))
+//                    etNoteOrderRestore.text.insert(0, "Документы не подписаны, ")
+//                }
+//                documentsIsChecked = false
+//            } else {
+//                binding.etNoteOrderRestore.text.clear()
+////                documentsIsChecked = null
+////            }
+//        }
+//    }
 
-    @SuppressLint("UseRequireInsteadOfGet")
-    private fun showSnackBar(
-        snackStrId: Int,
-        actionStrId: Int = 0,
-        listener: View.OnClickListener? = null
-    ) {
-        val snackBar = Snackbar.make(
-            this.context!!, view!!.findViewById(android.R.id.content), getString(snackStrId),
-            BaseTransientBottomBar.LENGTH_INDEFINITE
-        )
-        if (actionStrId != 0 && listener != null) {
-            snackBar.setAction(getString(actionStrId), listener)
-        }
-        snackBar.show()
-    }
-
-    private fun showSnack(message: String) {
-        this.view?.let { Snackbar.make(it, message, Snackbar.LENGTH_LONG).show() }
-    }
-
-    companion object {
-        fun newInstance(): RestoreOrderFragment {
-            return RestoreOrderFragment()
-        }
-    }
-}
+//    @SuppressLint("UseRequireInsteadOfGet")
+//    private fun showSnackBar(
+//        snackStrId: Int,
+//        actionStrId: Int = 0,
+//        listener: View.OnClickListener? = null
+//    ) {
+//        val snackBar = Snackbar.make(
+//            this.context!!, view!!.findViewById(android.R.id.content), getString(snackStrId),
+//            BaseTransientBottomBar.LENGTH_INDEFINITE
+//        )
+//        if (actionStrId != 0 && listener != null) {
+//            snackBar.setAction(getString(actionStrId), listener)
+//        }
+//        snackBar.show()
+//    }
+//
+//    private fun showSnack(message: String) {
+//        this.view?.let { Snackbar.make(it, message, Snackbar.LENGTH_LONG).show() }
+//    }
+//
+//    companion object {
+//        fun newInstance(): RestoreOrderFragment {
+//            return RestoreOrderFragment()
+//        }
+//    }
+//}

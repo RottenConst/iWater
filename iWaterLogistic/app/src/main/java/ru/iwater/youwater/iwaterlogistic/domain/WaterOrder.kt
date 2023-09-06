@@ -36,7 +36,7 @@ data class WaterOrder(
     @SerializedName("type")
     val type: String,
     @SerializedName("mobile")
-    val mobile: Int,
+    val mobile: String,
     @SerializedName("date")
     val date: Int,
     @SerializedName("coords")

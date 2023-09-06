@@ -36,8 +36,8 @@ class ShipmentsViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val _order: MutableLiveData<OrderInfo> = MutableLiveData()
-    val order: LiveData<OrderInfo>
+    private val _order: MutableLiveData<OrderInfoNew> = MutableLiveData()
+    val order: LiveData<OrderInfoNew>
         get() = _order
 
     private val _typeClient: MutableLiveData<TypeClient> = MutableLiveData()
@@ -83,7 +83,17 @@ class ShipmentsViewModel @Inject constructor(
             val decontrolReport = DecontrolReport(id, timeComplete, myCoordinate, tank, noticeDriver)
             if (completeOrdersRepository.addDecontrol(decontrolReport)) {
                 if (typeCash != null) {
-                    if (isSendReportOrder(id, typeCash, cash, tank, timeComplete, type)) {
+                    if (isSendReportOrder(
+                            id = id,
+                            typeCash = typeCash,
+                            cash = cash,
+                            tank = tank,
+                            timeComplete = timeComplete,
+                            type = type,
+                            coord = myCoordinate,
+                            noticeDriver
+                        )
+                    ) {
                         val answer = completeOrdersRepository.updateStatusOrder(id)
                         if (answer.error == 0 && answer.oper == "Запись изменена") {
                                 saveCompleteOrder(
@@ -154,7 +164,7 @@ class ShipmentsViewModel @Inject constructor(
         orderListRepository.deleteOrder(order)
     }
 
-    private suspend fun isSendReportOrder(id: Int, typeCash: String, cash: Float, tank: Int, timeComplete: Long, type: String): Boolean {
+    private suspend fun isSendReportOrder(id: Int, typeCash: String, cash: Float, tank: Int, timeComplete: Long, type: String, coord: String, notice: String): Boolean {
         val typeClient = if (_typeClient.value == PHYSICS) "0" else "1"
         val reportOrder = ReportOrder(
             company_id = account.company,
@@ -169,7 +179,9 @@ class ShipmentsViewModel @Inject constructor(
             number_containers = tank,
             orders_delivered = getCountCompleteOrder(),
             total_money = getTotalMoney() + cash,
-            type = type.toInt()
+            type = type.toInt(),
+            coord = coord,
+            notice = notice
         )
         return completeOrdersRepository.addReport(reportOrder)
     }

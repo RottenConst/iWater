@@ -104,7 +104,7 @@ class OrderListViewModel @Inject constructor(
 
     private suspend fun saveOrder(ordersNET: List<WaterOrder>, notCurrentId: List<Int>) {
         val ordersDb = orderListRepository.getDBOrders()
-        if (ordersDb.isNullOrEmpty() && ordersNET.isNotEmpty()) {
+        if (ordersDb.isEmpty() && ordersNET.isNotEmpty()) {
             orderListRepository.saveOrders(ordersNET)
         } else {
             val iterator = ordersDb.iterator()
@@ -162,11 +162,12 @@ class OrderListViewModel @Inject constructor(
     fun loadCoordinate(orders: List<WaterOrder>) {
         uiScope.launch {
             orders.forEach { order ->
-                if (order.coords.isNullOrEmpty()) {
-                    val location = getCoordinate(order.address)
-                    order.coords = "${location.lat},${location.lng}"
-                    updateOrder(order)
-                }
+//                if (order.coords.isNullOrEmpty()) {
+//                    val location = getCoordinate(order.address)
+                    Timber.d("location = ${order.coords}")
+//                    order.coords = "${location.lat},${location.lng}"
+//                    updateOrder(order)
+//                }
             }
             _status.value = OrderLoadStatus.DONE
         }

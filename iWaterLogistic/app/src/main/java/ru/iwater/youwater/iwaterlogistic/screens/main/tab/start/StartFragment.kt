@@ -86,7 +86,7 @@ class StartFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
     }
 
     private fun observeVW() {
-        viewModel.status.observe(this.viewLifecycleOwner, { status: OrderLoadStatus ->
+        viewModel.status.observe(this.viewLifecycleOwner) { status: OrderLoadStatus ->
             when (status) {
                 OrderLoadStatus.DONE -> {
                     binding?.apply {
@@ -96,16 +96,18 @@ class StartFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener {
                         rvListCurrentPreview.visibility = View.VISIBLE
                     }
                 }
+
                 OrderLoadStatus.ERROR -> {
                     binding?.apply {
                         tvTitle.text = "Плановых заказов пока нет"
                         rvListCurrentPreview.visibility = View.GONE
                     }
                 }
+
                 OrderLoadStatus.LOADING -> {
                 }
             }
-        })
+        }
     }
 
     companion object {

@@ -6,7 +6,7 @@ import androidx.annotation.Keep
 data class OrderInfo(
     val id : Int,
     val client_id : Int,
-    val mobile : Int,
+    val mobile : String,
     val local_id : String?,
     val company_id : String,
     val name : String,

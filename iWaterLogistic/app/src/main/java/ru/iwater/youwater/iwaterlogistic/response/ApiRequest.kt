@@ -12,7 +12,7 @@ interface ApiRequest {
     /**
      * авторризация
      */
-    @POST("iwater/auth/{login}/{company}/{password}/{notification}/")
+    @POST("logistic/auth/{login}/{company}/{password}/{notification}/")
     suspend fun authDriver(
         @Header("X-Authorization") key: String,
         @Path("login") login: String,
@@ -24,7 +24,7 @@ interface ApiRequest {
     /**
      * получить список заказов водителя по его сессии
      */
-    @GET("iwater/drivers_orders_instructions/{session}")
+    @GET("logistic/drivers_orders_instructions/{session}")
     suspend fun getDriverOrders(
         @Header("X-Authorization") key: String,
         @Path("session") session: String
@@ -33,16 +33,16 @@ interface ApiRequest {
     /**
      * получить подробную информацию о заказе по его id
      */
-    @GET("iwater/iwaterOrders_detail/{id}/")
+    @GET("logistic/iwaterOrders_detail/{id}/")
     suspend fun getOrderInfo(
         @Header("X-Authorization") key: String,
         @Path("id") idOrder: Int?
-    ): OrderInfo
+    ): OrderInfoNew
 
     /*
         получить тип клиента по id заказа
      */
-    @GET("iwater/getTypeClient/{id}/")
+    @GET("logistic/getTypeClient/{id}/")
     suspend fun getTypeClient(
         @Header("X-Authorization") key: String,
         @Path("id") idClient: Int?
@@ -52,7 +52,7 @@ interface ApiRequest {
         отправить отчет по конкретному заказу
      */
     @Headers( "Content-Type: application/json" )
-    @POST("iwater/iwaterDcontrol_list/")
+    @POST("logistic/iwaterDcontrol_list/")
     suspend fun reportOrderInsert(
          @Header("X-Authorization") key: String,
          @Body request: JsonObject
@@ -62,7 +62,7 @@ interface ApiRequest {
         обновить статус заказа
     */
     @Headers( "Content-Type: application/json" )
-    @POST("iwater/update-status/{id}/")
+    @POST("logistic/update-status/{id}/")
     suspend fun updateStatus(
         @Header("X-Authorization") key: String,
         @Path("id") id: Int?,
@@ -72,21 +72,21 @@ interface ApiRequest {
      * Отправить расход
      */
     @Headers( "Content-Type: application/json" )
-    @POST("iwater/iwaterExpenses_list/")
+    @POST("logistic/iwaterExpenses_list/")
     suspend fun addExpenses(
         @Header("X-Authorization") key: String,
         @Body request: Expenses
     ): Response<Expenses>
 
     @Headers( "Content-Type: application/json" )
-    @POST("iwater/iwaterReportApp_list/")
+    @POST("logistic/iwaterReportApp_list/")
     suspend fun addReport(
         @Header("X-Authorization") key: String,
         @Body request: ReportOrder
     ) : ReportDay?
 
     @Headers( "Content-Type: application/json" )
-    @POST("iwater/iwaterDriverCloseDay_list/")
+    @POST("logistic/iwaterDriverCloseDay_list/")
     suspend fun sendTotalReport(
         @Header("X-Authorization") key: String,
         @Body request: DayReport
@@ -120,57 +120,57 @@ interface ApiRequest {
     )
 
     @Headers( "Content-Type: application/json" )
-    @POST("iwater/open_work_shift/")
+    @POST("logistic/open_work_shift/")
     suspend fun openWorkShift(
         @Header("X-Authorization") key: String,
         @Body driverShift: OpenDriverShift
     ): Response<JsonObject>
 
     @Headers( "Content-Type: application/json" )
-    @POST("iwater/close_work_shift/")
+    @POST("logistic/close_work_shift/")
     suspend fun closeWorkShift(
         @Header("X-Authorization") key: String,
         @Body closeDriverShift: CloseDriverShift
     ): Response<JsonObject>
 
     @Headers( "Content-Type: application/json" )
-    @GET("iwater/open_work_shift/")
+    @GET("logistic/open_work_shift/")
     suspend fun getWorkShift(
         @Header("X-Authorization") key: String,
     ): List<OpenDriverShift?>
 
     @Headers( "Content-Type: application/json" )
-    @POST("iwater/spare_item/")
+    @POST("logistic/spare_item/")
     suspend fun getAdvancedProduct(
         @Header("X-Authorization") key: String,
         @Body id: JsonObject
     ): Response<AdvancedProduct>
 
-    @PUT("iwater/Get_the_container_dept/")
+    @PUT("logistic/Get_the_container_dept/")
     suspend fun getContainerDept(
         @Header("X-Authorization") key: String,
         @Body returnTare: JsonObject
     ): Response<JsonObject>
 
-    @POST("iwater/pick_up_empty_bottles/")
+    @POST("logistic/pick_up_empty_bottles/")
     suspend fun getClientInfo(
         @Header("X-Authorization") key: String,
         @Body returnTare: JsonObject
     ): Data?
 
-    @GET("iwater/data_report_app/{id}/")
+    @GET("logistic/data_report_app/{id}/")
     suspend fun getReport(
         @Header("X-Authorization") key: String,
         @Path("id") idOrder: Int?
     ): ReportOrder?
 
-    @GET("iwater/check_shift_closure/{id_driver}")
+    @GET("logistic/check_shift_closure/{id_driver}")
     suspend fun checkShiftDriver(
         @Header("X-Authorization") key: String,
         @Path("id_driver") idDriver: Int
     ):String?
 
-    @POST("iwater/products_of_the_day")
+    @POST("logistic/products_of_the_day")
     suspend fun getProduct(
         @Header("X-Authorization") key: String,
         @Body driverInfo: JsonObject

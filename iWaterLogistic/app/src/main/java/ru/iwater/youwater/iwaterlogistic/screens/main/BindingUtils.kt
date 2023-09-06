@@ -170,7 +170,7 @@ fun TextView.setNumOrder(item: WaterOrder) {
  **/
 
 @BindingAdapter("titleOrderInfo")
-fun TextView.bindDateTitleInfo(order: OrderInfo?) {
+fun TextView.bindDateTitleInfo(order: OrderInfoNew?) {
     if (order != null) {
         "№ ${order.id}, ${order.time}".also { text = it }
     }

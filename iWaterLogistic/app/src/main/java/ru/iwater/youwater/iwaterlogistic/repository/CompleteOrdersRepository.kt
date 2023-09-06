@@ -103,9 +103,10 @@ class CompleteOrdersRepository @Inject constructor(
         try {
             val answer = service.reportOrderInsert("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", report)
             return if (answer.isSuccessful) {
-                Timber.d("${answer.body()}")
+                Timber.d("answer body decontrol  ${answer.body()}")
                 true
             } else {
+                Timber.d("answer body decontrol false: ${answer.body()}")
                 false
             }
         }catch (e: Exception) {

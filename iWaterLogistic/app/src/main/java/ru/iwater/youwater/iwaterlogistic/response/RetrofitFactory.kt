@@ -7,7 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitFactory {
-    const val BASE_URL = "http://api.iwatercrm.ru/" //test
+    const val BASE_URL = "https://api.iwatercrm.ru/" //test
 //    const val BASE_URL = "http://app.iwatercrm.ru/" //prod
 
     fun makeRetrofit(): ApiRequest {

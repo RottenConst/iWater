@@ -1,5 +1,6 @@
 package ru.iwater.youwater.iwaterlogistic.repository
 
+import android.annotation.SuppressLint
 import com.google.gson.JsonObject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -75,6 +76,7 @@ class  OrderListRepository @Inject constructor(
         return false
     }
 
+    @SuppressLint("SuspiciousIndentation")
     suspend fun getAddressBottle(clientId: Int?, address: String): ClientInfo? {
         val infoClient = JsonObject()
         infoClient.addProperty("client_id", clientId)
@@ -129,7 +131,7 @@ class  OrderListRepository @Inject constructor(
         var currentOrders: List<WaterOrder> = emptyList()
         try {
             currentOrders = service.getDriverOrders("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", session)
-            if (!currentOrders.isNullOrEmpty()) {
+            if (currentOrders.isNotEmpty()) {
                 var num = 0
                 return currentOrders.sortedBy { order ->
                     order.time.split("-").last()
@@ -163,7 +165,7 @@ class  OrderListRepository @Inject constructor(
         return currentOrders
     }
 
-    suspend fun getLoadOrderInfo(orderId: Int?): OrderInfo? {
+    suspend fun getLoadOrderInfo(orderId: Int?): OrderInfoNew? {
         try {
             return service.getOrderInfo("3OSkO8gl.puTQf56Hi8BuTRFTpEDZyNjkkOFkvlPX", orderId)
         }catch (e: Exception) {

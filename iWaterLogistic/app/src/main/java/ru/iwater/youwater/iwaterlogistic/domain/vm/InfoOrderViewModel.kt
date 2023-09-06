@@ -4,12 +4,14 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import ru.iwater.youwater.iwaterlogistic.di.components.OnScreen
 import ru.iwater.youwater.iwaterlogistic.domain.ClientInfo
+import ru.iwater.youwater.iwaterlogistic.domain.Product
 import ru.iwater.youwater.iwaterlogistic.domain.WaterOrder
 import ru.iwater.youwater.iwaterlogistic.domain.mapdata.Location
 import ru.iwater.youwater.iwaterlogistic.repository.OrderListRepository
@@ -28,8 +30,8 @@ class InfoOrderViewModel @Inject constructor(
     private val viewModelJob = SupervisorJob()
     private val uiScope = CoroutineScope(Dispatchers.Main + viewModelJob)
 
-    private val _order: MutableLiveData<WaterOrder> = MutableLiveData()
-    val order: LiveData<WaterOrder>
+    private val _order: MutableLiveData<WaterOrder?> = MutableLiveData()
+    val order: LiveData<WaterOrder?>
         get() = _order
     private val _clientInfo: MutableLiveData<ClientInfo> = MutableLiveData()
     val clientInfo: LiveData<ClientInfo>
@@ -40,22 +42,23 @@ class InfoOrderViewModel @Inject constructor(
      * возвращает заказ по id
      **/
     fun getOrderInfo(context: Context?, id: Int) {
-        uiScope.launch {
+        viewModelScope.launch {
             try {
+
                 val orderDetail = orderListRepository.getDBOrderOnId(id)
                 val orderInfoDetail = orderListRepository.getLoadOrderInfo(id)
-                Timber.d("client = ${orderInfoDetail?.client_id} ${orderDetail.address}")
-                val clientInfo = orderListRepository.getAddressBottle(orderInfoDetail?.client_id, orderDetail.address)
+                Timber.d("client = ${orderInfoDetail?.client_id} ${orderInfoDetail?.address}")
+                val clientInfo = orderListRepository.getAddressBottle(orderInfoDetail?.client_id, orderInfoDetail?.address ?: "")
                 if (orderInfoDetail != null) {
                     if (!orderDetail.cash.isNullOrEmpty()) {
                         orderDetail.cash = orderInfoDetail.cash
                     } else {
                         orderDetail.cash_b = orderInfoDetail.cash_b
                     }
-                    if (orderDetail.coords.isNullOrEmpty()) {
-                        orderDetail.coords = getCoordinate(orderInfoDetail.address).toString()
-                        orderListRepository.updateDBLocation(orderDetail, orderDetail.coords)
-                    }
+//                    if (orderDetail.coords.isNullOrEmpty()) {
+//                        orderDetail.coords = getCoordinate(orderInfoDetail.address).toString()
+//                        orderListRepository.updateDBLocation(orderDetail, orderDetail.coords)
+//                    }
                     if (clientInfo?.fact_address?.isNotEmpty() == true) {
                         clientInfo.fact_address.also { orderDetail.address = it }
                     } else {
@@ -70,13 +73,13 @@ class InfoOrderViewModel @Inject constructor(
                     }
 
                     _order.value = orderDetail
-                    _clientInfo.value = clientInfo
+                    _clientInfo.value = clientInfo ?: ClientInfo("", 0)
                 } else {
                     _order.value = orderDetail
                     _clientInfo.value = ClientInfo("", 0)
                     UtilsMethods.showToast(
                         context,
-                        "Проблемы с интернетом, данные могут быть не коктными"
+                        "Проблемы с интернетом"
                     )
                 }
             } catch (e: Exception) {
@@ -100,17 +103,17 @@ class InfoOrderViewModel @Inject constructor(
      **/
     fun getPhoneNumberClient(): Array<String> {
         var contacts = mutableListOf<String>()
-        val contact = _order.value?.contact
-        if (!contact.isNullOrEmpty()) {
+        val mobileNumbers = _order.value?.mobile
+        if (!mobileNumbers.isNullOrEmpty()) {
             contacts = when {
-                contact.contains(";") -> {
-                    contact.split(";") as MutableList<String>
+                mobileNumbers.contains(";") -> {
+                    mobileNumbers.split(";") as MutableList<String>
                 }
-                contact.contains(",") -> {
-                    contact.split(",") as MutableList<String>
+                mobileNumbers.contains(",") -> {
+                    mobileNumbers.split(",") as MutableList<String>
                 }
                 else -> {
-                    arrayListOf(contact)
+                    arrayListOf(mobileNumbers)
                 }
             }
         }

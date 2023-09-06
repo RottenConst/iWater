@@ -24,13 +24,13 @@ class LoadMapActivity : BaseActivity() {
         setContentView(R.layout.splash_layout)
         screenComponent.inject(this)
         viewModel.getLoadOrderFromDB()
-        viewModel.status.observe(this, { status ->
+        viewModel.status.observe(this) { status ->
             if (status == OrderLoadStatus.DONE) {
                 val intent = Intent(this.applicationContext, MapsActivity::class.java)
                 startActivity(intent)
                 finish()
             }
-        })
+        }
         viewModel.dbListOrder.observe(this, {
             viewModel.loadCoordinate(it)
         })

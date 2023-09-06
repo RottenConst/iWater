@@ -16,5 +16,7 @@ data class ReportOrder(
     val payment_type: String,
     val total_money: Float,
     val type_client: String,
-    val type: Int
+    val type: Int,
+    val coord: String,
+    val notice: String
 )

@@ -72,30 +72,36 @@ class ReportCheckFragment: BaseFragment() {
             }
         }
 
-        viewModel.reportDay.observe(viewLifecycleOwner, {
+        viewModel.reportDay.observe(viewLifecycleOwner) {
             reportDay = it
-        })
+            Timber.d("report day $it")
+        }
 
-        viewModel.statusLoad.observe(this.viewLifecycleOwner, { load ->
+        viewModel.statusLoad.observe(this.viewLifecycleOwner) { load ->
             when (load) {
                 LoadPhoto.LOADING -> {
                     binding.pbForLoad.visibility = View.VISIBLE
                     binding.btnSendReport.isEnabled = false
                 }
+
                 LoadPhoto.DONE -> {
                     val report = viewModel.getDriverCloseMonitor()
                     viewModel.driverCloseDay(report)
                 }
+
                 LoadPhoto.ERROR -> {
                     binding.pbForLoad.visibility = View.GONE
                     binding.btnSendReport.isEnabled = true
-                    UtilsMethods.showToast(this.context, "Ошибка отправки отчета не удается передать данные")
+                    UtilsMethods.showToast(
+                        this.context,
+                        "Ошибка отправки отчета не удается передать данные"
+                    )
                 }
             }
 
-        })
+        }
 
-        viewModel.status.observe(this.viewLifecycleOwner, { status ->
+        viewModel.status.observe(this.viewLifecycleOwner) { status ->
             when (status) {
                 Status.DONE -> {
                     viewModel.saveTodayReport()
@@ -119,12 +125,17 @@ class ReportCheckFragment: BaseFragment() {
                     activity?.finish()
                     startActivity(intent)
                 }
+
                 Status.ERROR -> {
-                    UtilsMethods.showToast(this.context, "Ошибка отправки отчета не удается передать данные")
+                    UtilsMethods.showToast(
+                        this.context,
+                        "Ошибка отправки отчета не удается передать данные"
+                    )
                 }
+
                 Status.NONE -> {}
             }
-        })
+        }
 
         binding.btnSendReport.setOnClickListener {
             if (binding.ivPhotoCheckOne.isVisible) {

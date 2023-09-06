@@ -38,10 +38,10 @@ class FragmentCompleteOrderInfo: BaseFragment() {
         observeVM(binding)
         viewModel.getCompleteOrder(id)
         binding.btnRestore.setOnClickListener {
-            val fragment = RestoreOrderFragment.newInstance()
-            fragment.arguments = arg
+//            val fragment = RestoreOrderFragment.newInstance()
+//            fragment.arguments = arg
             activity?.supportFragmentManager?.beginTransaction()
-                ?.replace(R.id.fl_card_order_container, fragment)
+//                ?.replace(R.id.fl_card_order_container, fragment)
                 ?.commit()
         }
         return binding.root

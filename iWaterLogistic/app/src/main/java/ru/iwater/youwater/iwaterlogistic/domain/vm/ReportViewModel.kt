@@ -109,6 +109,7 @@ class ReportViewModel @Inject constructor(
      */
     fun initDateReport(date: String = "") {
         uiScope.launch {
+            Timber.d("Date = $date timeComplete = $timeComplete")
             if (date != timeComplete && date.isNotBlank()) {
                 _reportDay.value = reportRepository.loadReportFromDB(date)
             } else {
